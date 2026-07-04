@@ -31,9 +31,13 @@ create table if not exists public.chat_messages (
   user_id    uuid not null references auth.users on delete cascade,
   role       text not null check (role in ('user','assistant')),
   content    text not null,
+  mode       text not null default 'coach' check (mode in ('coach','nutrition','therapy')),
   created_at timestamptz default now()
 );
 create index if not exists chat_messages_user_idx on public.chat_messages (user_id, created_at);
+
+-- migration for databases created before the chat sub-areas existed
+alter table public.chat_messages add column if not exists mode text not null default 'coach';
 
 -- ---------- workout logs ----------
 create table if not exists public.workout_logs (

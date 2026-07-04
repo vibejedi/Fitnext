@@ -16,8 +16,8 @@ import { coachById } from "@/lib/coaches";
 import { GOALS } from "@/lib/onboarding";
 import { cn } from "@/lib/utils";
 
-const ask = (prompt: string) =>
-  window.dispatchEvent(new CustomEvent("coach-ask", { detail: prompt }));
+const ask = (prompt: string, mode: "coach" | "nutrition" = "coach") =>
+  window.dispatchEvent(new CustomEvent("coach-ask", { detail: { prompt, mode } }));
 
 export default function Dashboard() {
   const router = useRouter();
@@ -134,7 +134,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 gap-3">
             <Action icon={<Apple size={18} />} label="Meal Prep"
               disabled={!fit.wantNutrition}
-              onClick={() => ask("Give me a simple meal-prep plan for today that hits my macros.")} />
+              onClick={() => ask("Give me a simple meal-prep plan for today that hits my macros.", "nutrition")} />
             <Action icon={<HeartPulse size={18} />} label="Physical Therapy"
               disabled={!fit.wantInjury}
               onClick={() => ask("I'm dealing with some soreness/injury. Give me safe mobility and rehab work.")} />

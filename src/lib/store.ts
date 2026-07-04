@@ -19,6 +19,9 @@ export interface ChatMessage {
   ts: number;
 }
 
+/** Chat sub-areas under "Chat with Coach". Therapy is coming soon. */
+export type ChatMode = "coach" | "nutrition";
+
 export interface FitState {
   // onboarding answers
   coach: CoachId | null;
@@ -36,13 +39,14 @@ export interface FitState {
   targetDate: string | null;
   streak: number;
   wins: { id: string; label: string; done: boolean }[];
-  messages: ChatMessage[];
+  messages: ChatMessage[];          // training coach thread
+  nutritionMessages: ChatMessage[]; // nutrition coach thread
 
   // actions
   set: <K extends keyof FitState>(key: K, value: FitState[K]) => void;
   setProfile: (p: Partial<Profile>) => void;
   toggleWin: (id: string) => void;
-  addMessage: (m: ChatMessage) => void;
+  addMessage: (m: ChatMessage, mode?: ChatMode) => void;
   completeOnboarding: () => void;
   reset: () => void;
 }
@@ -69,6 +73,7 @@ const initial = {
   streak: 0,
   wins: DEFAULT_WINS,
   messages: [],
+  nutritionMessages: [],
 };
 
 export const useFit = create<FitState>()(
@@ -84,7 +89,12 @@ export const useFit = create<FitState>()(
             w.id === id ? { ...w, done: !w.done } : w
           ),
         })),
-      addMessage: (m) => setState((s) => ({ messages: [...s.messages, m] })),
+      addMessage: (m, mode = "coach") =>
+        setState((s) =>
+          mode === "nutrition"
+            ? { nutritionMessages: [...s.nutritionMessages, m] }
+            : { messages: [...s.messages, m] }
+        ),
       completeOnboarding: () => setState({ onboarded: true, streak: 1 }),
       reset: () => setState({ ...initial }),
     }),

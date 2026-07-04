@@ -1,7 +1,7 @@
 "use client";
 
 import { getSupabaseBrowser } from "./supabase/client";
-import type { FitState } from "./store";
+import type { ChatMode, FitState } from "./store";
 
 /** Shape stored in the `profiles` table (snake_case). */
 function toRow(s: FitState, id: string) {
@@ -74,10 +74,14 @@ export async function pullProfile(): Promise<Partial<FitState> | null> {
 }
 
 /** Persist a single chat message (best-effort). */
-export async function saveMessage(role: "user" | "assistant", content: string) {
+export async function saveMessage(
+  role: "user" | "assistant",
+  content: string,
+  mode: ChatMode = "coach"
+) {
   const sb = getSupabaseBrowser();
   if (!sb) return;
   const uid = await currentUserId();
   if (!uid) return;
-  await sb.from("chat_messages").insert({ user_id: uid, role, content });
+  await sb.from("chat_messages").insert({ user_id: uid, role, content, mode });
 }
