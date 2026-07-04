@@ -6,6 +6,10 @@ import { LogOut } from "lucide-react";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
+/** Prefer the username; fall back to email for any legacy accounts. */
+const displayName = (u: { email?: string; user_metadata?: Record<string, unknown> } | null) =>
+  u ? ((u.user_metadata?.username as string | undefined) ?? u.email ?? null) : null;
+
 export function AuthButton() {
   const [email, setEmail] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -17,11 +21,11 @@ export function AuthButton() {
       return;
     }
     sb.auth.getUser().then(({ data }) => {
-      setEmail(data.user?.email ?? null);
+      setEmail(displayName(data.user));
       setReady(true);
     });
     const { data: sub } = sb.auth.onAuthStateChange((_e, session) => {
-      setEmail(session?.user?.email ?? null);
+      setEmail(displayName(session?.user ?? null));
     });
     return () => sub.subscription.unsubscribe();
   }, []);

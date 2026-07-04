@@ -6,6 +6,7 @@
 -- ---------- profiles (one row per user: the 7-question calibration) ----------
 create table if not exists public.profiles (
   id uuid primary key references auth.users on delete cascade,
+  username       text,
   coach          text,
   goal           text,
   experience     text,
@@ -24,6 +25,12 @@ create table if not exists public.profiles (
   streak         int default 0,
   updated_at     timestamptz default now()
 );
+
+-- migration for databases created before username auth existed
+alter table public.profiles add column if not exists username text;
+-- usernames are unique, case-insensitively
+create unique index if not exists profiles_username_key
+  on public.profiles (lower(username));
 
 -- ---------- chat history ----------
 create table if not exists public.chat_messages (
@@ -100,7 +107,10 @@ end $$;
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  insert into public.profiles (id) values (new.id) on conflict (id) do nothing;
+  insert into public.profiles (id, username)
+  values (new.id, new.raw_user_meta_data->>'username')
+  on conflict (id) do update
+    set username = coalesce(excluded.username, public.profiles.username);
   return new;
 end $$;
 
