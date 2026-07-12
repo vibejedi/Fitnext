@@ -1,37 +1,82 @@
 @import "tailwindcss";
 
 /* ============================================================
-   FitNext — Modernized Ancient Greek + Olympian-Green tech
+   FitNext — "Sacred Marble": ivory temple surfaces, engraved
+   antique gold, chiseled square panels, meander bands.
    ============================================================ */
 
 :root {
-  /* Stone base */
-  --stone-950: #080b0a;
-  --stone-900: #0b0f0e;
-  --stone-850: #0f1513;
-  --stone-800: #141b18;
-  --stone-700: #1d2723;
-  --line: #25332d;
+  /* Surfaces */
+  --page-top: #f7f4ec;
+  --page-bottom: #efe9db;
+  --panel: #fbf8f1;
+  --panel-alt: #f7f2e4;
+  --pressed: #f3ecd9;
+  --done-wash: #fdf8ea;
 
-  /* Marble */
-  --marble: #f4f1ea;
-  --marble-dim: #cdd3cd;
-  --muted: #8b958f;
+  /* Lines & borders */
+  --line: #d8cfb9;          /* outer panel border */
+  --line-soft: #e7dfcc;     /* inner dividers */
+  --line-strong: #cbbb92;   /* accent / ornament border */
+  --meander: #c4ab6a;       /* meander stroke */
 
-  /* Olympian green */
-  --green: #16e07a;
-  --green-bright: #4dff9e;
-  --green-deep: #0b9d54;
-  --green-glow: rgba(22, 224, 122, 0.45);
+  /* Gold (the accent) */
+  --gold: #9a7b2d;
+  --gold-gleam: #d3b25e;
+  --gold-badge: #b08d3e;
+  --ivory: #fffbf0;         /* on-gold text */
+
+  /* Text */
+  --ink: #211d16;
+  --sec: #7c7159;
+  --faint: #a29677;
+
+  /* Over-target / warning (nutrition bars) */
+  --clay: #b4552b;
+
+  /* ---- Legacy aliases ----
+     Pre-marble pages (onboarding, login) were written against the dark
+     "Olympian Green" tokens. Remapping those names onto the marble palette
+     re-themes them wholesale: stone → ivory surfaces, green → gold. */
+  --stone-950: #efe9db;
+  --stone-900: #f7f4ec;
+  --stone-850: #f7f2e4;
+  --stone-800: #f3ecd9;
+  --stone-700: #e7dfcc;
+  --marble: #211d16;
+  --marble-dim: #7c7159;
+  --muted: #a29677;
+  --green: var(--gold);
+  --green-bright: var(--gold-gleam);
+  --green-deep: var(--gold-badge);
+  --green-glow: rgba(154, 123, 45, 0.3);
 }
 
 @theme inline {
+  /* marble tokens */
+  --color-panel: var(--panel);
+  --color-panel-alt: var(--panel-alt);
+  --color-pressed: var(--pressed);
+  --color-done-wash: var(--done-wash);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-line-strong: var(--line-strong);
+  --color-meander: var(--meander);
+  --color-gold: var(--gold);
+  --color-gold-gleam: var(--gold-gleam);
+  --color-gold-badge: var(--gold-badge);
+  --color-ivory: var(--ivory);
+  --color-ink: var(--ink);
+  --color-sec: var(--sec);
+  --color-faint: var(--faint);
+  --color-clay: var(--clay);
+
+  /* legacy names still used by onboarding/login */
   --color-stone-950: var(--stone-950);
   --color-stone-900: var(--stone-900);
   --color-stone-850: var(--stone-850);
   --color-stone-800: var(--stone-800);
   --color-stone-700: var(--stone-700);
-  --color-line: var(--line);
   --color-marble: var(--marble);
   --color-marble-dim: var(--marble-dim);
   --color-muted: var(--muted);
@@ -39,8 +84,8 @@
   --color-green-bright: var(--green-bright);
   --color-green-deep: var(--green-deep);
 
-  --color-background: var(--stone-900);
-  --color-foreground: var(--marble);
+  --color-background: var(--page-top);
+  --color-foreground: var(--ink);
 
   --font-display: var(--font-cinzel);
   --font-sans: var(--font-inter);
@@ -52,16 +97,15 @@
 }
 
 html {
-  background: var(--stone-900);
-  color: var(--marble);
+  background: var(--page-top);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
 
 body {
   font-family: var(--font-inter), system-ui, sans-serif;
-  background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(22, 224, 122, 0.07), transparent 60%),
-    var(--stone-900);
+  background: linear-gradient(180deg, var(--page-top), var(--page-bottom));
+  color: var(--ink);
   min-height: 100dvh;
 }
 
@@ -75,92 +119,149 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.32em;
   font-size: 0.7rem;
-  color: var(--green);
+  color: var(--gold);
 }
 
-/* ---------- Greek-key meander border ---------- */
+/* ---------- Meander (Greek-key) band ----------
+   Repeating 32px unit; use on a full-width div under headers. */
+.meander-band {
+  height: 10px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 10' width='32' height='10' fill='none' stroke='%23c4ab6a' stroke-width='1.2'%3E%3Cpath d='M8 9 V3 H24 V7 H16 V5'/%3E%3C/svg%3E");
+  background-size: 32px 10px;
+  background-repeat: repeat-x;
+}
+
+/* legacy border helper (kept for compatibility) */
 .greek-key {
   border-image: repeating-linear-gradient(
       90deg,
-      var(--green) 0 6px,
+      var(--meander) 0 6px,
       transparent 6px 12px
     )
     1;
 }
 
-/* ---------- Tech grid background ---------- */
+/* ---------- Faint marble grid (legacy helper, retinted) ---------- */
 .tech-grid {
   background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
   background-size: 44px 44px;
   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 75%);
   mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 75%);
 }
 
-/* ---------- Glow utilities ---------- */
+/* ---------- Glow utilities (retinted gold) ---------- */
 .glow-green {
-  box-shadow: 0 0 0 1px rgba(22, 224, 122, 0.35), 0 0 28px -6px var(--green-glow);
+  box-shadow: 0 0 0 1px rgba(154, 123, 45, 0.35), 0 10px 24px -12px rgba(70, 58, 30, 0.4);
 }
 .text-glow {
-  text-shadow: 0 0 18px var(--green-glow);
+  text-shadow: none;
 }
 
-/* ---------- Card ---------- */
+/* ---------- Panel: chiseled stone ---------- */
 .panel {
-  background: linear-gradient(180deg, var(--stone-850), var(--stone-900));
+  background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 0;
+  box-shadow: 0 1px 0 #fff inset;
 }
 .panel-hover {
-  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, background 0.2s;
 }
 .panel-hover:hover {
-  border-color: rgba(22, 224, 122, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 0 30px -10px var(--green-glow);
+  border-color: var(--line-strong);
 }
 
 /* ---------- Buttons ---------- */
 .btn-primary {
-  background: var(--green);
-  color: #04130a;
+  background: linear-gradient(110deg, var(--gold) 42%, var(--gold-gleam) 50%, var(--gold) 58%);
+  background-size: 220% 100%;
+  background-position: 130% 0;
+  color: var(--ivory);
   font-weight: 600;
-  border-radius: 999px;
-  transition: filter 0.15s, box-shadow 0.2s, transform 0.1s;
-  box-shadow: 0 0 24px -6px var(--green-glow);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  border-radius: 3px;
+  transition: filter 0.15s, transform 0.1s;
 }
 .btn-primary:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 0 34px -4px var(--green-glow);
+  filter: brightness(1.05);
 }
 .btn-primary:active {
   transform: translateY(1px);
 }
 .btn-ghost {
-  border: 1px solid var(--line);
-  color: var(--marble);
-  border-radius: 999px;
-  transition: border-color 0.2s, background 0.2s;
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  transition: background 0.15s, transform 0.1s;
 }
 .btn-ghost:hover {
-  border-color: rgba(22, 224, 122, 0.6);
-  background: rgba(22, 224, 122, 0.06);
+  background: var(--pressed);
+}
+.btn-ghost:active {
+  transform: translateY(1px);
 }
 
-/* ---------- Animations ---------- */
+/* ---------- Chisel press (stone tiles) ---------- */
+.chisel-press {
+  user-select: none;
+}
+.chisel-press:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 6px rgba(70, 58, 30, 0.18);
+  background: var(--pressed);
+}
+
+/* ---------- Animations ----------
+   Gleam/ring come in A/B pairs so alternating names retriggers
+   the animation on every click without remounting. */
+@keyframes gleamA {
+  from { background-position: 130% 0; }
+  to { background-position: -30% 0; }
+}
+@keyframes gleamB {
+  from { background-position: 130% 0; }
+  to { background-position: -30% 0; }
+}
+@keyframes ringA {
+  from { box-shadow: 0 0 0 0 rgba(154, 123, 45, 0.45); }
+  to { box-shadow: 0 0 0 16px rgba(154, 123, 45, 0); }
+}
+@keyframes ringB {
+  from { box-shadow: 0 0 0 0 rgba(154, 123, 45, 0.45); }
+  to { box-shadow: 0 0 0 16px rgba(154, 123, 45, 0); }
+}
+@keyframes laurelPop {
+  0% { transform: scale(0.3) rotate(-12deg); opacity: 0; }
+  60% { transform: scale(1.25) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes awakenGlow {
+  0% { box-shadow: 0 0 0 0 rgba(154, 123, 45, 0.4); }
+  45% { box-shadow: 0 0 0 12px rgba(154, 123, 45, 0.08), 0 0 44px 4px rgba(211, 178, 94, 0.5); }
+  100% { box-shadow: 0 0 0 0 rgba(154, 123, 45, 0); }
+}
+@keyframes awakenZoom {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
+@keyframes sheenSweep {
+  from { background-position: 150% 0; }
+  to { background-position: -50% 0; }
+}
+
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.55; }
   50% { opacity: 1; }
 }
 .animate-pulse-glow { animation: pulse-glow 2.4s ease-in-out infinite; }
 
-@keyframes scan {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
-}
-
 /* thin scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: var(--stone-700); border-radius: 8px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }

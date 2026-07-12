@@ -2,9 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import {
-  Apple, Dumbbell, HeartPulse, Mic, MicOff, Send, Volume2, VolumeX,
-} from "lucide-react";
+import { Mic, MicOff, Send, Volume2, VolumeX } from "lucide-react";
 import { useFit, type ChatMode } from "@/lib/store";
 import { coachById } from "@/lib/coaches";
 import { saveMessage } from "@/lib/sync";
@@ -44,8 +42,10 @@ export function CoachChat() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
   const [speak, setSpeak] = useState(false);
+  const [sendTick, setSendTick] = useState(0);      // gold ring pulse per send
   const recRef = useRef<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const busyRef = useRef(false);
   const pendingRef = useRef<{ prompt: string; mode: ChatMode } | null>(null);
 
@@ -66,6 +66,13 @@ export function CoachChat() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [thread.length, busyMode, draft, errorMsg, mode]);
+
+  // "Speak with Coach" on the dashboard focuses the oracle's ear
+  useEffect(() => {
+    const h = () => inputRef.current?.focus();
+    window.addEventListener("coach-focus", h);
+    return () => window.removeEventListener("coach-focus", h);
+  }, []);
 
   const send = async (text: string, m: ChatMode = mode) => {
     const content = text.trim();
@@ -198,141 +205,143 @@ export function CoachChat() {
     setListening(true);
   };
 
+  const submit = (text: string) => {
+    setSendTick((t) => t + 1);
+    send(text);
+  };
+
   const busyHere = busyMode === mode;
 
   return (
     <div className="panel flex h-full flex-col overflow-hidden">
-      {/* header */}
-      <div className="flex items-center gap-3 border-b border-line px-4 py-3">
-        {mode === "nutrition" ? (
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-green/40 bg-green/10 text-green">
-            <Apple size={16} />
+      {/* header — the oracle */}
+      <div className="flex items-center gap-[11px] border-b border-line px-4 py-3">
+        {coach && (
+          <div
+            className="relative h-11 w-[38px] shrink-0 overflow-hidden border border-line-strong bg-[#0b0f0e]"
+            style={{ borderRadius: "38px 38px 3px 3px" }}
+          >
+            <Image src={coach.image} alt={coach.name} fill className="object-cover" sizes="38px" />
           </div>
-        ) : (
-          coach && (
-            <div className="relative h-9 w-9 overflow-hidden rounded-full border border-green/40">
-              <Image src={coach.image} alt={coach.name} fill className="object-cover" sizes="36px" />
-            </div>
-          )
         )}
         <div className="flex-1">
-          <p className="font-display text-sm font-bold leading-none">
-            {mode === "nutrition" ? "Nutrition Coach" : `Coach ${coach?.name ?? "FitNext"}`}
+          <p className="font-display text-sm font-bold tracking-[0.04em] leading-none">
+            Coach {coach?.name ?? "FitNext"}
           </p>
-          <p className="text-[0.65rem] text-muted">
-            {mode === "nutrition" ? "Fuel & fat loss" : coach?.route ?? ""}
+          <p className="mt-1 text-[9px] uppercase tracking-[0.24em] text-gold">
+            The Oracle · {mode === "nutrition" ? "Nutrition" : coach?.route ?? "Fitness"}
           </p>
         </div>
-        <button onClick={() => setSpeak((s) => !s)}
+        <button
+          onClick={() => setSpeak((s) => !s)}
           title={speak ? "Mute voice" : "Speak replies"}
-          className={cn("rounded-md p-1.5", speak ? "text-green" : "text-muted hover:text-marble")}>
+          className={cn("p-1.5", speak ? "text-gold" : "text-sec hover:text-ink")}
+        >
           {speak ? <Volume2 size={16} /> : <VolumeX size={16} />}
         </button>
       </div>
 
-      {/* sub-areas */}
-      <div className="flex gap-1 border-b border-line px-2 py-1.5">
-        <Tab
-          active={mode === "coach"}
-          onClick={() => setMode("coach")}
-          icon={<Dumbbell size={13} />}
-          label="Coach"
-        />
+      {/* sub-areas — engraved underline tabs */}
+      <div className="flex gap-[22px] border-b border-line px-4">
+        <Tab active={mode === "coach"} onClick={() => setMode("coach")} label="Coach" />
         <Tab
           active={mode === "nutrition"}
           disabled={!fit.wantNutrition}
           onClick={() => setMode("nutrition")}
-          icon={<Apple size={13} />}
           label="Nutrition"
           title={fit.wantNutrition ? undefined : "Enable the nutrition add-on in onboarding"}
         />
-        <Tab
-          disabled
-          icon={<HeartPulse size={13} />}
-          label="Therapy"
-          badge="Soon"
-          title="Physical therapy coach — coming soon"
-        />
+        <Tab disabled dimmed label="Therapy · Soon" title="Physical therapy coach — coming soon" />
       </div>
 
       {/* messages */}
-      <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-        {thread.map((m, i) => (
-          <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
-            <div className={cn(
-              "max-w-[85%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm",
-              m.role === "user"
-                ? "bg-green text-stone-950"
-                : "border border-line bg-stone-850 text-marble"
-            )}>
-              {m.content}
-            </div>
-          </div>
-        ))}
+      <div ref={scrollRef} className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
+        {thread.map((m, i) => <Bubble key={i} role={m.role}>{m.content}</Bubble>)}
         {busyHere && (
-          <div className="flex justify-start">
-            <div className={cn(
-              "max-w-[85%] whitespace-pre-wrap rounded-2xl border border-line bg-stone-850 px-3.5 py-2.5 text-sm",
-              draft ? "text-marble" : "text-muted"
-            )}>
-              {draft || (
-                <span className="animate-pulse-glow">
-                  {mode === "nutrition" ? "Nutritionist is thinking…" : "Coach is thinking…"}
-                </span>
-              )}
-            </div>
-          </div>
+          <Bubble role="assistant" muted={!draft}>
+            {draft || (
+              <span className="animate-pulse-glow">
+                {mode === "nutrition" ? "The nutritionist is thinking…" : "The oracle is thinking…"}
+              </span>
+            )}
+          </Bubble>
         )}
         {errorMsg && !busyMode && (
           <div className="flex justify-start">
-            <div className="max-w-[85%] rounded-2xl border border-red-400/40 bg-red-500/10 px-3.5 py-2.5 text-sm text-red-200">
+            <div className="max-w-[85%] rounded-[2px_14px_14px_14px] border border-clay/40 bg-panel px-3.5 py-2.5 text-[13px] leading-[1.55] text-clay">
               {errorMsg}
             </div>
           </div>
         )}
       </div>
 
-      {/* input */}
-      <div className="border-t border-line p-3">
-        <div className="flex items-end gap-2">
-          <button onClick={toggleMic}
-            className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition",
-              listening ? "border-green bg-green text-stone-950 animate-pulse-glow" : "border-line text-marble hover:border-green/50")}
-            title="Voice input">
-            {listening ? <MicOff size={18} /> : <Mic size={18} />}
-          </button>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); }
-            }}
-            rows={1}
-            placeholder={
-              mode === "nutrition"
-                ? "Answer your nutritionist, or ask about food…"
-                : "Log a set, ask for a plan, or talk…"
-            }
-            className="panel max-h-32 flex-1 resize-none bg-stone-850 px-3 py-2.5 text-sm outline-none focus:border-green/50"
-          />
-          <button onClick={() => send(input)} disabled={!input.trim() || busyMode !== null}
-            className="btn-primary flex h-11 w-11 shrink-0 items-center justify-center disabled:opacity-40"
-            title="Send">
-            <Send size={16} />
-          </button>
-        </div>
+      {/* input bar */}
+      <div className="flex items-end gap-2 border-t border-line px-3.5 py-2.5">
+        <button
+          onClick={toggleMic}
+          className={cn(
+            "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition active:translate-y-px",
+            listening
+              ? "animate-pulse-glow border-gold bg-gold text-ivory"
+              : "border-line-strong bg-panel text-gold active:bg-pressed"
+          )}
+          title="Voice input"
+        >
+          {listening ? <MicOff size={17} /> : <Mic size={17} />}
+        </button>
+        <textarea
+          ref={inputRef}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(input); }
+          }}
+          rows={1}
+          placeholder="Speak to the oracle…"
+          className="max-h-32 flex-1 resize-none rounded-[4px] border border-line bg-panel-alt px-3 py-3 text-[13px] text-ink outline-none placeholder:text-faint focus:border-line-strong"
+        />
+        <button
+          onClick={() => submit(input)}
+          disabled={!input.trim() || busyMode !== null}
+          style={sendTick ? { animation: `${sendTick % 2 ? "ringA" : "ringB"} 0.6s ease` } : undefined}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[4px] bg-gold text-ivory active:translate-y-px disabled:opacity-40"
+          title="Send"
+        >
+          <Send size={15} />
+        </button>
       </div>
     </div>
   );
 }
 
-function Tab({ active, disabled, onClick, icon, label, badge, title }: {
+function Bubble({ role, muted, children }: {
+  role: "user" | "assistant";
+  muted?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={cn("flex", role === "user" ? "justify-end" : "justify-start")}>
+      <div
+        className={cn(
+          "max-w-[85%] whitespace-pre-wrap px-3.5 py-2.5 text-[13px] leading-[1.55]",
+          role === "user"
+            ? "rounded-[14px_2px_14px_14px] bg-gold text-ivory"
+            : "rounded-[2px_14px_14px_14px] border border-line bg-panel shadow-[0_2px_6px_-4px_rgba(70,58,30,0.35)]",
+          role === "assistant" && (muted ? "text-faint" : "text-ink")
+        )}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Tab({ active, disabled, dimmed, onClick, label, title }: {
   active?: boolean;
   disabled?: boolean;
+  dimmed?: boolean;
   onClick?: () => void;
-  icon: React.ReactNode;
   label: string;
-  badge?: string;
   title?: string;
 }) {
   return (
@@ -341,17 +350,16 @@ function Tab({ active, disabled, onClick, icon, label, badge, title }: {
       disabled={disabled}
       title={title}
       className={cn(
-        "flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-[0.7rem] font-medium uppercase tracking-wider transition",
-        active ? "bg-green/15 text-green" : "text-muted hover:text-marble",
-        disabled && "cursor-not-allowed opacity-40 hover:text-muted"
+        "-mb-px pb-2 pt-2.5 text-[10px] uppercase tracking-[0.2em] transition-colors",
+        active
+          ? "border-b-2 border-gold font-semibold text-ink"
+          : "border-b-2 border-transparent text-faint",
+        !active && !disabled && "hover:text-ink",
+        dimmed && "opacity-55",
+        disabled && "cursor-not-allowed"
       )}
     >
-      {icon} {label}
-      {badge && (
-        <span className="rounded border border-line px-1 text-[0.55rem] normal-case tracking-normal text-muted">
-          {badge}
-        </span>
-      )}
+      {label}
     </button>
   );
 }

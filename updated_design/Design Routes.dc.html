@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#f7f4ec"/><text x="50" y="58" text-anchor="middle" font-family="serif" font-size="26" font-weight="700" fill="#9a7b2d">SM</text></svg></template>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: #0a0b0c; }
+    @keyframes gleamA { from { background-position: 130% 0; } to { background-position: -30% 0; } }
+    @keyframes gleamB { from { background-position: 130% 0; } to { background-position: -30% 0; } }
+    @keyframes ringA { from { box-shadow: 0 0 0 0 rgba(154,123,45,0.45); } to { box-shadow: 0 0 0 16px rgba(154,123,45,0); } }
+    @keyframes ringB { from { box-shadow: 0 0 0 0 rgba(154,123,45,0.45); } to { box-shadow: 0 0 0 16px rgba(154,123,45,0); } }
+    @keyframes laurelPop { 0% { transform: scale(0.3) rotate(-12deg); opacity: 0; } 60% { transform: scale(1.25) rotate(3deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+    @keyframes awakenGlow { 0% { box-shadow: 0 0 0 0 rgba(154,123,45,0.4); } 45% { box-shadow: 0 0 0 12px rgba(154,123,45,0.08), 0 0 44px 4px rgba(211,178,94,0.5); } 100% { box-shadow: 0 0 0 0 rgba(154,123,45,0); } }
+    @keyframes awakenZoom { 0% { transform: scale(1); } 45% { transform: scale(1.07); } 100% { transform: scale(1); } }
+    @keyframes sheenSweep { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+  </style>
+</helmet>
+
+<section style="padding:48px 56px 72px 56px; border-bottom:1px solid #1c1f22; font-family:Inter, system-ui, sans-serif;" data-screen-label="Turn 3 — Sacred Marble desktop">
+  <div style="margin-bottom:36px;">
+    <div style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.32em; text-transform:uppercase; color:#9a7b2d; margin-bottom:10px;">Turn 3 · Desktop web</div>
+    <div style="font-family:Cinzel, serif; font-size:34px; font-weight:700; color:#f4f1ea;">Sacred Marble — laptop layout</div>
+    <div style="font-size:14px; color:#8b958f; margin-top:8px; max-width:640px;">Same design language as <a href="#2a" style="color:#9a7b2d; text-decoration:none;">2a</a>, re-flowed for wide screens: dashboard on the left, the Coach chat as a persistent right-hand column — mirroring the current app's desktop grid. Same tap animations; the Daily Rites even stay in sync with the phone below.</div>
+  </div>
+
+  <div id="3a" style="display:flex; flex-direction:column; gap:16px;" data-screen-label="3a Sacred Marble — desktop">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#3a" style="display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:26px; border-radius:7px; background:#b08d3e; color:#fffbf0; font-weight:600; font-size:13px; text-decoration:none;">3a</a>
+      <div>
+        <div style="font-family:Cinzel, serif; font-size:16px; font-weight:700; color:#f4f1ea;">Sacred Marble · Desktop</div>
+        <div style="font-size:12px; color:#8b958f;">Two-column dashboard + docked Coach chat, 1280px content width</div>
+      </div>
+    </div>
+    <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ 1360 }}" height="{{ 860 }}" url="fitnext.app/dashboard" hint-size="1360px,860px">
+      <div style="height:100%; overflow-y:auto; background:linear-gradient(180deg,#f7f4ec,#efe9db); color:#211d16; font-family:Inter, system-ui, sans-serif;">
+        <div style="position:sticky; top:0; z-index:5; background:rgba(247,244,236,0.92); backdrop-filter:blur(8px); border-bottom:1px solid #d8cfb9;">
+          <div style="display:flex; align-items:center; justify-content:space-between; height:60px; max-width:1280px; margin:0 auto; padding:0 32px;">
+            <div style="font-family:Cinzel, serif; font-size:19px; font-weight:700; letter-spacing:0.1em;"><span style="color:#211d16;">FIT</span><span style="color:#9a7b2d;">NEXT</span></div>
+            <div style="display:flex; align-items:center; gap:20px;">
+              <div style="display:flex; align-items:center; gap:7px; font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.1em; color:#7c7159;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+                DAY I OF THE STREAK
+              </div>
+              <button style="border:1px solid #cbbb92; background:transparent; color:#211d16; border-radius:3px; padding:7px 16px; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; font-family:Inter, sans-serif; cursor:pointer;" style-active="transform:translateY(1px); background:#f3ecd9;">Sign out</button>
+            </div>
+          </div>
+          <svg viewBox="0 0 1360 10" width="100%" height="10" fill="none" stroke="#c4ab6a" stroke-width="1.2" preserveAspectRatio="none" style="display:block;"><path d="M8 9 V3 H24 V7 H16 V5"></path><path d="M76 9 V3 H92 V7 H84 V5"></path><path d="M144 9 V3 H160 V7 H152 V5"></path><path d="M212 9 V3 H228 V7 H220 V5"></path><path d="M280 9 V3 H296 V7 H288 V5"></path><path d="M348 9 V3 H364 V7 H356 V5"></path><path d="M416 9 V3 H432 V7 H424 V5"></path><path d="M484 9 V3 H500 V7 H492 V5"></path><path d="M552 9 V3 H568 V7 H560 V5"></path><path d="M620 9 V3 H636 V7 H628 V5"></path><path d="M688 9 V3 H704 V7 H696 V5"></path><path d="M756 9 V3 H772 V7 H764 V5"></path><path d="M824 9 V3 H840 V7 H832 V5"></path><path d="M892 9 V3 H908 V7 H900 V5"></path><path d="M960 9 V3 H976 V7 H968 V5"></path><path d="M1028 9 V3 H1044 V7 H1036 V5"></path><path d="M1096 9 V3 H1112 V7 H1104 V5"></path><path d="M1164 9 V3 H1180 V7 H1172 V5"></path><path d="M1232 9 V3 H1248 V7 H1240 V5"></path><path d="M1300 9 V3 H1316 V7 H1308 V5"></path></svg>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 380px; gap:24px; max-width:1280px; margin:0 auto; padding:24px 32px 48px 32px; align-items:start;">
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div style="display:flex; align-items:center; gap:20px; background:#fbf8f1; border:1px solid #d8cfb9; box-shadow:0 1px 0 #fff inset; padding:18px 22px;">
+              <div onClick="{{ tapCoach }}" style="position:relative; width:72px; height:88px; flex-shrink:0; cursor:pointer;">
+                <div style="position:relative; width:100%; height:100%; border-radius:72px 72px 4px 4px; overflow:hidden; border:1px solid #cbbb92; box-shadow:inset 0 0 0 3px #f7f4ec, inset 0 0 0 4px #cbbb92; background:#0b0f0e;">
+                  <div style="width:100%; height:100%; {{ coachBg }} {{ portraitZoom }}"></div>
+                  <sc-if value="{{ coachPlaying }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute; inset:0; background:linear-gradient(115deg, transparent 42%, rgba(255,244,214,0.55) 50%, transparent 58%); background-size:220% 100%; background-position:150% 0; animation:sheenSweep 1.4s ease 0.2s both;"></div>
+                  </sc-if>
+                </div>
+                <sc-if value="{{ coachPlaying }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute; inset:0; border-radius:72px 72px 4px 4px; animation:awakenGlow 2.4s ease; pointer-events:none;"></div>
+                </sc-if>
+                <sc-if value="{{ coachIdle }}" hint-placeholder-val="{{ true }}">
+                  <span style="position:absolute; bottom:4px; right:4px; display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:999px; background:rgba(251,248,241,0.92); border:1px solid #cbbb92;"><svg width="8" height="8" viewBox="0 0 24 24" fill="#9a7b2d"><path d="M8 5v14l11-7z"></path></svg></span>
+                </sc-if>
+              </div>
+              <div style="flex:1;">
+                <div style="font-family:'Geist Mono', monospace; font-size:9px; letter-spacing:0.4em; text-transform:uppercase; color:#9a7b2d;">{{ coachRoute }}</div>
+                <div style="font-family:Cinzel, serif; font-size:26px; font-weight:700; letter-spacing:0.04em; margin-top:3px;">{{ heroTitle }}</div>
+                <div style="font-size:13px; color:#7c7159; margin-top:4px;">Goal: <span style="color:#9a7b2d; font-weight:600;">Get stronger</span> · 4 days a week</div>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="display:block; width:44px; height:1px; background:#c4ab6a;"></span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#9a7b2d"><circle cx="12" cy="12" r="3"></circle></svg>
+                  <span style="display:block; width:44px; height:1px; background:#c4ab6a;"></span>
+                </div>
+                <button onClick="{{ tapSpeak }}" style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(110deg, #9a7b2d 42%, #d3b25e 50%, #9a7b2d 58%); background-size:220% 100%; background-position:130% 0; color:#fffbf0; font-weight:600; border:none; border-radius:3px; padding:12px 22px; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-family:Inter, sans-serif; cursor:pointer; {{ speakAnim }}" style-active="transform:translateY(1px);">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fffbf0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  Speak with Coach
+                </button>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:#d8cfb9; border:1px solid #d8cfb9;">
+              <div style="background:#fbf8f1; padding:18px 12px; text-align:center;">
+                <div style="font-family:Cinzel, serif; font-size:22px; font-weight:700; color:#211d16;">I</div>
+                <div style="font-size:9px; text-transform:uppercase; letter-spacing:0.22em; color:#9a7b2d; margin-top:5px;">Day streak</div>
+              </div>
+              <div style="background:#fbf8f1; padding:18px 12px; text-align:center;">
+                <div style="font-family:Cinzel, serif; font-size:22px; font-weight:700; color:#211d16;">Strength</div>
+                <div style="font-size:9px; text-transform:uppercase; letter-spacing:0.22em; color:#9a7b2d; margin-top:5px;">Focus</div>
+              </div>
+              <div style="background:#fbf8f1; padding:18px 12px; text-align:center;">
+                <div style="font-family:Cinzel, serif; font-size:22px; font-weight:700; color:#211d16;">IV / VII</div>
+                <div style="font-size:9px; text-transform:uppercase; letter-spacing:0.22em; color:#9a7b2d; margin-top:5px;">Cadence</div>
+              </div>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9; box-shadow:0 1px 0 #fff inset;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #e7dfcc;">
+                <div style="font-family:Cinzel, serif; font-size:13px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#211d16;">Today's Labor</div>
+                <button style="border:none; background:transparent; font-family:'Geist Mono', monospace; font-size:10px; color:#9a7b2d; letter-spacing:0.1em; cursor:pointer; padding:4px 6px;" style-active="transform:translateY(1px); opacity:0.6;">+ CALENDAR</button>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 18px;">
+                <div>
+                  <div style="font-size:14px; font-weight:600;">{{ sessionLabel }}</div>
+                  <div style="font-size:12px; color:#7c7159; margin-top:2px;">Your coach has inscribed the plan.</div>
+                </div>
+                <button onClick="{{ tapBegin }}" style="background:linear-gradient(110deg, #9a7b2d 42%, #d3b25e 50%, #9a7b2d 58%); background-size:220% 100%; background-position:130% 0; color:#fffbf0; font-weight:600; border:none; border-radius:3px; padding:11px 24px; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; font-family:Inter, sans-serif; cursor:pointer; {{ beginAnim }}" style-active="transform:translateY(1px);">Begin</button>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+              <div style="background:#fbf8f1; border:1px solid #d8cfb9;">
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #e7dfcc;">
+                  <div style="font-family:Cinzel, serif; font-size:13px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">Daily Rites</div>
+                  <div style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.12em; color:#9a7b2d;">{{ riteProgress }}</div>
+                </div>
+                <sc-for list="{{ riteList }}" as="rite" hint-placeholder-count="6">
+                  <div onClick="{{ rite.toggle }}" style="display:flex; align-items:center; gap:11px; padding:10px 18px; border-bottom:1px solid #e7dfcc; cursor:pointer; user-select:none; {{ rite.rowStyle }}" style-active="background:#f3ecd9;">
+                    <span style="display:flex; align-items:center; justify-content:center; width:15px; height:15px; border:1px solid #cbbb92; border-radius:2px; flex-shrink:0;">
+                      <sc-if value="{{ rite.done }}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation:laurelPop 0.45s ease;"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+                    </span>
+                    <span style="flex:1; min-width:0;">
+                      <span style="display:block; font-size:13px; font-weight:600;">{{ rite.label }}</span>
+                      <span style="display:block; font-size:11px; color:#7c7159; margin-top:1px;">{{ rite.target }}</span>
+                    </span>
+                    <span style="font-size:8px; letter-spacing:0.16em; text-transform:uppercase; color:#a29677; border:1px solid #e7dfcc; border-radius:2px; padding:2px 5px; flex-shrink:0;">{{ rite.src }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:grid; grid-template-rows:1fr 1fr; gap:18px;">
+                <div style="background:#fbf8f1; border:1px solid #d8cfb9; padding:14px 18px; display:flex; align-items:center; gap:14px; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"></path><path d="M10 2c1 .5 2 2 2 5"></path></svg>
+                  <div>
+                    <div style="font-family:Cinzel, serif; font-size:14px; font-weight:700;">Ambrosia</div>
+                    <div style="font-size:11px; color:#7c7159; margin-top:1px;">Meal prep with your coach</div>
+                  </div>
+                </div>
+                <div style="background:#fbf8f1; border:1px solid #d8cfb9; padding:14px 18px; display:flex; align-items:center; gap:14px; opacity:0.45;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                  <div>
+                    <div style="font-family:Cinzel, serif; font-size:14px; font-weight:700;">Healing</div>
+                    <div style="font-size:11px; color:#7c7159; margin-top:1px;">Enable in settings</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9; padding:18px; display:flex; align-items:center; justify-content:center; gap:18px;">
+              <sc-if value="{{ notSealed }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ tapSeal }}" style="display:inline-flex; align-items:center; gap:8px; border:none; border-radius:3px; padding:13px 28px; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; font-family:Inter, sans-serif; font-weight:600; background-size:220% 100%; background-position:130% 0; {{ sealStyle }}" style-active="transform:translateY(1px);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"></path></svg>
+                  Seal the Day
+                </button>
+                <div style="font-size:11px; color:#7c7159;">{{ sealHint }}</div>
+              </sc-if>
+              <sc-if value="{{ sealed }}" hint-placeholder-val="{{ false }}">
+                <span style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:999px; background:#fdf8ea; border:1px solid #cbbb92; animation:laurelPop 0.5s ease;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"></path></svg></span>
+                <div style="text-align:left;">
+                  <div style="font-family:Cinzel, serif; font-size:15px; font-weight:700; letter-spacing:0.08em;">Day Sealed</div>
+                  <div style="font-size:11px; color:#7c7159; margin-top:2px;">+50 laurels · Coach {{ coachName }}'s message is playing in the hero — new video each week</div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #e7dfcc;">
+                <div style="font-family:Cinzel, serif; font-size:13px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">Nutrition</div>
+                <button style="border:none; background:transparent; font-family:'Geist Mono', monospace; font-size:10px; color:#9a7b2d; letter-spacing:0.1em; cursor:pointer; padding:4px 6px;" style-active="transform:translateY(1px); opacity:0.6;">+ LOG A MEAL</button>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 300px;">
+                <div style="display:flex; flex-direction:column; border-right:1px solid #e7dfcc;">
+                  <div style="display:flex; align-items:baseline; gap:10px; padding:11px 18px; border-bottom:1px solid #e7dfcc;">
+                    <span style="flex:1; min-width:0; font-size:13px; font-weight:600;">Greek yogurt &amp; honey <span style="font-size:9px; font-weight:400; color:#a29677; letter-spacing:0.08em;">· BREAKFAST</span></span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">32P · 45C · 12F</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:11px; color:#211d16; width:70px; text-align:right;">420 kcal</span>
+                  </div>
+                  <div style="display:flex; align-items:baseline; gap:10px; padding:11px 18px; border-bottom:1px solid #e7dfcc;">
+                    <span style="flex:1; min-width:0; font-size:13px; font-weight:600;">Chicken souvlaki bowl <span style="font-size:9px; font-weight:400; color:#a29677; letter-spacing:0.08em;">· LUNCH</span></span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">52P · 70C · 18F</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:11px; color:#211d16; width:70px; text-align:right;">680 kcal</span>
+                  </div>
+                  <div style="display:flex; align-items:baseline; gap:10px; padding:11px 18px; border-bottom:1px solid #e7dfcc;">
+                    <span style="flex:1; min-width:0; font-size:13px; font-weight:600;">Almonds &amp; figs <span style="font-size:9px; font-weight:400; color:#a29677; letter-spacing:0.08em;">· SNACK</span></span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">9P · 22C · 22F</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:11px; color:#211d16; width:70px; text-align:right;">310 kcal</span>
+                  </div>
+                  <div style="display:flex; align-items:baseline; gap:10px; padding:11px 18px;">
+                    <span style="flex:1; min-width:0; font-size:13px; font-weight:600;">Salmon, potatoes &amp; greens <span style="font-size:9px; font-weight:400; color:#a29677; letter-spacing:0.08em;">· DINNER</span></span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">48P · 58C · 28F</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:11px; color:#211d16; width:70px; text-align:right;">720 kcal</span>
+                  </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px; padding:14px 18px; background:#f7f2e4;">
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                    <div style="display:flex; align-items:baseline; justify-content:space-between;">
+                      <span style="font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#7c7159; font-weight:600;">Calories</span>
+                      <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16;">2,130 / 2,450 <span style="color:#9a7b2d;">· 320 UNDER</span></span>
+                    </div>
+                    <div style="height:5px; background:#e7dfcc; border-radius:2px; overflow:hidden;"><div style="width:87%; height:100%; background:#9a7b2d;"></div></div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                    <div style="display:flex; align-items:baseline; justify-content:space-between;">
+                      <span style="font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#7c7159; font-weight:600;">Protein</span>
+                      <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16;">141g / 180g <span style="color:#9a7b2d;">· 39 TO GO</span></span>
+                    </div>
+                    <div style="height:5px; background:#e7dfcc; border-radius:2px; overflow:hidden;"><div style="width:78%; height:100%; background:#9a7b2d;"></div></div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                    <div style="display:flex; align-items:baseline; justify-content:space-between;">
+                      <span style="font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#7c7159; font-weight:600;">Carbs</span>
+                      <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16;">195g / 250g <span style="color:#9a7b2d;">· 55 TO GO</span></span>
+                    </div>
+                    <div style="height:5px; background:#e7dfcc; border-radius:2px; overflow:hidden;"><div style="width:78%; height:100%; background:#9a7b2d;"></div></div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                    <div style="display:flex; align-items:baseline; justify-content:space-between;">
+                      <span style="font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#7c7159; font-weight:600;">Fats</span>
+                      <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16;">80g / 70g <span style="color:#b4552b;">· 10 OVER</span></span>
+                    </div>
+                    <div style="height:5px; background:#e7dfcc; border-radius:2px; overflow:hidden;"><div style="width:100%; height:100%; background:#b4552b;"></div></div>
+                  </div>
+                  <div style="font-size:9px; color:#a29677; margin-top:2px;">Targets set by your Nutrition Coach · updates as you log meals in chat</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9;">
+              <div style="padding:14px 18px; border-bottom:1px solid #e7dfcc; font-family:Cinzel, serif; font-size:13px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">The Labors</div>
+              <div style="display:grid; grid-template-columns:repeat(6, 1fr);">
+                <div style="padding:20px 8px; text-align:center; border-right:1px solid #e7dfcc; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:14px; font-weight:600;">Push</div><div style="font-size:9px; letter-spacing:0.2em; color:#9a7b2d; margin-top:3px;">I</div></div>
+                <div style="padding:20px 8px; text-align:center; border-right:1px solid #e7dfcc; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:14px; font-weight:600;">Pull</div><div style="font-size:9px; letter-spacing:0.2em; color:#9a7b2d; margin-top:3px;">II</div></div>
+                <div style="padding:20px 8px; text-align:center; border-right:1px solid #e7dfcc; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:14px; font-weight:600;">Legs</div><div style="font-size:9px; letter-spacing:0.2em; color:#9a7b2d; margin-top:3px;">III</div></div>
+                <div style="padding:20px 8px; text-align:center; border-right:1px solid #e7dfcc; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:14px; font-weight:600;">Conditioning</div><div style="font-size:9px; letter-spacing:0.2em; color:#9a7b2d; margin-top:3px;">IV</div></div>
+                <div style="padding:20px 8px; text-align:center; border-right:1px solid #e7dfcc; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:14px; font-weight:600;">Core</div><div style="font-size:9px; letter-spacing:0.2em; color:#9a7b2d; margin-top:3px;">V</div></div>
+                <div style="padding:20px 8px; text-align:center; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:14px; font-weight:600;">Mobility</div><div style="font-size:9px; letter-spacing:0.2em; color:#9a7b2d; margin-top:3px;">VI</div></div>
+              </div>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9;">
+              <div onClick="{{ toggleGuides }}" style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 18px; cursor:pointer; user-select:none;" style-active="background:#f3ecd9;">
+                <div style="font-family:Cinzel, serif; font-size:13px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">Movement Guides</div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <span style="font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.12em; color:#9a7b2d;">{{ guidesCount }}</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{ chevronStyle }}"><path d="m6 9 6 6 6-6"></path></svg>
+                </div>
+              </div>
+              <sc-if value="{{ guidesClosed }}" hint-placeholder-val="{{ true }}">
+                <div style="padding:0 18px 14px 18px; font-size:11px; color:#7c7159;">Quick 5–10s shorts for today's session — click to open</div>
+              </sc-if>
+              <sc-if value="{{ guidesOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="border-top:1px solid #e7dfcc;">
+                  <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; padding:10px 18px; border-bottom:1px solid #e7dfcc;">
+                    <div style="display:flex; align-items:center; gap:8px; background:#f7f2e4; border:1px solid #d8cfb9; border-radius:4px; padding:7px 12px; width:260px;">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                      <input value="{{ query }}" onChange="{{ setQuery }}" placeholder="Search today's movements…" style="flex:1; min-width:0; border:none; outline:none; background:transparent; font-size:12px; color:#211d16; font-family:Inter, sans-serif;">
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#9a7b2d; font-weight:600; cursor:pointer;" style-active="opacity:0.6;">
+                      Full library
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+                    </div>
+                  </div>
+                  <div style="display:flex; gap:10px; padding:14px 18px; overflow-x:auto;">
+                    <sc-for list="{{ todayMoves }}" as="mv" hint-placeholder-count="4">
+                      <div style="position:relative; width:96px; aspect-ratio:9/16; flex-shrink:0; border-radius:6px; overflow:hidden; background:linear-gradient(180deg,#3a2f1c,#211d16); border:1px solid #cbbb92; cursor:pointer;" style-active="transform:translateY(1px);">
+                        <span style="position:absolute; top:6px; left:6px; font-size:7px; letter-spacing:0.18em; text-transform:uppercase; color:#f6e7c9; background:rgba(30,17,8,0.7); border-radius:2px; padding:1px 4px;">{{ mv.part }}</span>
+                        <span style="position:absolute; top:50%; left:50%; transform:translate(-50%,-60%); display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:999px; background:rgba(251,248,241,0.9); border:1px solid #cbbb92;"><svg width="10" height="10" viewBox="0 0 24 24" fill="#9a7b2d"><path d="M8 5v14l11-7z"></path></svg></span>
+                        <span style="position:absolute; top:6px; right:6px; font-family:'Geist Mono', monospace; font-size:8px; color:#f6e7c9; background:rgba(30,17,8,0.7); border-radius:2px; padding:1px 4px;">{{ mv.dur }}</span>
+                        <span style="position:absolute; left:7px; right:7px; bottom:7px; font-size:10px; font-weight:600; color:#fffbf0; line-height:1.25;">{{ mv.name }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ noMoves }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:4px 18px 16px 18px; text-align:center; font-size:12px; color:#a29677;">No movement in today's session for “{{ query }}”</div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #e7dfcc;">
+                <div style="font-family:Cinzel, serif; font-size:13px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">Progress Photos</div>
+                <button onClick="{{ togglePhotos }}" style="display:inline-flex; align-items:center; gap:6px; border:1px solid #cbbb92; background:#f7f2e4; color:#9a7b2d; border-radius:3px; padding:6px 12px; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; font-weight:600; font-family:Inter, sans-serif; cursor:pointer;" style-active="transform:translateY(1px); background:#f3ecd9;">
+                  <sc-if value="{{ photosHidden }}" hint-placeholder-val="{{ true }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></sc-if>
+                  <sc-if value="{{ photosShown }}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.5 13.5 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.39-1.61"></path><path d="m2 2 20 20"></path></svg></sc-if>
+                  {{ photosToggleLabel }}
+                </button>
+              </div>
+              <sc-if value="{{ photosHidden }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex; align-items:center; justify-content:center; gap:12px; padding:24px 18px;">
+                  <span style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:999px; background:#f7f2e4; border:1px solid #cbbb92;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.5 13.5 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.39-1.61"></path><path d="m2 2 20 20"></path></svg></span>
+                  <div>
+                    <div style="font-family:Cinzel, serif; font-size:13px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;">Veiled</div>
+                    <div style="font-size:11px; color:#7c7159; margin-top:1px;">Your photos stay private — only you can reveal them</div>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ photosShown }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:14px 18px;">
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                    <span style="font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:#9a7b2d; font-weight:600;">Before · After</span>
+                    <span style="flex:1; height:1px; background:#e7dfcc;"></span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:9px; color:#a29677;">WEEK I → IV</span>
+                  </div>
+                  <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
+                    <div style="position:relative; aspect-ratio:3/4; border:1px solid #d8cfb9; border-radius:4px; background:linear-gradient(180deg,#f3ecd9,#e7dcc2); display:flex; align-items:center; justify-content:center;">
+                      <span style="position:absolute; top:6px; left:6px; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:#7c7159; background:rgba(251,248,241,0.9); border:1px solid #d8cfb9; border-radius:2px; padding:1px 5px;">Before · W I</span>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cbbb92" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                    </div>
+                    <div style="position:relative; aspect-ratio:3/4; border:1px solid #d8cfb9; border-radius:4px; background:linear-gradient(180deg,#f3ecd9,#e7dcc2); display:flex; align-items:center; justify-content:center;">
+                      <span style="position:absolute; top:6px; left:6px; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:#9a7b2d; background:rgba(251,248,241,0.9); border:1px solid #cbbb92; border-radius:2px; padding:1px 5px;">After · W IV</span>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#cbbb92" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                    </div>
+                    <button style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; aspect-ratio:3/4; border:1px dashed #cbbb92; background:transparent; color:#9a7b2d; border-radius:4px; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; font-weight:600; font-family:Inter, sans-serif; cursor:pointer;" style-active="transform:translateY(1px); background:#f3ecd9;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5v14"></path></svg>
+                      Add photo
+                    </button>
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; aspect-ratio:3/4; border:1px dashed #e7dfcc; border-radius:4px; color:#a29677; font-size:9px; letter-spacing:0.14em; text-transform:uppercase;">Week VIII</div>
+                  </div>
+                  <div style="font-size:10px; color:#a29677; text-align:center; margin-top:10px;">Stored privately · never shared, never on the leaderboard</div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #e7dfcc;">
+                <div style="font-family:Cinzel, serif; font-size:13px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">Hall of Honor</div>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <div style="position:relative;">
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; padding:16px 18px; filter:blur(3px); opacity:0.5; pointer-events:none;" aria-hidden="true">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-family:Cinzel, serif; font-size:15px; font-weight:700; color:#9a7b2d;">I</span>
+                    <span style="flex:1; font-size:13px;">Achilles</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">1,240</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-family:Cinzel, serif; font-size:15px; font-weight:700; color:#9a7b2d;">II</span>
+                    <span style="flex:1; font-size:13px;">Atalanta</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">1,105</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-family:Cinzel, serif; font-size:15px; font-weight:700; color:#9a7b2d;">III</span>
+                    <span style="flex:1; font-size:13px;">You</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">980</span>
+                  </div>
+                </div>
+                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:10px; background:rgba(247,244,236,0.55);">
+                  <span style="display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:999px; background:#fbf8f1; border:1px solid #cbbb92;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+                  <div style="font-family:Cinzel, serif; font-size:13px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;">Locked</div>
+                  <div style="font-size:11px; color:#7c7159;">Leaderboard &amp; rewards — coming soon</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="position:sticky; top:94px; display:flex; flex-direction:column; height:calc(860px - 200px); background:#fbf8f1; border:1px solid #d8cfb9; box-shadow:0 1px 0 #fff inset;">
+            <div style="display:flex; align-items:center; gap:11px; padding:12px 16px; border-bottom:1px solid #d8cfb9;">
+              <div style="width:38px; height:44px; border-radius:38px 38px 3px 3px; overflow:hidden; border:1px solid #cbbb92; flex-shrink:0; background:#0b0f0e;"><div style="width:100%; height:100%; {{ coachBg }}"></div></div>
+              <div style="flex:1;">
+                <div style="font-family:Cinzel, serif; font-size:14px; font-weight:700; letter-spacing:0.04em;">Coach {{ coachName }}</div>
+                <div style="font-size:9px; letter-spacing:0.24em; text-transform:uppercase; color:#9a7b2d; margin-top:2px;">The Oracle · {{ coachRoute }}</div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c7159" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6a1.4 1.4 0 0 1-1 .4H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z"></path><path d="M16 9a5 5 0 0 1 0 6"></path></svg>
+            </div>
+            <div style="display:flex; padding:0 16px; gap:22px; border-bottom:1px solid #d8cfb9;">
+              <div style="padding:10px 0 8px 0; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#211d16; font-weight:600; border-bottom:2px solid #9a7b2d; cursor:pointer;">Coach</div>
+              <div style="padding:10px 0 8px 0; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#a29677; cursor:pointer;" style-active="color:#211d16;">Nutrition</div>
+              <div style="padding:10px 0 8px 0; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#a29677; opacity:0.55;">Therapy · Soon</div>
+            </div>
+            <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding:16px;">
+              <div style="align-self:flex-start; max-width:88%; background:#f7f2e4; border:1px solid #d8cfb9; border-radius:2px 14px 14px 14px; padding:10px 14px; font-size:13px; line-height:1.55;">{{ greeting }}</div>
+              <div style="align-self:flex-end; max-width:88%; background:#9a7b2d; color:#fffbf0; border-radius:14px 2px 14px 14px; padding:10px 14px; font-size:13px; line-height:1.55;">Just hit squats — 5×5 at 102 kg. Last set was a grind.</div>
+              <div style="align-self:flex-start; max-width:88%; background:#f7f2e4; border:1px solid #d8cfb9; border-radius:2px 14px 14px 14px; padding:10px 14px; font-size:13px; line-height:1.55;">Strong work. 102 for a grinding 5×5 means we hold the weight next session and win bar speed back. Log your sleep tonight — recovery drives the next PR.</div>
+            </div>
+            <div style="border-top:1px solid #d8cfb9; padding:10px 14px; display:flex; align-items:center; gap:8px;">
+              <button style="display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:999px; border:1px solid #cbbb92; background:#f7f2e4; flex-shrink:0; cursor:pointer;" style-active="transform:translateY(1px); background:#f3ecd9;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="13" rx="3"></rect><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"></path></svg></button>
+              <div style="flex:1; background:#f7f2e4; border:1px solid #d8cfb9; border-radius:4px; padding:12px; font-size:13px; color:#a29677;">Speak to the oracle…</div>
+              <button onClick="{{ tapSend }}" style="display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:4px; background:#9a7b2d; border:none; flex-shrink:0; cursor:pointer; {{ sendAnim }}" style-active="transform:translateY(1px);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fffbf0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"></path><path d="M22 2 15 22l-4-9-9-4z"></path></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+</section>
+
+<section style="padding:48px 56px 72px 56px; border-bottom:1px solid #1c1f22; font-family:Inter, system-ui, sans-serif;" data-screen-label="Turn 2 — Sacred Marble interactive">
+  <div style="margin-bottom:36px;">
+    <div style="font-family:'Geist Mono', monospace; font-size:11px; letter-spacing:0.32em; text-transform:uppercase; color:#9a7b2d; margin-bottom:10px;">Turn 2 · Chosen route</div>
+    <div style="font-family:Cinzel, serif; font-size:34px; font-weight:700; color:#f4f1ea;">Sacred Marble — with Greek tap animations</div>
+    <div style="font-size:14px; color:#8b958f; margin-top:8px; max-width:640px;">Evolves the original Sacred Marble concept. Tap things: <strong style="color:#cdd3cd;">Begin</strong> gleams like polished gold, <strong style="color:#cdd3cd;">Daily Rites</strong> stamp a laurel check, the stone tiles press down like chiseled marble, and <strong style="color:#cdd3cd;">send</strong> pulses a gold ring.</div>
+  </div>
+
+  <div id="2a" style="display:flex; flex-direction:column; gap:16px;" data-screen-label="2a Sacred Marble — interactive">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#2a" style="display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:26px; border-radius:7px; background:#b08d3e; color:#fffbf0; font-weight:600; font-size:13px; text-decoration:none;">2a</a>
+      <div>
+        <div style="font-family:Cinzel, serif; font-size:16px; font-weight:700; color:#f4f1ea;">Sacred Marble · Interactive</div>
+        <div style="font-size:12px; color:#8b958f;">Try the buttons — subtle gleam, laurel stamps, chisel presses</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:24px; align-items:flex-start;">
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="390px,844px">
+        <div style="height:100%; overflow-y:auto; background:linear-gradient(180deg,#f7f4ec,#efe9db); color:#211d16; font-family:Inter, system-ui, sans-serif;">
+          <div style="position:sticky; top:0; z-index:5; background:rgba(247,244,236,0.92); backdrop-filter:blur(8px); border-bottom:1px solid #d8cfb9;">
+            <div style="display:flex; align-items:center; justify-content:space-between; height:54px; padding:0 18px;">
+              <div style="font-family:Cinzel, serif; font-size:16px; font-weight:700; letter-spacing:0.1em;"><span style="color:#211d16;">FIT</span><span style="color:#9a7b2d;">NEXT</span></div>
+              <div style="display:flex; align-items:center; gap:6px; font-family:'Geist Mono', monospace; font-size:10px; letter-spacing:0.1em; color:#7c7159;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+                DAY I OF THE STREAK
+              </div>
+            </div>
+            <svg viewBox="0 0 390 10" width="100%" height="10" fill="none" stroke="#c4ab6a" stroke-width="1.2" style="display:block;"><path d="M8 9 V3 H24 V7 H16 V5"></path><path d="M40 9 V3 H56 V7 H48 V5"></path><path d="M72 9 V3 H88 V7 H80 V5"></path><path d="M104 9 V3 H120 V7 H112 V5"></path><path d="M136 9 V3 H152 V7 H144 V5"></path><path d="M168 9 V3 H184 V7 H176 V5"></path><path d="M200 9 V3 H216 V7 H208 V5"></path><path d="M232 9 V3 H248 V7 H240 V5"></path><path d="M264 9 V3 H280 V7 H272 V5"></path><path d="M296 9 V3 H312 V7 H304 V5"></path><path d="M328 9 V3 H344 V7 H336 V5"></path><path d="M360 9 V3 H376 V7 H368 V5"></path></svg>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:16px; padding:18px;">
+            <div style="text-align:center; padding-top:6px;">
+              <div style="font-family:'Geist Mono', monospace; font-size:9px; letter-spacing:0.4em; text-transform:uppercase; color:#9a7b2d;">{{ coachRoute }}</div>
+              <div onClick="{{ tapCoach }}" style="position:relative; width:150px; height:190px; margin:12px auto 0 auto; cursor:pointer;">
+                <div style="position:relative; width:100%; height:100%; border-radius:150px 150px 6px 6px; overflow:hidden; border:1px solid #cbbb92; box-shadow:inset 0 0 0 5px #f7f4ec, inset 0 0 0 6px #cbbb92, 0 12px 28px -14px rgba(70,58,30,0.5); background:#0b0f0e;">
+                  <div style="width:100%; height:100%; {{ coachBg }} {{ portraitZoom }}"></div>
+                  <sc-if value="{{ coachPlaying }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute; inset:0; background:linear-gradient(115deg, transparent 42%, rgba(255,244,214,0.55) 50%, transparent 58%); background-size:220% 100%; background-position:150% 0; animation:sheenSweep 1.4s ease 0.2s both;"></div>
+                  </sc-if>
+                </div>
+                <sc-if value="{{ coachPlaying }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute; inset:0; border-radius:150px 150px 6px 6px; animation:awakenGlow 2.4s ease; pointer-events:none;"></div>
+                </sc-if>
+                <sc-if value="{{ coachIdle }}" hint-placeholder-val="{{ true }}">
+                  <span style="position:absolute; bottom:8px; right:8px; display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:999px; background:rgba(251,248,241,0.92); border:1px solid #cbbb92; box-shadow:0 2px 6px -2px rgba(70,58,30,0.4);"><svg width="10" height="10" viewBox="0 0 24 24" fill="#9a7b2d"><path d="M8 5v14l11-7z"></path></svg></span>
+                </sc-if>
+              </div>
+              <div style="font-family:Cinzel, serif; font-size:24px; font-weight:700; margin-top:12px; letter-spacing:0.04em;">Coach {{ coachName }}</div>
+              <div style="font-size:12px; color:#7c7159; margin-top:4px;">Goal: <span style="color:#9a7b2d; font-weight:600;">Get stronger</span> · 4 days a week</div>
+              <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-top:10px;">
+                <span style="display:block; width:44px; height:1px; background:#c4ab6a;"></span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#9a7b2d"><circle cx="12" cy="12" r="3"></circle></svg>
+                <span style="display:block; width:44px; height:1px; background:#c4ab6a;"></span>
+              </div>
+              <button onClick="{{ tapSpeak }}" style="display:inline-flex; align-items:center; gap:8px; margin-top:14px; background:linear-gradient(110deg, #9a7b2d 42%, #d3b25e 50%, #9a7b2d 58%); background-size:220% 100%; background-position:130% 0; color:#fffbf0; font-weight:600; border:none; border-radius:3px; padding:12px 24px; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-family:Inter, sans-serif; cursor:pointer; {{ speakAnim }}" style-active="transform:translateY(1px);">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fffbf0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Speak with Coach
+              </button>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:#d8cfb9; border:1px solid #d8cfb9;">
+              <div style="background:#fbf8f1; padding:14px 10px; text-align:center;">
+                <div style="font-family:Cinzel, serif; font-size:19px; font-weight:700; color:#211d16;">I</div>
+                <div style="font-size:8px; text-transform:uppercase; letter-spacing:0.22em; color:#9a7b2d; margin-top:4px;">Day streak</div>
+              </div>
+              <div style="background:#fbf8f1; padding:14px 10px; text-align:center;">
+                <div style="font-family:Cinzel, serif; font-size:19px; font-weight:700; color:#211d16;">Strength</div>
+                <div style="font-size:8px; text-transform:uppercase; letter-spacing:0.22em; color:#9a7b2d; margin-top:4px;">Focus</div>
+              </div>
+              <div style="background:#fbf8f1; padding:14px 10px; text-align:center;">
+                <div style="font-family:Cinzel, serif; font-size:19px; font-weight:700; color:#211d16;">IV / VII</div>
+                <div style="font-size:8px; text-transform:uppercase; letter-spacing:0.22em; color:#9a7b2d; margin-top:4px;">Cadence</div>
+              </div>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9; box-shadow:0 1px 0 #fff inset;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #e7dfcc;">
+                <div style="font-family:Cinzel, serif; font-size:12px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#211d16;">Today's Labor</div>
+                <button style="border:none; background:transparent; font-family:'Geist Mono', monospace; font-size:9px; color:#9a7b2d; letter-spacing:0.1em; cursor:pointer; padding:4px 6px;" style-active="transform:translateY(1px); opacity:0.6;">+ CALENDAR</button>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:13px 14px;">
+                <div>
+                  <div style="font-size:13px; font-weight:600;">{{ sessionLabel }}</div>
+                  <div style="font-size:11px; color:#7c7159; margin-top:2px;">Your coach has inscribed the plan.</div>
+                </div>
+                <button onClick="{{ tapBegin }}" style="background:linear-gradient(110deg, #9a7b2d 42%, #d3b25e 50%, #9a7b2d 58%); background-size:220% 100%; background-position:130% 0; color:#fffbf0; font-weight:600; border:none; border-radius:3px; padding:9px 18px; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-family:Inter, sans-serif; cursor:pointer; {{ beginAnim }}" style-active="transform:translateY(1px);">Begin</button>
+              </div>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #e7dfcc;">
+                <div style="font-family:Cinzel, serif; font-size:12px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">Daily Rites</div>
+                <div style="font-family:'Geist Mono', monospace; font-size:9px; letter-spacing:0.12em; color:#9a7b2d;">{{ riteProgress }}</div>
+              </div>
+              <sc-for list="{{ riteList }}" as="rite" hint-placeholder-count="6">
+                <div onClick="{{ rite.toggle }}" style="display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid #e7dfcc; cursor:pointer; user-select:none; {{ rite.rowStyle }}" style-active="background:#f3ecd9;">
+                  <span style="display:flex; align-items:center; justify-content:center; width:15px; height:15px; border:1px solid #cbbb92; border-radius:2px; flex-shrink:0;">
+                    <sc-if value="{{ rite.done }}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation:laurelPop 0.45s ease;"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+                  </span>
+                  <span style="flex:1; min-width:0;">
+                    <span style="display:block; font-size:12px; font-weight:600;">{{ rite.label }}</span>
+                    <span style="display:block; font-size:10px; color:#7c7159; margin-top:1px;">{{ rite.target }}</span>
+                  </span>
+                  <span style="font-size:8px; letter-spacing:0.16em; text-transform:uppercase; color:#a29677; border:1px solid #e7dfcc; border-radius:2px; padding:2px 5px; flex-shrink:0;">{{ rite.src }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9; padding:16px 14px; text-align:center;">
+              <sc-if value="{{ notSealed }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ tapSeal }}" style="display:inline-flex; align-items:center; gap:8px; border:none; border-radius:3px; padding:13px 26px; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; font-family:Inter, sans-serif; font-weight:600; background-size:220% 100%; background-position:130% 0; {{ sealStyle }}" style-active="transform:translateY(1px);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"></path></svg>
+                  Seal the Day
+                </button>
+                <div style="font-size:10px; color:#7c7159; margin-top:8px;">{{ sealHint }}</div>
+              </sc-if>
+              <sc-if value="{{ sealed }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                  <span style="display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:999px; background:#fdf8ea; border:1px solid #cbbb92; animation:laurelPop 0.5s ease;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"></path></svg></span>
+                  <div style="font-family:Cinzel, serif; font-size:15px; font-weight:700; letter-spacing:0.08em;">Day Sealed</div>
+                  <div style="font-size:10px; color:#7c7159;">+50 laurels · Coach {{ coachName }}'s message is playing above — new video each week</div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #e7dfcc;">
+                <div style="font-family:Cinzel, serif; font-size:12px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">Nutrition</div>
+                <button style="border:none; background:transparent; font-family:'Geist Mono', monospace; font-size:9px; color:#9a7b2d; letter-spacing:0.1em; cursor:pointer; padding:4px 6px;" style-active="transform:translateY(1px); opacity:0.6;">+ LOG A MEAL</button>
+              </div>
+              <div style="display:flex; flex-direction:column;">
+                <div style="display:flex; align-items:baseline; gap:8px; padding:10px 14px; border-bottom:1px solid #e7dfcc;">
+                  <span style="flex:1; min-width:0; font-size:12px; font-weight:600;">Greek yogurt &amp; honey <span style="font-size:9px; font-weight:400; color:#a29677; letter-spacing:0.08em;">· BREAKFAST</span></span>
+                  <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">32P · 45C · 12F</span>
+                  <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16; width:64px; text-align:right;">420 kcal</span>
+                </div>
+                <div style="display:flex; align-items:baseline; gap:8px; padding:10px 14px; border-bottom:1px solid #e7dfcc;">
+                  <span style="flex:1; min-width:0; font-size:12px; font-weight:600;">Chicken souvlaki bowl <span style="font-size:9px; font-weight:400; color:#a29677; letter-spacing:0.08em;">· LUNCH</span></span>
+                  <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">52P · 70C · 18F</span>
+                  <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16; width:64px; text-align:right;">680 kcal</span>
+                </div>
+                <div style="display:flex; align-items:baseline; gap:8px; padding:10px 14px; border-bottom:1px solid #e7dfcc;">
+                  <span style="flex:1; min-width:0; font-size:12px; font-weight:600;">Almonds &amp; figs <span style="font-size:9px; font-weight:400; color:#a29677; letter-spacing:0.08em;">· SNACK</span></span>
+                  <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">9P · 22C · 22F</span>
+                  <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16; width:64px; text-align:right;">310 kcal</span>
+                </div>
+                <div style="display:flex; align-items:baseline; gap:8px; padding:10px 14px; border-bottom:1px solid #e7dfcc;">
+                  <span style="flex:1; min-width:0; font-size:12px; font-weight:600;">Salmon, potatoes &amp; greens <span style="font-size:9px; font-weight:400; color:#a29677; letter-spacing:0.08em;">· DINNER</span></span>
+                  <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">48P · 58C · 28F</span>
+                  <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16; width:64px; text-align:right;">720 kcal</span>
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:9px; padding:12px 14px; background:#f7f2e4;">
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <div style="display:flex; align-items:baseline; justify-content:space-between;">
+                    <span style="font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#7c7159; font-weight:600;">Calories</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16;">2,130 / 2,450 <span style="color:#9a7b2d;">· 320 UNDER</span></span>
+                  </div>
+                  <div style="height:5px; background:#e7dfcc; border-radius:2px; overflow:hidden;"><div style="width:87%; height:100%; background:#9a7b2d;"></div></div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <div style="display:flex; align-items:baseline; justify-content:space-between;">
+                    <span style="font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#7c7159; font-weight:600;">Protein</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16;">141g / 180g <span style="color:#9a7b2d;">· 39 TO GO</span></span>
+                  </div>
+                  <div style="height:5px; background:#e7dfcc; border-radius:2px; overflow:hidden;"><div style="width:78%; height:100%; background:#9a7b2d;"></div></div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <div style="display:flex; align-items:baseline; justify-content:space-between;">
+                    <span style="font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#7c7159; font-weight:600;">Carbs</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16;">195g / 250g <span style="color:#9a7b2d;">· 55 TO GO</span></span>
+                  </div>
+                  <div style="height:5px; background:#e7dfcc; border-radius:2px; overflow:hidden;"><div style="width:78%; height:100%; background:#9a7b2d;"></div></div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                  <div style="display:flex; align-items:baseline; justify-content:space-between;">
+                    <span style="font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#7c7159; font-weight:600;">Fats</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#211d16;">80g / 70g <span style="color:#b4552b;">· 10 OVER</span></span>
+                  </div>
+                  <div style="height:5px; background:#e7dfcc; border-radius:2px; overflow:hidden;"><div style="width:100%; height:100%; background:#b4552b;"></div></div>
+                </div>
+                <div style="font-size:9px; color:#a29677; text-align:center; margin-top:2px;">Targets set by your Nutrition Coach · updates as you log meals in chat</div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div style="background:#fbf8f1; border:1px solid #d8cfb9; padding:14px; text-align:center; cursor:pointer; user-select:none; transition:box-shadow 0.15s;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"></path><path d="M10 2c1 .5 2 2 2 5"></path></svg>
+                <div style="font-family:Cinzel, serif; font-size:13px; font-weight:700; margin-top:6px;">Ambrosia</div>
+                <div style="font-size:10px; color:#7c7159; margin-top:2px;">Meal prep with your coach</div>
+              </div>
+              <div style="background:#fbf8f1; border:1px solid #d8cfb9; padding:14px; text-align:center; opacity:0.45;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                <div style="font-family:Cinzel, serif; font-size:13px; font-weight:700; margin-top:6px;">Healing</div>
+                <div style="font-size:10px; color:#7c7159; margin-top:2px;">Enable in settings</div>
+              </div>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9; margin-bottom:10px;">
+              <div style="padding:12px 14px; border-bottom:1px solid #e7dfcc; font-family:Cinzel, serif; font-size:12px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">The Labors</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr;">
+                <div style="padding:16px 8px; text-align:center; border-right:1px solid #e7dfcc; border-bottom:1px solid #e7dfcc; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:13px; font-weight:600;">Push</div><div style="font-size:8px; letter-spacing:0.2em; color:#9a7b2d; margin-top:2px;">I</div></div>
+                <div style="padding:16px 8px; text-align:center; border-right:1px solid #e7dfcc; border-bottom:1px solid #e7dfcc; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:13px; font-weight:600;">Pull</div><div style="font-size:8px; letter-spacing:0.2em; color:#9a7b2d; margin-top:2px;">II</div></div>
+                <div style="padding:16px 8px; text-align:center; border-bottom:1px solid #e7dfcc; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:13px; font-weight:600;">Legs</div><div style="font-size:8px; letter-spacing:0.2em; color:#9a7b2d; margin-top:2px;">III</div></div>
+                <div style="padding:16px 8px; text-align:center; border-right:1px solid #e7dfcc; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:13px; font-weight:600;">Conditioning</div><div style="font-size:8px; letter-spacing:0.2em; color:#9a7b2d; margin-top:2px;">IV</div></div>
+                <div style="padding:16px 8px; text-align:center; border-right:1px solid #e7dfcc; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:13px; font-weight:600;">Core</div><div style="font-size:8px; letter-spacing:0.2em; color:#9a7b2d; margin-top:2px;">V</div></div>
+                <div style="padding:16px 8px; text-align:center; cursor:pointer; user-select:none;" style-active="transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(70,58,30,0.18); background:#f3ecd9;"><div style="font-family:Cinzel, serif; font-size:13px; font-weight:600;">Mobility</div><div style="font-size:8px; letter-spacing:0.2em; color:#9a7b2d; margin-top:2px;">VI</div></div>
+              </div>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9;">
+              <div onClick="{{ toggleGuides }}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; cursor:pointer; user-select:none;" style-active="background:#f3ecd9;">
+                <div style="font-family:Cinzel, serif; font-size:12px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">Movement Guides</div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-family:'Geist Mono', monospace; font-size:9px; letter-spacing:0.12em; color:#9a7b2d;">{{ guidesCount }}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{ chevronStyle }}"><path d="m6 9 6 6 6-6"></path></svg>
+                </div>
+              </div>
+              <sc-if value="{{ guidesClosed }}" hint-placeholder-val="{{ true }}">
+                <div style="padding:0 14px 12px 14px; font-size:10px; color:#7c7159;">Quick 5–10s shorts for today's session — tap to open</div>
+              </sc-if>
+              <sc-if value="{{ guidesOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="border-top:1px solid #e7dfcc;">
+                  <div style="padding:10px 14px; border-bottom:1px solid #e7dfcc;">
+                    <div style="display:flex; align-items:center; gap:8px; background:#f7f2e4; border:1px solid #d8cfb9; border-radius:4px; padding:9px 12px;">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                      <input value="{{ query }}" onChange="{{ setQuery }}" placeholder="Search today's movements…" style="flex:1; min-width:0; border:none; outline:none; background:transparent; font-size:12px; color:#211d16; font-family:Inter, sans-serif;">
+                    </div>
+                  </div>
+                  <div style="display:flex; gap:8px; padding:12px 14px; overflow-x:auto;">
+                    <sc-for list="{{ todayMoves }}" as="mv" hint-placeholder-count="4">
+                      <div style="position:relative; width:88px; aspect-ratio:9/16; flex-shrink:0; border-radius:6px; overflow:hidden; background:linear-gradient(180deg,#3a2f1c,#211d16); border:1px solid #cbbb92; cursor:pointer;" style-active="transform:translateY(1px);">
+                        <span style="position:absolute; top:6px; left:6px; font-size:7px; letter-spacing:0.18em; text-transform:uppercase; color:#f6e7c9; background:rgba(30,17,8,0.7); border-radius:2px; padding:1px 4px;">{{ mv.part }}</span>
+                        <span style="position:absolute; top:50%; left:50%; transform:translate(-50%,-60%); display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:999px; background:rgba(251,248,241,0.9); border:1px solid #cbbb92;"><svg width="9" height="9" viewBox="0 0 24 24" fill="#9a7b2d"><path d="M8 5v14l11-7z"></path></svg></span>
+                        <span style="position:absolute; top:6px; right:6px; font-family:'Geist Mono', monospace; font-size:8px; color:#f6e7c9; background:rgba(30,17,8,0.7); border-radius:2px; padding:1px 4px;">{{ mv.dur }}</span>
+                        <span style="position:absolute; left:6px; right:6px; bottom:6px; font-size:9px; font-weight:600; color:#fffbf0; line-height:1.25;">{{ mv.name }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ noMoves }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:4px 14px 14px 14px; text-align:center; font-size:11px; color:#a29677;">No movement in today's session for “{{ query }}”</div>
+                  </sc-if>
+                  <div style="display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 14px; border-top:1px solid #e7dfcc; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#9a7b2d; font-weight:600; cursor:pointer;" style-active="background:#f3ecd9;">
+                    Full library
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #e7dfcc;">
+                <div style="font-family:Cinzel, serif; font-size:12px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">Progress Photos</div>
+                <button onClick="{{ togglePhotos }}" style="display:inline-flex; align-items:center; gap:6px; border:1px solid #cbbb92; background:#f7f2e4; color:#9a7b2d; border-radius:3px; padding:5px 10px; font-size:9px; letter-spacing:0.16em; text-transform:uppercase; font-weight:600; font-family:Inter, sans-serif; cursor:pointer;" style-active="transform:translateY(1px); background:#f3ecd9;">
+                  <sc-if value="{{ photosHidden }}" hint-placeholder-val="{{ true }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></sc-if>
+                  <sc-if value="{{ photosShown }}" hint-placeholder-val="{{ false }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.5 13.5 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.39-1.61"></path><path d="m2 2 20 20"></path></svg></sc-if>
+                  {{ photosToggleLabel }}
+                </button>
+              </div>
+              <sc-if value="{{ photosHidden }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:5px; padding:22px 14px;">
+                  <span style="display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:999px; background:#f7f2e4; border:1px solid #cbbb92;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.5 13.5 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.39-1.61"></path><path d="m2 2 20 20"></path></svg></span>
+                  <div style="font-family:Cinzel, serif; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;">Veiled</div>
+                  <div style="font-size:10px; color:#7c7159;">Your photos stay private — only you can reveal them</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ photosShown }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:12px 14px;">
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                    <span style="font-size:9px; letter-spacing:0.26em; text-transform:uppercase; color:#9a7b2d; font-weight:600;">Before · After</span>
+                    <span style="flex:1; height:1px; background:#e7dfcc;"></span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:8px; color:#a29677;">WEEK I → IV</span>
+                  </div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                    <div style="position:relative; aspect-ratio:3/4; border:1px solid #d8cfb9; border-radius:4px; background:linear-gradient(180deg,#f3ecd9,#e7dcc2); display:flex; align-items:center; justify-content:center;">
+                      <span style="position:absolute; top:6px; left:6px; font-size:7px; letter-spacing:0.2em; text-transform:uppercase; color:#7c7159; background:rgba(251,248,241,0.9); border:1px solid #d8cfb9; border-radius:2px; padding:1px 5px;">Before · W I</span>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#cbbb92" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                    </div>
+                    <div style="position:relative; aspect-ratio:3/4; border:1px solid #d8cfb9; border-radius:4px; background:linear-gradient(180deg,#f3ecd9,#e7dcc2); display:flex; align-items:center; justify-content:center;">
+                      <span style="position:absolute; top:6px; left:6px; font-size:7px; letter-spacing:0.2em; text-transform:uppercase; color:#9a7b2d; background:rgba(251,248,241,0.9); border:1px solid #cbbb92; border-radius:2px; padding:1px 5px;">After · W IV</span>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#cbbb92" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                    </div>
+                  </div>
+                  <button style="display:flex; align-items:center; justify-content:center; gap:6px; width:100%; margin-top:8px; border:1px dashed #cbbb92; background:transparent; color:#9a7b2d; border-radius:4px; padding:9px 0; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; font-weight:600; font-family:Inter, sans-serif; cursor:pointer;" style-active="transform:translateY(1px); background:#f3ecd9;">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5v14"></path></svg>
+                    Add this week's photo
+                  </button>
+                  <div style="font-size:9px; color:#a29677; text-align:center; margin-top:8px;">Stored privately · never shared, never on the leaderboard</div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="background:#fbf8f1; border:1px solid #d8cfb9; margin-bottom:10px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #e7dfcc;">
+                <div style="font-family:Cinzel, serif; font-size:12px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase;">Hall of Honor</div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <div style="position:relative;">
+                <div style="display:flex; flex-direction:column; gap:10px; padding:14px; filter:blur(3px); opacity:0.5; pointer-events:none;" aria-hidden="true">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-family:Cinzel, serif; font-size:13px; font-weight:700; color:#9a7b2d; width:20px;">I</span>
+                    <span style="flex:1; font-size:12px;">Achilles</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">1,240 laurels</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-family:Cinzel, serif; font-size:13px; font-weight:700; color:#9a7b2d; width:20px;">II</span>
+                    <span style="flex:1; font-size:12px;">Atalanta</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">1,105 laurels</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-family:Cinzel, serif; font-size:13px; font-weight:700; color:#9a7b2d; width:20px;">III</span>
+                    <span style="flex:1; font-size:12px;">You</span>
+                    <span style="font-family:'Geist Mono', monospace; font-size:10px; color:#7c7159;">980 laurels</span>
+                  </div>
+                </div>
+                <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:rgba(247,244,236,0.55);">
+                  <span style="display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:999px; background:#fbf8f1; border:1px solid #cbbb92;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+                  <div style="font-family:Cinzel, serif; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;">Locked</div>
+                  <div style="font-size:10px; color:#7c7159;">Leaderboard &amp; rewards — coming soon</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </x-import>
+
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="390px,844px">
+        <div style="height:100%; display:flex; flex-direction:column; background:linear-gradient(180deg,#f7f4ec,#efe9db); color:#211d16; font-family:Inter, system-ui, sans-serif;">
+          <div style="display:flex; align-items:center; gap:11px; padding:12px 16px; border-bottom:1px solid #d8cfb9; background:rgba(247,244,236,0.92);">
+            <div style="width:38px; height:44px; border-radius:38px 38px 3px 3px; overflow:hidden; border:1px solid #cbbb92; flex-shrink:0; background:#0b0f0e;"><div style="width:100%; height:100%; {{ coachBg }}"></div></div>
+            <div style="flex:1;">
+              <div style="font-family:Cinzel, serif; font-size:14px; font-weight:700; letter-spacing:0.04em;">Coach {{ coachName }}</div>
+              <div style="font-size:9px; letter-spacing:0.24em; text-transform:uppercase; color:#9a7b2d; margin-top:2px;">The Oracle · {{ coachRoute }}</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c7159" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6a1.4 1.4 0 0 1-1 .4H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4a.7.7 0 0 0 1.2-.5z"></path><path d="M16 9a5 5 0 0 1 0 6"></path></svg>
+          </div>
+          <div style="display:flex; padding:0 16px; gap:22px; border-bottom:1px solid #d8cfb9; background:rgba(247,244,236,0.92);">
+            <div style="padding:10px 0 8px 0; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#211d16; font-weight:600; border-bottom:2px solid #9a7b2d; cursor:pointer;">Coach</div>
+            <div style="padding:10px 0 8px 0; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#a29677; cursor:pointer;" style-active="color:#211d16;">Nutrition</div>
+            <div style="padding:10px 0 8px 0; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#a29677; opacity:0.55;">Therapy · Soon</div>
+          </div>
+          <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding:16px;">
+            <div style="align-self:flex-start; max-width:85%; background:#fbf8f1; border:1px solid #d8cfb9; border-radius:2px 14px 14px 14px; padding:10px 14px; font-size:13px; line-height:1.55; box-shadow:0 2px 6px -4px rgba(70,58,30,0.35);">{{ greeting }}</div>
+            <div style="align-self:flex-end; max-width:85%; background:#9a7b2d; color:#fffbf0; border-radius:14px 2px 14px 14px; padding:10px 14px; font-size:13px; line-height:1.55;">Just hit squats — 5×5 at 102 kg. Last set was a grind.</div>
+            <div style="align-self:flex-start; max-width:85%; background:#fbf8f1; border:1px solid #d8cfb9; border-radius:2px 14px 14px 14px; padding:10px 14px; font-size:13px; line-height:1.55; box-shadow:0 2px 6px -4px rgba(70,58,30,0.35);">Strong work. 102 for a grinding 5×5 means we hold the weight next session and win bar speed back. Log your sleep tonight — recovery drives the next PR.</div>
+          </div>
+          <div style="border-top:1px solid #d8cfb9; padding:10px 14px; display:flex; align-items:center; gap:8px; background:rgba(247,244,236,0.92);">
+            <button style="display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:999px; border:1px solid #cbbb92; background:#fbf8f1; flex-shrink:0; cursor:pointer;" style-active="transform:translateY(1px); background:#f3ecd9;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a7b2d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="13" rx="3"></rect><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"></path></svg></button>
+            <div style="flex:1; background:#fbf8f1; border:1px solid #d8cfb9; border-radius:4px; padding:12px; font-size:13px; color:#a29677;">Speak to the oracle…</div>
+            <button onClick="{{ tapSend }}" style="display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:4px; background:#9a7b2d; border:none; flex-shrink:0; cursor:pointer; {{ sendAnim }}" style-active="transform:translateY(1px);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fffbf0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"></path><path d="M22 2 15 22l-4-9-9-4z"></path></svg></button>
+          </div>
+        </div>
+      </x-import>
+    </div>
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;coach&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;kratos&quot;, &quot;prometheus&quot;, &quot;adonis&quot;, &quot;nike&quot;, &quot;atalanta&quot;, &quot;hermes&quot;], &quot;default&quot;: &quot;kratos&quot;, &quot;section&quot;: &quot;Content&quot;, &quot;tsType&quot;: &quot;string&quot; },
+  &quot;showChat&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;section&quot;: &quot;Layout&quot;, &quot;tsType&quot;: &quot;boolean&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    beginCount: 0,
+    sendCount: 0,
+    speakCount: 0,
+    coachPlaying: false,
+    rites: { calories: true, macros: true, steps: false, relax: false, mobility: false },
+    query: "",
+    guidesOpen: false,
+    photosHidden: true,
+    sealed: false,
+  };
+  toggleRite(id) {
+    this.setState((s) => ({ rites: { ...s.rites, [id]: !s.rites[id] } }));
+  }
+  riteStyle(on) {
+    return on ? "color:#211d16; background:#fdf8ea;" : "color:#a29677; background:transparent;";
+  }
+  renderVals() {
+    const COACHES = {
+      kratos:     { name: "Kratos",     route: "Powerlifting",   img: "coach-kratos.png" },
+      prometheus: { name: "Prometheus", route: "Hybrid Fitness", img: "coach-prometheus.png" },
+      adonis:     { name: "Adonis",     route: "Bodybuilding",   img: "coach-adonis.png" },
+      nike:       { name: "Nike",       route: "CrossFit",       img: "coach-nike.png" },
+      atalanta:   { name: "Atalanta",   route: "Calisthenics",   img: "coach-atalanta.png" },
+      hermes:     { name: "Hermes",     route: "Running",        img: "coach-hermes.png" },
+    };
+    const id = this.props.coach ?? "kratos";
+    const c = COACHES[id] ?? COACHES.kratos;
+    const r = this.state.rites;
+    const RITES = [
+      { id: "calories", label: "Calories", target: "2,450 kcal", src: "Coach" },
+      { id: "macros", label: "Macros", target: "180g P · 250g C · 70g F", src: "Coach" },
+      { id: "steps", label: "Steps", target: "10,000 steps", src: "Custom" },
+      { id: "relax", label: "Relax", target: "15 min · no screens, music, or contact", src: "Custom" },
+      { id: "mobility", label: "Mobility", target: "10 min · yesterday's muscles", src: "Custom" },
+    ];
+    const doneCount = RITES.filter((d) => r[d.id]).length;
+    const allDone = doneCount === RITES.length;
+    const NUM = ["–", "I", "II", "III", "IV", "V", "VI"];
+    // Backend will feed today's plan; only those movements' shorts appear here.
+    const TODAY_MOVES = [
+      { name: "Back Squat", dur: "0:09", part: "Legs" },
+      { name: "Romanian Deadlift", dur: "0:08", part: "Legs" },
+      { name: "Barbell Row", dur: "0:08", part: "Back" },
+      { name: "Plank", dur: "0:05", part: "Core" },
+    ];
+    const q = this.state.query.trim().toLowerCase();
+    const todayMoves = TODAY_MOVES.filter(
+      (m) => !q || m.name.toLowerCase().includes(q) || m.part.toLowerCase().includes(q)
+    );
+    const gNUM = ["–", "I", "II", "III", "IV", "V", "VI"];
+    const bc = this.state.beginCount;
+    const sc = this.state.sendCount;
+    return {
+      showChat: this.props.showChat ?? true,
+      tapBegin: () => this.setState((s) => ({ beginCount: s.beginCount + 1 })),
+      beginAnim: bc
+        ? "animation:" + (bc % 2 ? "gleamA" : "gleamB") + " 0.7s ease, " + (bc % 2 ? "ringA" : "ringB") + " 0.7s ease;"
+        : "",
+      tapSend: () => this.setState((s) => ({ sendCount: s.sendCount + 1 })),
+      tapCoach: () => {
+        if (this.state.coachPlaying) return;
+        this.setState({ coachPlaying: true });
+        clearTimeout(this._coachTimer);
+        this._coachTimer = setTimeout(() => this.setState({ coachPlaying: false }), 2400);
+      },
+      coachPlaying: this.state.coachPlaying,
+      coachIdle: !this.state.coachPlaying,
+      portraitZoom: this.state.coachPlaying ? "animation:awakenZoom 2.4s ease;" : "",
+      tapSpeak: () => this.setState((s) => ({ speakCount: s.speakCount + 1 })),
+      speakAnim: this.state.speakCount
+        ? "animation:" + (this.state.speakCount % 2 ? "gleamA" : "gleamB") + " 0.7s ease, " + (this.state.speakCount % 2 ? "ringA" : "ringB") + " 0.7s ease;"
+        : "",
+      sendAnim: sc
+        ? "animation:" + (sc % 2 ? "ringA" : "ringB") + " 0.6s ease;"
+        : "",
+      query: this.state.query,
+      setQuery: (e) => this.setState({ query: e.target.value }),
+      todayMoves: todayMoves,
+      noMoves: todayMoves.length === 0,
+      guidesOpen: this.state.guidesOpen,
+      guidesClosed: !this.state.guidesOpen,
+      toggleGuides: () => this.setState((s) => ({ guidesOpen: !s.guidesOpen })),
+      guidesCount: gNUM[TODAY_MOVES.length] + " for today",
+      photosHidden: this.state.photosHidden,
+      photosShown: !this.state.photosHidden,
+      togglePhotos: () => this.setState((s) => ({ photosHidden: !s.photosHidden })),
+      photosToggleLabel: this.state.photosHidden ? "Reveal" : "Hide",
+      chevronStyle: this.state.guidesOpen ? "transform:rotate(180deg); transition:transform 0.25s;" : "transform:rotate(0deg); transition:transform 0.25s;",
+      riteList: RITES.map((d) => ({
+        ...d,
+        done: r[d.id],
+        toggle: () => this.toggleRite(d.id),
+        rowStyle: this.riteStyle(r[d.id]),
+      })),
+      riteProgress: NUM[doneCount] + " / " + NUM[RITES.length],
+      sealed: this.state.sealed,
+      notSealed: !this.state.sealed,
+      sealStyle: allDone
+        ? "background-image:linear-gradient(110deg, #9a7b2d 42%, #d3b25e 50%, #9a7b2d 58%); color:#fffbf0; cursor:pointer;"
+        : "background:#efe9db; color:#a29677; cursor:default;",
+      sealHint: allDone
+        ? "All rites complete — earn 50 laurels toward the Hall of Honor"
+        : RITES.length - doneCount + " rite" + (RITES.length - doneCount > 1 ? "s" : "") + " remain to seal the day",
+      tapSeal: () => {
+        if (!allDone || this.state.sealed) return;
+        this.setState({ sealed: true, coachPlaying: true });
+        clearTimeout(this._coachTimer);
+        this._coachTimer = setTimeout(() => this.setState({ coachPlaying: false }), 2400);
+      },
+      coachName: c.name,
+      coachRoute: c.route,
+      coachImg: c.img,
+      coachBg: "background-image:url('" + c.img + "'); background-size:cover; background-position:center;",
+      coachBgTop: "background-image:url('" + c.img + "'); background-size:cover; background-position:top;",
+      heroTitle: "Coach " + c.name + " is ready.",
+      sessionLabel: c.route + " session",
+      greeting: "I'm Coach " + c.name + ". Tell me how today went, or ask me anything — workouts, macros, recovery. You can talk to me by tapping the mic.",
+    };
+  }
+}
+</script>
+</body>
+</html>

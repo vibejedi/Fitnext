@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CoachId } from "./coaches";
 import type { PersonalityId } from "./personalities";
+import { EMPTY_RITES, SEAL_LAURELS, type RiteId } from "./rites";
 
 export interface Profile {
   age?: number;
@@ -22,6 +23,9 @@ export interface ChatMessage {
 /** Chat sub-areas under "Chat with Coach". Therapy is coming soon. */
 export type ChatMode = "coach" | "nutrition";
 
+/** The user's local date as YYYY-MM-DD. */
+export const localDay = () => new Date().toLocaleDateString("en-CA");
+
 export interface FitState {
   // onboarding answers
   coach: CoachId | null;
@@ -38,25 +42,29 @@ export interface FitState {
   // dashboard data
   targetDate: string | null;
   streak: number;
-  wins: { id: string; label: string; done: boolean }[];
+  /** Daily Rites — reset each local day (ritesDate tracks which day). */
+  rites: Record<RiteId, boolean>;
+  ritesDate: string | null;
+  /** Day sealed (ISO date) — sealing awards laurels toward the Hall of Honor. */
+  sealedDate: string | null;
+  laurels: number;
+  /** Current coach video (backend-rotated weekly/bi-weekly); null → still portrait. */
+  coachVideoUrl: string | null;
   messages: ChatMessage[];          // training coach thread
   nutritionMessages: ChatMessage[]; // nutrition coach thread
 
   // actions
   set: <K extends keyof FitState>(key: K, value: FitState[K]) => void;
   setProfile: (p: Partial<Profile>) => void;
-  toggleWin: (id: string) => void;
+  /** Roll rites over to today if the local day has changed. */
+  beginDay: () => void;
+  toggleRite: (id: RiteId) => void;
+  /** Seal today: +laurels, once per day. No-op unless all rites are done. */
+  sealDay: () => void;
   addMessage: (m: ChatMessage, mode?: ChatMode) => void;
   completeOnboarding: () => void;
   reset: () => void;
 }
-
-const DEFAULT_WINS = [
-  { id: "train", label: "Today's training", done: false },
-  { id: "protein", label: "Hit protein target", done: false },
-  { id: "steps", label: "10k steps", done: false },
-  { id: "sleep", label: "7h+ sleep", done: false },
-];
 
 const initial = {
   coach: null,
@@ -71,24 +79,42 @@ const initial = {
   onboarded: false,
   targetDate: null,
   streak: 0,
-  wins: DEFAULT_WINS,
+  rites: { ...EMPTY_RITES },
+  ritesDate: null,
+  sealedDate: null,
+  laurels: 0,
+  coachVideoUrl: null,
   messages: [],
   nutritionMessages: [],
 };
 
 export const useFit = create<FitState>()(
   persist(
-    (setState) => ({
+    (setState, getState) => ({
       ...initial,
       set: (key, value) => setState({ [key]: value } as Partial<FitState>),
       setProfile: (p) =>
         setState((s) => ({ profile: { ...s.profile, ...p } })),
-      toggleWin: (id) =>
-        setState((s) => ({
-          wins: s.wins.map((w) =>
-            w.id === id ? { ...w, done: !w.done } : w
-          ),
-        })),
+      beginDay: () => {
+        const today = localDay();
+        if (getState().ritesDate !== today) {
+          setState({ rites: { ...EMPTY_RITES }, ritesDate: today });
+        }
+      },
+      toggleRite: (id) =>
+        setState((s) => {
+          const today = localDay();
+          const base = s.ritesDate === today ? s.rites : { ...EMPTY_RITES };
+          return { rites: { ...base, [id]: !base[id] }, ritesDate: today };
+        }),
+      sealDay: () => {
+        const s = getState();
+        const today = localDay();
+        const allDone =
+          s.ritesDate === today && Object.values(s.rites).every(Boolean);
+        if (!allDone || s.sealedDate === today) return;
+        setState({ sealedDate: today, laurels: s.laurels + SEAL_LAURELS });
+      },
       addMessage: (m, mode = "coach") =>
         setState((s) =>
           mode === "nutrition"

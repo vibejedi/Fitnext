@@ -28,6 +28,9 @@ create table if not exists public.profiles (
 
 -- migration for databases created before username auth existed
 alter table public.profiles add column if not exists username text;
+-- migration for the Sacred Marble update: Seal the Day + laurels
+alter table public.profiles add column if not exists laurels int default 0;
+alter table public.profiles add column if not exists sealed_date date;
 -- usernames are unique, case-insensitively
 create unique index if not exists profiles_username_key
   on public.profiles (lower(username));

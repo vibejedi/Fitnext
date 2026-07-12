@@ -32,7 +32,7 @@ export default function RootLayout({
       lang="en"
       className={`${cinzel.variable} ${inter.variable} ${geistMono.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col bg-stone-900 text-marble">
+      <body className="min-h-full flex flex-col text-ink">
         {children}
       </body>
     </html>
