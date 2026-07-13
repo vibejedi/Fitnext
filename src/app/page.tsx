@@ -36,7 +36,12 @@ const GODS = [
 const HERO_WORDS = ["Every", "legend", "begins", "with", "a", "single", "rep."];
 
 export default function Landing() {
-  const reduceMotion = useReducedMotion();
+  const rmPref = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  // only honor the OS reduced-motion preference after mount — branching on it
+  // during hydration makes the server and client first paint disagree
+  const reduceMotion = mounted && !!rmPref;
   const { scrollY } = useScroll();
   const [progress, setProgress] = useState(0);
 
@@ -54,14 +59,17 @@ export default function Landing() {
   const p = reduceMotion ? 1 : progress;
   const n = HERO_WORDS.length;
 
-  const reveal = reduceMotion
-    ? {}
-    : {
-        initial: { opacity: 0, y: 44 },
-        whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true, margin: "-15% 0px" },
-        transition: { duration: 0.7, ease: "easeOut" as const },
-      };
+  // whileInView must ALWAYS be attached: useReducedMotion() is null on the
+  // first render (sections mount at opacity 0), then can flip true — if that
+  // strips the trigger, the sections freeze invisible (blank Acts II/III on
+  // iPhones with Reduce Motion enabled). Reduced motion only zeroes the
+  // duration; `initial` stays constant so SSR and client markup match.
+  const reveal = {
+    initial: { opacity: 0, y: 44 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-15% 0px" },
+    transition: { duration: reduceMotion ? 0 : 0.7, ease: "easeOut" as const },
+  };
 
   return (
     <div className="overflow-x-clip">
