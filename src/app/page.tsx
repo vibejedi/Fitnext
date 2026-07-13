@@ -76,9 +76,9 @@ export default function Landing() {
             >
               The Coaches
             </a>
-            <a href="#enter" className="btn-ghost px-4 py-2 text-[11px] tracking-[0.14em]">
+            <Link href="/login" className="btn-ghost px-4 py-2 text-[11px] tracking-[0.14em]">
               Enter
-            </a>
+            </Link>
           </div>
         </div>
         <MeanderBand />
