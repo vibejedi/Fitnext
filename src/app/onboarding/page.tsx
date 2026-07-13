@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Apple, HeartPulse } from "lucide-react";
+import { ArrowLeft, ArrowRight, Apple, ChevronDown, HeartPulse } from "lucide-react";
 import { Wordmark } from "@/components/Brand";
 import { Choice } from "@/components/Choice";
 import { COACHES, type CoachId } from "@/lib/coaches";
@@ -168,27 +168,66 @@ function Step({ title, sub, children }: { title: string; sub?: string; children:
 
 function StepCoach() {
   const fit = useFit();
+  const [open, setOpen] = useState<CoachId | null>(null);
   return (
     <Step title="Choose your god" sub="Your coach's name, domain, and training style.">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-2 items-start gap-3 sm:grid-cols-3">
         {COACHES.map((c) => (
-          <button key={c.id} onClick={() => fit.set("coach", c.id)}
+          <div key={c.id}
             className={cn(
-              "panel panel-hover group relative overflow-hidden text-left",
+              "panel panel-hover overflow-hidden",
               fit.coach === c.id && "border-green/70 glow-green"
             )}>
-            <div className="relative aspect-[3/4]">
-              <Image src={c.image} alt={c.name} fill sizes="33vw"
-                className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/10 to-transparent" />
-              <div className="absolute bottom-0 p-3">
-                <p className="eyebrow text-[0.55rem]">{c.route}</p>
-                <p className="font-display text-base font-bold leading-tight">
-                  {c.name}
-                </p>
+            <button onClick={() => fit.set("coach", c.id)} className="block w-full text-left">
+              <div className="relative aspect-[3/4]">
+                <Image src={c.image} alt={c.name} fill sizes="33vw"
+                  className="object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/10 to-transparent" />
+                <div className="absolute bottom-0 p-3">
+                  <p className="eyebrow text-[0.55rem]">{c.route}</p>
+                  <p className="font-display text-base font-bold leading-tight">
+                    {c.name}
+                  </p>
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
+            {/* focuses & primary muscles dropdown */}
+            <button
+              onClick={() => setOpen((o) => (o === c.id ? null : c.id))}
+              aria-expanded={open === c.id}
+              className="flex w-full items-center justify-between gap-1 border-t border-line px-2.5 py-2 text-[8px] font-semibold uppercase tracking-[0.16em] text-green active:bg-pressed sm:text-[9px]"
+            >
+              Focuses &amp; Muscles
+              <ChevronDown
+                size={11}
+                className={cn("shrink-0 transition-transform duration-200", open === c.id && "rotate-180")}
+              />
+            </button>
+            {open === c.id && (
+              <div className="flex flex-col gap-2.5 border-t border-line-soft px-2.5 py-2.5">
+                <div>
+                  <p className="font-mono text-[7px] uppercase tracking-[0.22em] text-green sm:text-[8px]">
+                    Focuses
+                  </p>
+                  <ul className="mt-1 space-y-0.5">
+                    {c.focuses.map((f) => (
+                      <li key={f} className="text-[10px] leading-snug text-marble-dim sm:text-[11px]">· {f}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-mono text-[7px] uppercase tracking-[0.22em] text-green sm:text-[8px]">
+                    Primary muscles &amp; systems
+                  </p>
+                  <ul className="mt-1 space-y-0.5">
+                    {c.muscles.map((m) => (
+                      <li key={m} className="text-[10px] leading-snug text-marble-dim sm:text-[11px]">· {m}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </Step>
