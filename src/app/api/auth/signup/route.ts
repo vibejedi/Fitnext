@@ -58,6 +58,14 @@ export async function POST(req: NextRequest) {
       );
     }
     console.error("[signup] createUser failed:", error.code, error.message);
+    // status 0 / "fetch failed" = Supabase itself is unreachable (e.g. the
+    // free-tier project auto-paused) — not something retrying will fix.
+    if (error.status === 0 || error.message.includes("fetch failed")) {
+      return NextResponse.json(
+        { error: "The account service is unreachable — it may be paused. Check the Supabase project, then try again." },
+        { status: 502 }
+      );
+    }
     return NextResponse.json(
       { error: "Could not create the account — try again." },
       { status: 500 }
