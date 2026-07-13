@@ -10,11 +10,12 @@ import {
 import { Wordmark, MeanderBand, GoldDivider } from "@/components/Brand";
 import { CoachChat } from "@/components/CoachChat";
 import { AuthButton } from "@/components/AuthButton";
+import { LogMealDialog, mealSlot } from "@/components/LogMeal";
 import { useFit, localDay } from "@/lib/store";
-import { pullProfile, pullRites, pushProfile, pushRites, uploadProgressPhoto, listProgressPhotos, type ProgressPhoto } from "@/lib/sync";
+import { pullProfile, pullRites, pullMeals, pushProfile, pushRites, uploadProgressPhoto, listProgressPhotos, type ProgressPhoto } from "@/lib/sync";
 import { coachById } from "@/lib/coaches";
 import { GOALS } from "@/lib/onboarding";
-import { RITES, EMPTY_RITES, SEAL_LAURELS, type RiteId } from "@/lib/rites";
+import { RITES, EMPTY_RITES, SEAL_LAURELS, NUTRITION_TARGETS, type RiteId } from "@/lib/rites";
 import { TODAY_GUIDES, GUIDE_LIBRARY, filterGuides, guideVideoSrc, type Guide } from "@/lib/guides";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { cn, toRoman } from "@/lib/utils";
@@ -66,6 +67,12 @@ export default function Dashboard() {
       const s = useFit.getState();
       s.set("rites", { ...EMPTY_RITES, ...r });
       s.set("ritesDate", localDay());
+    });
+    // cloud copy of today's meals wins over the local one when signed in
+    pullMeals(localDay()).then((ms) => {
+      if (!ms || ms.length === 0) return;
+      const s = useFit.getState();
+      s.set("meals", [...s.meals.filter((m) => m.day !== localDay()), ...ms]);
     });
   }, [mounted]);
 
@@ -503,16 +510,14 @@ function QuickAction({ icon, title, sub, onClick, disabled }: {
 
 /* ---------------- nutrition ---------------- */
 
-const DEMO_MEALS = [
-  { name: "Greek yogurt & honey", slot: "Breakfast", p: 32, c: 45, f: 12, kcal: 420 },
-  { name: "Chicken souvlaki bowl", slot: "Lunch", p: 52, c: 70, f: 18, kcal: 680 },
-  { name: "Almonds & figs", slot: "Snack", p: 9, c: 22, f: 22, kcal: 310 },
-  { name: "Salmon, potatoes & greens", slot: "Dinner", p: 48, c: 58, f: 28, kcal: 720 },
-];
-const TARGETS = { kcal: 2450, p: 180, c: 250, f: 70 };
+const TARGETS = NUTRITION_TARGETS;
 
 function NutritionPanel() {
-  const sum = DEMO_MEALS.reduce(
+  const fit = useFit();
+  const [logging, setLogging] = useState(false);
+  const today = localDay();
+  const meals = fit.meals.filter((m) => m.day === today);
+  const sum = meals.reduce(
     (a, m) => ({ kcal: a.kcal + m.kcal, p: a.p + m.p, c: a.c + m.c, f: a.f + m.f }),
     { kcal: 0, p: 0, c: 0, f: 0 }
   );
@@ -521,7 +526,7 @@ function NutritionPanel() {
       title="Nutrition"
       action={
         <button
-          onClick={() => ask("I want to log a meal. Ask me what I ate and estimate the calories and macros.", "nutrition")}
+          onClick={() => setLogging(true)}
           className="px-1.5 py-1 font-mono text-[9px] tracking-[0.1em] text-gold active:translate-y-px active:opacity-60 lg:text-[10px]"
         >
           + LOG A MEAL
@@ -530,22 +535,43 @@ function NutritionPanel() {
     >
       <div className="lg:grid lg:grid-cols-[1fr_300px]">
         <div className="flex flex-col lg:border-r lg:border-line-soft">
-          {DEMO_MEALS.map((m, i) => (
-            <div
-              key={m.name}
-              className={cn(
-                "flex items-baseline gap-2 px-[14px] py-2.5 lg:px-[18px]",
-                i < DEMO_MEALS.length - 1 && "border-b border-line-soft"
-              )}
+          {meals.length === 0 ? (
+            <button
+              onClick={() => setLogging(true)}
+              className="flex flex-col items-center justify-center gap-1.5 px-[14px] py-7 text-center active:bg-pressed lg:h-full"
             >
-              <span className="min-w-0 flex-1 text-xs font-semibold lg:text-[13px]">
-                {m.name}{" "}
-                <span className="text-[9px] font-normal tracking-[0.08em] text-faint">· {m.slot.toUpperCase()}</span>
+              <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-line-strong bg-panel-alt">
+                <Camera size={13} className="text-gold" />
               </span>
-              <span className="font-mono text-[10px] text-sec">{m.p}P · {m.c}C · {m.f}F</span>
-              <span className="w-16 text-right font-mono text-[10px] text-ink lg:text-[11px]">{m.kcal.toLocaleString()} kcal</span>
-            </div>
-          ))}
+              <span className="font-display text-xs font-bold uppercase tracking-[0.14em]">
+                Nothing inscribed today
+              </span>
+              <span className="text-[10px] text-sec lg:text-[11px]">
+                Shoot your meal — top view + close-up — and the oracle eyeballs the macros
+              </span>
+            </button>
+          ) : (
+            meals.map((m, i) => (
+              <div
+                key={m.id}
+                className={cn(
+                  "flex items-baseline gap-2 px-[14px] py-2.5 lg:px-[18px]",
+                  i < meals.length - 1 && "border-b border-line-soft"
+                )}
+              >
+                <span className="min-w-0 flex-1 truncate text-xs font-semibold lg:text-[13px]">
+                  {m.name}{" "}
+                  <span className="text-[9px] font-normal tracking-[0.08em] text-faint">
+                    · {mealSlot(m.ts).toUpperCase()}
+                  </span>
+                </span>
+                <span className="font-mono text-[10px] text-sec">{m.p}P · {m.c}C · {m.f}F</span>
+                <span className="w-16 shrink-0 text-right font-mono text-[10px] text-ink lg:text-[11px]">
+                  {m.kcal.toLocaleString()} kcal
+                </span>
+              </div>
+            ))
+          )}
         </div>
         <div className="flex flex-col gap-[9px] bg-panel-alt px-[14px] py-3 lg:gap-2.5 lg:px-[18px] lg:py-[14px]">
           <MacroBar label="Calories" cur={sum.kcal} max={TARGETS.kcal}
@@ -554,10 +580,11 @@ function NutritionPanel() {
           <MacroBar label="Carbs" cur={sum.c} max={TARGETS.c} text={`${sum.c}g / ${TARGETS.c}g`} unit="g" />
           <MacroBar label="Fats" cur={sum.f} max={TARGETS.f} text={`${sum.f}g / ${TARGETS.f}g`} unit="g" />
           <p className="mt-0.5 text-[9px] text-faint">
-            Targets set by your Nutrition Coach · updates as you log meals in chat
+            Targets set by your Nutrition Coach · macros &amp; calories are eyeball estimates from your meal photos
           </p>
         </div>
       </div>
+      <LogMealDialog open={logging} onClose={() => setLogging(false)} />
     </Panel>
   );
 }

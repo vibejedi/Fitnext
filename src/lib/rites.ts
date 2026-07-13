@@ -29,3 +29,7 @@ export const EMPTY_RITES: Record<RiteId, boolean> = {
 
 /** Laurels awarded by Seal the Day — they accrue toward the Hall of Honor. */
 export const SEAL_LAURELS = 50;
+
+/** The nutrition coach's current daily targets — the same numbers the
+ *  calories/macros rites point at. Static until targets go per-user. */
+export const NUTRITION_TARGETS = { kcal: 2450, p: 180, c: 250, f: 70 };

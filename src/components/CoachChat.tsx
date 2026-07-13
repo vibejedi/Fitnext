@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Mic, MicOff, Send, Volume2, VolumeX } from "lucide-react";
-import { useFit, type ChatMode } from "@/lib/store";
+import { useFit, localDay, type ChatMode, type NutritionMode } from "@/lib/store";
 import { coachById } from "@/lib/coaches";
-import { saveMessage } from "@/lib/sync";
+import { pushProfile, saveMessage } from "@/lib/sync";
+import { NUTRITION_TARGETS } from "@/lib/rites";
 import { cn } from "@/lib/utils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -23,6 +24,17 @@ const NUTRITION_GREETING = [
   "• Goal weight (or the look/feel you're after)",
   "• How fast — steady and sustainable, or as fast as possible?",
 ].join("\n");
+
+const TRACKER_GREETING = [
+  "🥗 Tracker mode — I count, you eat.",
+  "",
+  "Log meals from the dashboard (+ LOG A MEAL: top-view photo, close-up, and a short description) and I'll keep your daily calories and macros. You can also just tell me what you ate here.",
+  "",
+  "Heads up: estimates are eyeballed from your photos — close enough to steer the day, not lab numbers. Want the full nutritionist (custom meal plan) later? Just say the word.",
+].join("\n");
+
+const nutritionGreeting = (m: NutritionMode) =>
+  m === "tracker" ? TRACKER_GREETING : NUTRITION_GREETING;
 
 const coachGreeting = (name: string) =>
   `I'm Coach ${name}. Tell me how today went, or ask me anything — workouts, macros, recovery. You can talk to me by tapping the mic.`;
@@ -52,16 +64,17 @@ export function CoachChat() {
   const thread = mode === "nutrition" ? fit.nutritionMessages : fit.messages;
 
   // greeting on first open of each sub-area (fresh state read, so React
-  // StrictMode's double effect run can't add it twice)
+  // StrictMode's double effect run can't add it twice). The nutrition
+  // greeting waits until the user picks full vs tracker (chooser below).
   useEffect(() => {
     const s = useFit.getState();
     if (mode === "coach" && s.messages.length === 0 && coach) {
       s.addMessage({ role: "assistant", content: coachGreeting(coach.name), ts: Date.now() }, "coach");
     }
-    if (mode === "nutrition" && s.nutritionMessages.length === 0) {
-      s.addMessage({ role: "assistant", content: NUTRITION_GREETING, ts: Date.now() }, "nutrition");
+    if (mode === "nutrition" && s.nutritionMessages.length === 0 && s.nutritionMode) {
+      s.addMessage({ role: "assistant", content: nutritionGreeting(s.nutritionMode), ts: Date.now() }, "nutrition");
     }
-  }, [mode, coach]);
+  }, [mode, coach, fit.nutritionMode]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -100,6 +113,11 @@ export function CoachChat() {
             coach: s.coach, personality: s.personality, goal: s.goal,
             experience: s.experience, profile: s.profile, equipment: s.equipment,
             days: s.days, wantNutrition: s.wantNutrition, wantInjury: s.wantInjury,
+            nutritionMode: s.nutritionMode,
+            targets: NUTRITION_TARGETS,
+            todayMeals: s.meals
+              .filter((x) => x.day === localDay())
+              .map((x) => ({ name: x.name, kcal: x.kcal, p: x.p, c: x.c, f: x.f })),
             clientDate: localDate(),
           },
         }),
@@ -157,8 +175,12 @@ export function CoachChat() {
       const s = useFit.getState();
       if (m === "nutrition" && !s.wantNutrition) m = "coach";
       // seed the greeting before the prompt so the intro isn't skipped
+      // (a dashboard prompt implies the full nutritionist when unchosen)
       if (m === "nutrition" && s.nutritionMessages.length === 0) {
-        s.addMessage({ role: "assistant", content: NUTRITION_GREETING, ts: Date.now() }, "nutrition");
+        s.addMessage(
+          { role: "assistant", content: nutritionGreeting(s.nutritionMode ?? "full"), ts: Date.now() },
+          "nutrition"
+        );
       }
       setMode(m);
       if (busyRef.current) {
@@ -256,6 +278,15 @@ export function CoachChat() {
 
       {/* messages */}
       <div ref={scrollRef} className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
+        {mode === "nutrition" && !fit.nutritionMode && thread.length === 0 && (
+          <NutritionChooser
+            onPick={(m) => {
+              const s = useFit.getState();
+              s.set("nutritionMode", m);
+              void pushProfile(useFit.getState());
+            }}
+          />
+        )}
         {thread.map((m, i) => <Bubble key={i} role={m.role}>{m.content}</Bubble>)}
         {busyHere && (
           <Bubble role="assistant" muted={!draft}>
@@ -310,6 +341,41 @@ export function CoachChat() {
           <Send size={15} />
         </button>
       </div>
+    </div>
+  );
+}
+
+function NutritionChooser({ onPick }: { onPick: (m: NutritionMode) => void }) {
+  return (
+    <div className="flex flex-col gap-2.5 py-2">
+      <p className="text-center font-mono text-[9px] uppercase tracking-[0.28em] text-gold">
+        Choose your nutritionist
+      </p>
+      <button
+        onClick={() => onPick("full")}
+        className="panel chisel-press px-4 py-3.5 text-left"
+      >
+        <span className="block font-display text-[13px] font-bold uppercase tracking-[0.12em]">
+          Full Nutritionist
+        </span>
+        <span className="mt-1 block text-[11px] leading-relaxed text-sec">
+          A quick interview, then a custom meal-prep plan built around foods you actually like — plus tracking.
+        </span>
+      </button>
+      <button
+        onClick={() => onPick("tracker")}
+        className="panel chisel-press px-4 py-3.5 text-left"
+      >
+        <span className="block font-display text-[13px] font-bold uppercase tracking-[0.12em]">
+          Tracker Only
+        </span>
+        <span className="mt-1 block text-[11px] leading-relaxed text-sec">
+          No meal plans — just count calories &amp; macros from the meals you log. Switch to the full nutritionist anytime.
+        </span>
+      </button>
+      <p className="text-center text-[9px] text-faint">
+        Either way, logged-meal macros are eyeball estimates from your photos
+      </p>
     </div>
   );
 }

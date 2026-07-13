@@ -2,7 +2,7 @@
 
 import { getSupabaseBrowser } from "./supabase/client";
 import { RITES, type RiteId } from "./rites";
-import type { ChatMode, FitState } from "./store";
+import type { ChatMode, FitState, Meal } from "./store";
 
 /** Shape stored in the `profiles` table (snake_case). */
 function toRow(s: FitState, id: string) {
@@ -26,6 +26,7 @@ function toRow(s: FitState, id: string) {
     streak: s.streak,
     laurels: s.laurels,
     sealed_date: s.sealedDate,
+    nutrition_mode: s.nutritionMode,
     updated_at: new Date().toISOString(),
   };
 }
@@ -75,6 +76,7 @@ export async function pullProfile(): Promise<Partial<FitState> | null> {
     streak: data.streak ?? 0,
     laurels: data.laurels ?? 0,
     sealedDate: data.sealed_date ?? null,
+    nutritionMode: data.nutrition_mode ?? null,
   };
 }
 
@@ -122,6 +124,52 @@ export async function pullRites(
   const out: Partial<Record<RiteId, boolean>> = {};
   for (const row of data) out[row.win_id as RiteId] = !!row.done;
   return out;
+}
+
+/* ---------------- Meals (photo-logged, eyeball-estimated) ---------------- */
+
+/** Persist a logged meal (best-effort). */
+export async function pushMeal(m: Meal) {
+  const sb = getSupabaseBrowser();
+  if (!sb) return;
+  const uid = await currentUserId();
+  if (!uid) return;
+  await sb.from("meals").insert({
+    user_id: uid,
+    day: m.day,
+    name: m.name,
+    description: m.desc,
+    kcal: m.kcal,
+    protein_g: m.p,
+    carbs_g: m.c,
+    fat_g: m.f,
+  });
+}
+
+/** Pull one day's meals. Null when signed out. */
+export async function pullMeals(day: string): Promise<Meal[] | null> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return null;
+  const uid = await currentUserId();
+  if (!uid) return null;
+  const { data } = await sb
+    .from("meals")
+    .select("id, day, name, description, kcal, protein_g, carbs_g, fat_g, created_at")
+    .eq("user_id", uid)
+    .eq("day", day)
+    .order("created_at", { ascending: true });
+  if (!data) return null;
+  return data.map((r) => ({
+    id: String(r.id),
+    day: r.day,
+    name: r.name,
+    desc: r.description ?? "",
+    kcal: r.kcal ?? 0,
+    p: r.protein_g ?? 0,
+    c: r.carbs_g ?? 0,
+    f: r.fat_g ?? 0,
+    ts: new Date(r.created_at).getTime(),
+  }));
 }
 
 /* ---------------- Progress photos (private Storage bucket) ---------------- */

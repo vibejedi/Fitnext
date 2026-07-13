@@ -31,6 +31,8 @@ alter table public.profiles add column if not exists username text;
 -- migration for the Sacred Marble update: Seal the Day + laurels
 alter table public.profiles add column if not exists laurels int default 0;
 alter table public.profiles add column if not exists sealed_date date;
+-- migration for the nutritionist mode choice ('full' | 'tracker')
+alter table public.profiles add column if not exists nutrition_mode text;
 -- usernames are unique, case-insensitively
 create unique index if not exists profiles_username_key
   on public.profiles (lower(username));
@@ -68,6 +70,21 @@ create table if not exists public.daily_wins (
   unique (user_id, day, win_id)
 );
 
+-- ---------- logged meals (macros are eyeball estimates from meal photos) ----------
+create table if not exists public.meals (
+  id         bigint generated always as identity primary key,
+  user_id    uuid not null references auth.users on delete cascade,
+  day        date default current_date,
+  name       text not null,
+  description text,
+  kcal       int,
+  protein_g  int,
+  carbs_g    int,
+  fat_g      int,
+  created_at timestamptz default now()
+);
+create index if not exists meals_user_day_idx on public.meals (user_id, day);
+
 -- ---------- progress photos (metadata; file lives in Storage) ----------
 create table if not exists public.progress_photos (
   id       bigint generated always as identity primary key,
@@ -83,6 +100,7 @@ alter table public.profiles        enable row level security;
 alter table public.chat_messages   enable row level security;
 alter table public.workout_logs    enable row level security;
 alter table public.daily_wins      enable row level security;
+alter table public.meals           enable row level security;
 alter table public.progress_photos enable row level security;
 
 -- profiles keyed by id = auth.uid()
@@ -94,7 +112,7 @@ create policy "own profile" on public.profiles
 do $$
 declare t text;
 begin
-  foreach t in array array['chat_messages','workout_logs','daily_wins','progress_photos']
+  foreach t in array array['chat_messages','workout_logs','daily_wins','meals','progress_photos']
   loop
     execute format('drop policy if exists "own rows" on public.%I;', t);
     execute format(

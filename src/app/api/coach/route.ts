@@ -24,6 +24,12 @@ interface Body {
     days: number | null;
     wantNutrition: boolean;
     wantInjury: boolean;
+    /** "full" = interview → meal plan; "tracker" = calorie/macro counting only. */
+    nutritionMode?: "full" | "tracker" | null;
+    /** Current daily targets shown in the app. */
+    targets?: { kcal: number; p: number; c: number; f: number };
+    /** Today's photo-logged meals (macros already eyeball-estimated). */
+    todayMeals?: { name: string; kcal: number; p: number; c: number; f: number }[];
     /** Athlete's local date (YYYY-MM-DD) so lift-log dates match their day. */
     clientDate?: string;
   };
@@ -74,7 +80,62 @@ Today's date: ${today(ctx)}`;
   return [intro, athleteProfile(ctx), TRAINING_PROTOCOL].join("\n\n");
 }
 
+/** Today's photo-logged meals + targets, shared by both nutrition modes. */
+function todaysLog(ctx: Body["context"]) {
+  const t = ctx.targets;
+  const meals = Array.isArray(ctx.todayMeals) ? ctx.todayMeals.slice(0, 20) : [];
+  const totals = meals.reduce(
+    (a, m) => ({ kcal: a.kcal + (m.kcal || 0), p: a.p + (m.p || 0), c: a.c + (m.c || 0), f: a.f + (m.f || 0) }),
+    { kcal: 0, p: 0, c: 0, f: 0 }
+  );
+  return `-------------------------------------
+TODAY'S FOOD LOG (photo-logged in the app; macros are eyeball estimates)
+-------------------------------------
+
+${
+  meals.length === 0
+    ? "Nothing logged yet today."
+    : meals.map((m) => `- ${m.name} — ${m.kcal} kcal · ${m.p}P/${m.c}C/${m.f}F`).join("\n") +
+      `\nRunning total: ${totals.kcal} kcal · ${totals.p}P/${totals.c}C/${totals.f}F`
+}
+${t ? `Daily targets: ${t.kcal} kcal · ${t.p}P/${t.c}C/${t.f}F` : ""}
+
+These numbers are already counted — never re-add a logged meal. All app
+estimates come from the athlete's meal photos and are EYEBALLED; say so
+when precision matters.`;
+}
+
+const TRACKER_PROTOCOL = `-------------------------------------
+TRACKER MODE
+-------------------------------------
+
+The athlete chose to use you as a CALORIE & MACRO TRACKER ONLY — they did
+not ask for meal plans or the intake interview. Rules:
+
+- Do NOT run the 4-section interview. Do NOT build meal plans, shopping
+  lists, or supplement stacks unless they explicitly ask (if they do ask,
+  switch to your full protocol).
+- When they describe a meal in chat, eyeball its calories and macros
+  (state that it's an estimate), add it to the running total from TODAY'S
+  FOOD LOG, and report: total so far, what's left vs targets.
+- Keep replies SHORT — a few lines. Totals first, then at most one
+  practical nudge (e.g. what to eat to close the protein gap).
+- You reply in a plain-text chat bubble: no markdown bold/headers/tables.
+  Compact lines like "So far: 840 kcal · 83P/92C/10F" work best.
+- If they sound like they want more than tracking, offer the full
+  nutritionist once, briefly.`;
+
 function buildNutritionSystemPrompt(ctx: Body["context"]) {
+  if (ctx.nutritionMode === "tracker") {
+    return `${NUTRITION_SYSTEM_PROMPT}
+
+${TRACKER_PROTOCOL}
+
+${todaysLog(ctx)}
+
+Today's date: ${today(ctx)}
+Athlete stats: ${JSON.stringify(ctx.profile)} · goal: ${ctx.goal ?? "—"}`;
+  }
   return `${NUTRITION_SYSTEM_PROMPT}
 
 -------------------------------------
@@ -96,7 +157,9 @@ asking blind, and only re-ask what is missing:
 
 If their primary goal is not fat loss (e.g. muscle gain), adapt the plan's
 energy balance accordingly (e.g. a lean surplus instead of a deficit) while
-keeping the same interview, structure and quality bar.`;
+keeping the same interview, structure and quality bar.
+
+${todaysLog(ctx)}`;
 }
 
 function mockCoachReply(ctx: Body["context"], lastUser: string) {

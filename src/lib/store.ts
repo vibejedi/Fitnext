@@ -23,6 +23,26 @@ export interface ChatMessage {
 /** Chat sub-areas under "Chat with Coach". Therapy is coming soon. */
 export type ChatMode = "coach" | "nutrition";
 
+/** How the user wants the nutritionist to behave:
+ *  "full" = interview → custom meal-prep plan; "tracker" = calorie/macro
+ *  tracking only. Null until they pick. */
+export type NutritionMode = "full" | "tracker";
+
+/** A logged meal. Macros/calories are EYEBALL ESTIMATES from the user's
+ *  meal photos (top view + close-up) and short description — never
+ *  presented as measurements. */
+export interface Meal {
+  id: string;
+  day: string; // YYYY-MM-DD local
+  name: string;
+  desc: string;
+  kcal: number;
+  p: number; // protein g
+  c: number; // carbs g
+  f: number; // fat g
+  ts: number;
+}
+
 /** The user's local date as YYYY-MM-DD. */
 export const localDay = () => new Date().toLocaleDateString("en-CA");
 
@@ -50,6 +70,9 @@ export interface FitState {
   laurels: number;
   /** Current coach video (backend-rotated weekly/bi-weekly); null → still portrait. */
   coachVideoUrl: string | null;
+  /** Photo-logged meals (eyeball-estimated macros). Filtered by day in the UI. */
+  meals: Meal[];
+  nutritionMode: NutritionMode | null;
   messages: ChatMessage[];          // training coach thread
   nutritionMessages: ChatMessage[]; // nutrition coach thread
 
@@ -61,6 +84,7 @@ export interface FitState {
   toggleRite: (id: RiteId) => void;
   /** Seal today: +laurels, once per day. No-op unless all rites are done. */
   sealDay: () => void;
+  addMeal: (m: Meal) => void;
   addMessage: (m: ChatMessage, mode?: ChatMode) => void;
   completeOnboarding: () => void;
   reset: () => void;
@@ -84,6 +108,8 @@ const initial = {
   sealedDate: null,
   laurels: 0,
   coachVideoUrl: null,
+  meals: [],
+  nutritionMode: null,
   messages: [],
   nutritionMessages: [],
 };
@@ -115,6 +141,8 @@ export const useFit = create<FitState>()(
         if (!allDone || s.sealedDate === today) return;
         setState({ sealedDate: today, laurels: s.laurels + SEAL_LAURELS });
       },
+      addMeal: (m) =>
+        setState((s) => ({ meals: [...s.meals, m].slice(-200) })),
       addMessage: (m, mode = "coach") =>
         setState((s) =>
           mode === "nutrition"
