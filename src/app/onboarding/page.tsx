@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Apple, ChevronDown, HeartPulse } from "lucide-react";
+import { ArrowLeft, ArrowRight, Apple, Check, ChevronDown, HeartPulse } from "lucide-react";
 import { Wordmark } from "@/components/Brand";
 import { Choice } from "@/components/Choice";
 import { COACHES, type CoachId } from "@/lib/coaches";
@@ -172,22 +172,65 @@ function StepCoach() {
   return (
     <Step title="Choose your god" sub="Your coach's name, domain, and training style.">
       <div className="grid grid-cols-2 items-start gap-3 sm:grid-cols-3">
-        {COACHES.map((c) => (
+        {COACHES.map((c) => {
+          const isChosen = fit.coach === c.id;
+          return (
           <div key={c.id}
             className={cn(
-              "panel panel-hover overflow-hidden",
-              fit.coach === c.id && "border-green/70 glow-green"
-            )}>
-            <button onClick={() => fit.set("coach", c.id)} className="block w-full text-left">
+              "panel overflow-hidden transition-[opacity,filter,border-color] duration-300",
+              isChosen
+                ? "border-gold"
+                : fit.coach
+                  ? "panel-hover opacity-60 saturate-[0.75]"
+                  : "panel-hover"
+            )}
+            style={
+              isChosen
+                ? {
+                    boxShadow: "0 0 0 1px var(--gold), 0 12px 28px -14px rgba(70,58,30,0.5)",
+                    // "the god awakens" pulse on selection
+                    animation: "awakenGlow 1.6s ease",
+                  }
+                : undefined
+            }>
+            <button onClick={() => fit.set("coach", c.id)} className="block w-full text-left active:translate-y-px">
               <div className="relative aspect-[3/4]">
                 <Image src={c.image} alt={c.name} fill sizes="33vw"
                   className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/10 to-transparent" />
+                {isChosen && (
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                      background:
+                        "linear-gradient(115deg, transparent 42%, rgba(255,244,214,0.55) 50%, transparent 58%)",
+                      backgroundSize: "220% 100%",
+                      backgroundPosition: "150% 0",
+                      animation: "sheenSweep 1.4s ease 0.2s both",
+                    }}
+                  />
+                )}
+                {isChosen && (
+                  <span
+                    className="absolute right-2 top-2 flex h-[26px] w-[26px] items-center justify-center rounded-full border border-line-strong bg-[rgba(251,248,241,0.95)] text-gold shadow-[0_2px_6px_-2px_rgba(70,58,30,0.4)]"
+                    style={{ animation: "laurelPop 0.45s ease" }}
+                  >
+                    <Check size={13} strokeWidth={3} />
+                  </span>
+                )}
                 <div className="absolute bottom-0 p-3">
-                  <p className="eyebrow text-[0.55rem]">{c.route}</p>
+                  <p className="eyebrow text-[0.55rem]">
+                    {c.route}
+                  </p>
                   <p className="font-display text-base font-bold leading-tight">
                     {c.name}
                   </p>
+                  {isChosen && (
+                    <p className="mt-0.5 font-mono text-[8px] uppercase tracking-[0.24em] text-gold"
+                      style={{ animation: "laurelPop 0.45s ease" }}>
+                      Chosen
+                    </p>
+                  )}
                 </div>
               </div>
             </button>
@@ -228,7 +271,8 @@ function StepCoach() {
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
     </Step>
   );
