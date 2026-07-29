@@ -2,7 +2,7 @@
 
 import { getSupabaseBrowser } from "./supabase/client";
 import { RITES, type RiteId } from "./rites";
-import type { ChatMode, FitState, Meal } from "./store";
+import type { ChatMode, FitState, Meal, RiteDay, Workout } from "./store";
 
 /** Shape stored in the `profiles` table (snake_case). */
 function toRow(s: FitState, id: string) {
@@ -143,6 +143,7 @@ export async function pushMeal(m: Meal) {
     protein_g: m.p,
     carbs_g: m.c,
     fat_g: m.f,
+    edited: m.edited ?? false,
   });
 }
 
@@ -154,12 +155,46 @@ export async function pullMeals(day: string): Promise<Meal[] | null> {
   if (!uid) return null;
   const { data } = await sb
     .from("meals")
-    .select("id, day, name, description, kcal, protein_g, carbs_g, fat_g, created_at")
+    .select("id, day, name, description, kcal, protein_g, carbs_g, fat_g, edited, created_at")
     .eq("user_id", uid)
     .eq("day", day)
     .order("created_at", { ascending: true });
   if (!data) return null;
-  return data.map((r) => ({
+  return data.map(rowToMeal);
+}
+
+/** Pull every meal logged on or after `sinceDay` (YYYY-MM-DD), oldest first.
+ *  Powers the History view + coach context. Null when signed out. */
+export async function pullMealsRange(sinceDay: string): Promise<Meal[] | null> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return null;
+  const uid = await currentUserId();
+  if (!uid) return null;
+  const { data } = await sb
+    .from("meals")
+    .select("id, day, name, description, kcal, protein_g, carbs_g, fat_g, edited, created_at")
+    .eq("user_id", uid)
+    .gte("day", sinceDay)
+    .order("created_at", { ascending: true });
+  if (!data) return null;
+  return data.map(rowToMeal);
+}
+
+interface MealRow {
+  id: number | string;
+  day: string;
+  name: string;
+  description: string | null;
+  kcal: number | null;
+  protein_g: number | null;
+  carbs_g: number | null;
+  fat_g: number | null;
+  edited: boolean | null;
+  created_at: string;
+}
+
+function rowToMeal(r: MealRow): Meal {
+  return {
     id: String(r.id),
     day: r.day,
     name: r.name,
@@ -168,8 +203,104 @@ export async function pullMeals(day: string): Promise<Meal[] | null> {
     p: r.protein_g ?? 0,
     c: r.carbs_g ?? 0,
     f: r.fat_g ?? 0,
+    edited: !!r.edited,
     ts: new Date(r.created_at).getTime(),
-  }));
+  };
+}
+
+/* ---------------- Workouts (structured lift log) ---------------- */
+
+/** Persist a logged workout (best-effort). The structured lift data lives in
+ *  the `data` jsonb; the "how it felt" note lives in `note`. */
+export async function pushWorkout(w: Workout) {
+  const sb = getSupabaseBrowser();
+  if (!sb) return;
+  const uid = await currentUserId();
+  if (!uid) return;
+  await sb.from("workout_logs").insert({
+    user_id: uid,
+    note: w.feel || null,
+    // `cid` = the client-generated id, so a pushed workout keeps ONE stable
+    // key across local and cloud (the row's bigint id would otherwise differ
+    // from the local id and duplicate the session on the next merge).
+    data: {
+      cid: w.id,
+      day: w.day,
+      title: w.title,
+      exercises: w.exercises,
+      energy: w.energy ?? null,
+    },
+    logged_at: new Date(w.ts).toISOString(),
+  });
+}
+
+interface WorkoutRow {
+  id: number | string;
+  note: string | null;
+  data: {
+    cid?: string;
+    day?: string;
+    title?: string;
+    exercises?: Workout["exercises"];
+    energy?: number | null;
+  } | null;
+  logged_at: string;
+}
+
+/** Pull the most recent workouts (newest last, to match the local store).
+ *  Null when signed out. */
+export async function pullWorkouts(limit = 60): Promise<Workout[] | null> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return null;
+  const uid = await currentUserId();
+  if (!uid) return null;
+  const { data } = await sb
+    .from("workout_logs")
+    .select("id, note, data, logged_at")
+    .eq("user_id", uid)
+    .order("logged_at", { ascending: false })
+    .limit(limit);
+  if (!data) return null;
+  return (data as WorkoutRow[])
+    .map((r): Workout => {
+      const d = r.data ?? {};
+      return {
+        // prefer the stable client id so it de-dupes against the local copy
+        id: d.cid ?? String(r.id),
+        day: d.day ?? r.logged_at.slice(0, 10),
+        title: d.title ?? "Session",
+        exercises: Array.isArray(d.exercises) ? d.exercises : [],
+        feel: r.note ?? "",
+        energy: typeof d.energy === "number" ? d.energy : undefined,
+        ts: new Date(r.logged_at).getTime(),
+      };
+    })
+    .reverse(); // oldest → newest, matching the store's ordering
+}
+
+/* ---------------- Rite history (range over daily_wins) ---------------- */
+
+/** Pull rite completions for every day on or after `sinceDay`, grouped by
+ *  day. Null when signed out. */
+export async function pullRitesRange(
+  sinceDay: string
+): Promise<Record<string, RiteDay> | null> {
+  const sb = getSupabaseBrowser();
+  if (!sb) return null;
+  const uid = await currentUserId();
+  if (!uid) return null;
+  const { data } = await sb
+    .from("daily_wins")
+    .select("day, win_id, done")
+    .eq("user_id", uid)
+    .gte("day", sinceDay);
+  if (!data) return null;
+  const out: Record<string, RiteDay> = {};
+  for (const row of data) {
+    const day = row.day as string;
+    (out[day] ??= {})[row.win_id as RiteId] = !!row.done;
+  }
+  return out;
 }
 
 /* ---------------- Progress photos (private Storage bucket) ---------------- */

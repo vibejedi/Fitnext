@@ -3,16 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Flame, Apple, HeartPulse, Check, Search, Play, Plus, Lock,
-  MessageSquare, Eye, EyeOff, Camera, ChevronDown, Award,
+  MessageSquare, Eye, EyeOff, Camera, ChevronDown, Award, Dumbbell, ScrollText,
 } from "lucide-react";
 import { Wordmark, MeanderBand, GoldDivider } from "@/components/Brand";
 import { CoachChat } from "@/components/CoachChat";
 import { AuthButton } from "@/components/AuthButton";
 import { LogMealDialog, mealSlot } from "@/components/LogMeal";
+import { LogWorkoutDialog } from "@/components/LogWorkout";
 import { useFit, localDay } from "@/lib/store";
-import { pullProfile, pullRites, pullMeals, pushProfile, pushRites, uploadProgressPhoto, listProgressPhotos, type ProgressPhoto } from "@/lib/sync";
+import { pullProfile, pullRites, pullMeals, pullMealsRange, pullWorkouts, pullRitesRange, pushProfile, pushRites, uploadProgressPhoto, listProgressPhotos, type ProgressPhoto } from "@/lib/sync";
 import { coachById } from "@/lib/coaches";
 import { GOALS } from "@/lib/onboarding";
 import { RITES, EMPTY_RITES, SEAL_LAURELS, NUTRITION_TARGETS, type RiteId } from "@/lib/rites";
@@ -48,6 +50,7 @@ export default function Dashboard() {
   const fit = useFit();
   const [mounted, setMounted] = useState(false);
   const [coachPlaying, setCoachPlaying] = useState(false);
+  const [loggingWorkout, setLoggingWorkout] = useState(false);
   const playTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => setMounted(true), []);
@@ -73,6 +76,22 @@ export default function Dashboard() {
       if (!ms || ms.length === 0) return;
       const s = useFit.getState();
       s.set("meals", [...s.meals.filter((m) => m.day !== localDay()), ...ms]);
+    });
+    // fold the last ~45 days of meals, workouts and rites into the store so
+    // the History view and the coach both have the full record to work from
+    const since = new Date();
+    since.setDate(since.getDate() - 45);
+    const sinceDay = since.toLocaleDateString("en-CA");
+    void Promise.all([
+      pullMealsRange(sinceDay),
+      pullWorkouts(80),
+      pullRitesRange(sinceDay),
+    ]).then(([meals, workouts, riteHistory]) => {
+      useFit.getState().absorbHistory({
+        meals: meals ?? undefined,
+        workouts: workouts ?? undefined,
+        riteHistory: riteHistory ?? undefined,
+      });
     });
   }, [mounted]);
 
@@ -129,11 +148,20 @@ export default function Dashboard() {
       <header className="sticky top-0 z-20 border-b border-line bg-[rgba(247,244,236,0.92)] backdrop-blur">
         <div className="mx-auto flex h-[54px] w-full max-w-[1280px] items-center justify-between px-[18px] lg:h-[60px] lg:px-8">
           <Wordmark className="text-base lg:text-[19px]" />
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3 lg:gap-5">
             <div className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.1em] text-sec lg:text-[11px]">
               <Flame size={13} className="text-gold" />
               DAY {toRoman(fit.streak)} OF THE STREAK
             </div>
+            <Link
+              href="/history"
+              aria-label="Records"
+              title="Your records"
+              className="inline-flex items-center gap-1.5 rounded-[3px] border border-line-strong bg-panel-alt px-2.5 py-[5px] text-[9px] font-semibold uppercase tracking-[0.16em] text-gold active:translate-y-px active:bg-pressed lg:text-[10px]"
+            >
+              <ScrollText size={12} />
+              <span className="hidden sm:inline">Records</span>
+            </Link>
             <div className="hidden lg:block">
               <AuthButton />
             </div>
@@ -203,12 +231,21 @@ export default function Dashboard() {
           <Panel
             title="Today's Labor"
             action={
-              <button
-                onClick={downloadICS}
-                className="px-1.5 py-1 font-mono text-[9px] tracking-[0.1em] text-gold active:translate-y-px active:opacity-60 lg:text-[10px]"
-              >
-                + CALENDAR
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setLoggingWorkout(true)}
+                  className="inline-flex items-center gap-1 px-1.5 py-1 font-mono text-[9px] tracking-[0.1em] text-gold active:translate-y-px active:opacity-60 lg:text-[10px]"
+                >
+                  <Dumbbell size={11} /> LOG SESSION
+                </button>
+                <span className="text-line-strong">·</span>
+                <button
+                  onClick={downloadICS}
+                  className="px-1.5 py-1 font-mono text-[9px] tracking-[0.1em] text-gold active:translate-y-px active:opacity-60 lg:text-[10px]"
+                >
+                  + CALENDAR
+                </button>
+              </div>
             }
           >
             <div className="flex items-center justify-between gap-3 px-[14px] py-[13px] lg:px-[18px] lg:py-[15px]">
@@ -352,6 +389,12 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
+
+      <LogWorkoutDialog
+        open={loggingWorkout}
+        onClose={() => setLoggingWorkout(false)}
+        defaultTitle={coach?.route ? `${coach.route} session` : ""}
+      />
     </div>
   );
 }

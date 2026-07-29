@@ -3,6 +3,10 @@ import Anthropic from "@anthropic-ai/sdk";
 import { coachById, type CoachId } from "@/lib/coaches";
 import { personalityById, type PersonalityId } from "@/lib/personalities";
 import { TRAINING_PROTOCOL, NUTRITION_SYSTEM_PROMPT } from "@/lib/prompts";
+import { exerciseSummary } from "@/lib/history";
+import type {
+  NutritionHistoryEntry, WorkoutHistoryEntry, RitesHistoryEntry,
+} from "@/lib/history";
 import type { ChatMode } from "@/lib/store";
 
 export const runtime = "nodejs";
@@ -32,6 +36,12 @@ interface Body {
     todayMeals?: { name: string; kcal: number; p: number; c: number; f: number }[];
     /** Athlete's local date (YYYY-MM-DD) so lift-log dates match their day. */
     clientDate?: string;
+    /** Past days' nutrition totals (excludes today; today is TODAY'S FOOD LOG). */
+    nutritionHistory?: NutritionHistoryEntry[];
+    /** Recent structured training sessions (lift → reps → weight + how it felt). */
+    workoutHistory?: WorkoutHistoryEntry[];
+    /** Recent daily-rite completions. */
+    ritesHistory?: RitesHistoryEntry[];
   };
 }
 
@@ -66,6 +76,65 @@ Stats: ${JSON.stringify(ctx.profile)}
 Nutrition coaching add-on: ${ctx.wantNutrition ? "yes" : "no"}`;
 }
 
+/** Past-days history so the coach can reason over every submission: the
+ *  logged workouts (+ how they felt), nutrition totals, and rite adherence.
+ *  Returns "" when nothing has been logged yet. */
+function athleteHistory(ctx: Body["context"]): string {
+  const nut = (Array.isArray(ctx.nutritionHistory) ? ctx.nutritionHistory : []).slice(0, 21);
+  const wk = (Array.isArray(ctx.workoutHistory) ? ctx.workoutHistory : []).slice(0, 14);
+  const rites = (Array.isArray(ctx.ritesHistory) ? ctx.ritesHistory : []).slice(0, 21);
+  if (nut.length === 0 && wk.length === 0 && rites.length === 0) return "";
+
+  const sections: string[] = [
+    `-------------------------------------
+ATHLETE HISTORY (logged in the app — the record behind every submission)
+-------------------------------------`,
+  ];
+
+  if (wk.length > 0) {
+    const lines = wk.map((w) => {
+      const head = `[${w.day}] ${w.title || "Session"}${
+        typeof w.energy === "number" ? ` (energy ${w.energy}/5)` : ""
+      }`;
+      const exs = (w.exercises ?? []).map(
+        (e) => `    ${e.name}: ${exerciseSummary(e)}`
+      );
+      const feel = w.feel ? `    Felt: "${w.feel}"` : "";
+      return [head, ...exs, feel].filter(Boolean).join("\n");
+    });
+    sections.push(
+      `TRAINING SESSIONS (structured lift log — treat as source of truth for weights & progression):\n${lines.join("\n")}`
+    );
+  }
+
+  if (nut.length > 0) {
+    const lines = nut.map(
+      (d) =>
+        `- ${d.day}: ${d.kcal} kcal · ${d.p}P/${d.c}C/${d.f}F (${d.meals} meal${
+          d.meals === 1 ? "" : "s"
+        })`
+    );
+    sections.push(
+      `NUTRITION BY DAY (app estimates are eyeballed from meal photos):\n${lines.join("\n")}`
+    );
+  }
+
+  if (rites.length > 0) {
+    const lines = rites.map(
+      (r) =>
+        `- ${r.day}: ${r.done.length}/${r.total}${
+          r.done.length ? ` (${r.done.join(", ")})` : ""
+        }`
+    );
+    sections.push(`DAILY RITES COMPLETED:\n${lines.join("\n")}`);
+  }
+
+  sections.push(
+    "Use this history to judge progression, recovery, adherence and trends — reference concrete numbers and dates. Never invent entries that aren't here."
+  );
+  return sections.join("\n\n");
+}
+
 function buildCoachSystemPrompt(ctx: Body["context"]) {
   const coach = coachById(ctx.coach);
   const persona = personalityById(ctx.personality);
@@ -77,7 +146,9 @@ function buildCoachSystemPrompt(ctx: Body["context"]) {
 
 Today's date: ${today(ctx)}`;
 
-  return [intro, athleteProfile(ctx), TRAINING_PROTOCOL].join("\n\n");
+  return [intro, athleteProfile(ctx), athleteHistory(ctx), TRAINING_PROTOCOL]
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 /** Today's photo-logged meals + targets, shared by both nutrition modes. */
@@ -126,12 +197,14 @@ not ask for meal plans or the intake interview. Rules:
   nutritionist once, briefly.`;
 
 function buildNutritionSystemPrompt(ctx: Body["context"]) {
+  const hist = athleteHistory(ctx);
+  const histBlock = hist ? `\n\n${hist}` : "";
   if (ctx.nutritionMode === "tracker") {
     return `${NUTRITION_SYSTEM_PROMPT}
 
 ${TRACKER_PROTOCOL}
 
-${todaysLog(ctx)}
+${todaysLog(ctx)}${histBlock}
 
 Today's date: ${today(ctx)}
 Athlete stats: ${JSON.stringify(ctx.profile)} · goal: ${ctx.goal ?? "—"}`;
@@ -159,7 +232,7 @@ If their primary goal is not fat loss (e.g. muscle gain), adapt the plan's
 energy balance accordingly (e.g. a lean surplus instead of a deficit) while
 keeping the same interview, structure and quality bar.
 
-${todaysLog(ctx)}`;
+${todaysLog(ctx)}${histBlock}`;
 }
 
 function mockCoachReply(ctx: Body["context"], lastUser: string) {

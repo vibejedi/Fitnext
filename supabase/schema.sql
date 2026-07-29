@@ -52,6 +52,8 @@ create index if not exists chat_messages_user_idx on public.chat_messages (user_
 alter table public.chat_messages add column if not exists mode text not null default 'coach';
 
 -- ---------- workout logs ----------
+-- Structured lift log: `data` jsonb holds { day, title, exercises:[{name,
+-- sets:[{reps,weight}]}], energy }; `note` holds the "how it felt" text.
 create table if not exists public.workout_logs (
   id        bigint generated always as identity primary key,
   user_id   uuid not null references auth.users on delete cascade,
@@ -59,6 +61,8 @@ create table if not exists public.workout_logs (
   data      jsonb,
   logged_at timestamptz default now()
 );
+create index if not exists workout_logs_user_idx
+  on public.workout_logs (user_id, logged_at);
 
 -- ---------- daily wins ----------
 create table if not exists public.daily_wins (
@@ -81,9 +85,12 @@ create table if not exists public.meals (
   protein_g  int,
   carbs_g    int,
   fat_g      int,
+  edited     boolean default false,
   created_at timestamptz default now()
 );
 create index if not exists meals_user_day_idx on public.meals (user_id, day);
+-- migration for the editable-eyeball update: track hand-adjusted estimates
+alter table public.meals add column if not exists edited boolean default false;
 
 -- ---------- progress photos (metadata; file lives in Storage) ----------
 create table if not exists public.progress_photos (

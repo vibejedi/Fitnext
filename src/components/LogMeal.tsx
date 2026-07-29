@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Camera, X, Check, RotateCcw } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Camera, X, Check, RotateCcw, Minus, Plus } from "lucide-react";
 import { useFit, localDay, type Meal } from "@/lib/store";
 import { pushMeal } from "@/lib/sync";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,19 @@ interface Shot {
   data: string; // base64 jpeg (downscaled)
   preview: string; // data URL for the thumbnail
 }
+
+/** The athlete-adjustable copy of the estimate (macros + name). */
+interface Review {
+  name: string;
+  kcal: number;
+  p: number;
+  c: number;
+  f: number;
+}
+
+const clampPortion = (n: number) => Math.min(10, Math.max(0.25, Math.round(n * 100) / 100));
+/** Portion label: whole numbers plain, else 2dp trimmed. e.g. 1, 0.5, 1.25 */
+const fmtPortion = (n: number) => (Number.isInteger(n) ? String(n) : String(+n.toFixed(2)));
 
 async function fileToShot(file: File, max = 1024): Promise<Shot> {
   const url = URL.createObjectURL(file);
@@ -54,7 +67,11 @@ export function LogMealDialog({ open, onClose }: { open: boolean; onClose: () =>
   const [desc, setDesc] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // `estimate` is the oracle's untouched baseline; `review` holds the values
+  // the athlete may adjust (macros + portion) before inscribing.
   const [estimate, setEstimate] = useState<MealEstimate | null>(null);
+  const [review, setReview] = useState<Review | null>(null);
+  const [portion, setPortion] = useState(1);
 
   if (!open) return null;
 
@@ -64,6 +81,8 @@ export function LogMealDialog({ open, onClose }: { open: boolean; onClose: () =>
     setDesc("");
     setError(null);
     setEstimate(null);
+    setReview(null);
+    setPortion(1);
     setBusy(false);
   };
   const dismiss = () => {
@@ -94,7 +113,16 @@ export function LogMealDialog({ open, onClose }: { open: boolean; onClose: () =>
         setError(data.error ?? "The oracle couldn't read that meal — try again.");
         return;
       }
-      setEstimate(data as MealEstimate);
+      const est = data as MealEstimate;
+      setEstimate(est);
+      setReview({
+        name: est.name,
+        kcal: est.kcal,
+        p: est.protein_g,
+        c: est.carbs_g,
+        f: est.fat_g,
+      });
+      setPortion(1);
     } catch {
       setError("Network error — check your connection and try again.");
     } finally {
@@ -102,17 +130,52 @@ export function LogMealDialog({ open, onClose }: { open: boolean; onClose: () =>
     }
   };
 
-  const inscribe = () => {
+  /** Scale every macro from the oracle's baseline by a new portion factor. */
+  const setPortionTo = (next: number) => {
     if (!estimate) return;
+    const p = clampPortion(next);
+    setPortion(p);
+    setReview({
+      name: review?.name ?? estimate.name,
+      kcal: Math.round(estimate.kcal * p),
+      p: Math.round(estimate.protein_g * p),
+      c: Math.round(estimate.carbs_g * p),
+      f: Math.round(estimate.fat_g * p),
+    });
+  };
+
+  const patchReview = (patch: Partial<Review>) =>
+    setReview((r) => (r ? { ...r, ...patch } : r));
+
+  /** True once the athlete moved off the oracle's original numbers. */
+  const isEdited =
+    !!estimate &&
+    !!review &&
+    (portion !== 1 ||
+      review.name !== estimate.name ||
+      review.kcal !== estimate.kcal ||
+      review.p !== estimate.protein_g ||
+      review.c !== estimate.carbs_g ||
+      review.f !== estimate.fat_g);
+
+  const retake = () => {
+    setEstimate(null);
+    setReview(null);
+    setPortion(1);
+  };
+
+  const inscribe = () => {
+    if (!estimate || !review) return;
     const meal: Meal = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       day: localDay(),
-      name: estimate.name,
+      name: review.name.trim() || estimate.name,
       desc: desc.trim(),
-      kcal: estimate.kcal,
-      p: estimate.protein_g,
-      c: estimate.carbs_g,
-      f: estimate.fat_g,
+      kcal: review.kcal,
+      p: review.p,
+      c: review.c,
+      f: review.f,
+      edited: isEdited,
       ts: Date.now(),
     };
     useFit.getState().addMeal(meal);
@@ -136,7 +199,7 @@ export function LogMealDialog({ open, onClose }: { open: boolean; onClose: () =>
           </button>
         </div>
 
-        {!estimate ? (
+        {!estimate || !review ? (
           <div className="flex flex-col gap-3.5 px-4 py-4">
             {/* the two required shots */}
             <div className="grid grid-cols-2 gap-2.5">
@@ -174,33 +237,73 @@ export function LogMealDialog({ open, onClose }: { open: boolean; onClose: () =>
             </button>
           </div>
         ) : (
-          /* review the eyeball estimate */
+          /* review + adjust the eyeball estimate */
           <div className="flex flex-col gap-3.5 px-4 py-4">
-            <div className="text-center">
-              <p className="font-display text-lg font-bold">{estimate.name}</p>
-              <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.24em] text-gold">
-                Eyeball estimate
+            <div className="flex flex-col items-center gap-1">
+              <input
+                value={review.name}
+                onChange={(e) => patchReview({ name: e.target.value })}
+                maxLength={60}
+                aria-label="Meal name"
+                className="w-full rounded-[4px] border border-transparent bg-transparent px-2 py-1 text-center font-display text-lg font-bold text-ink outline-none hover:border-line focus:border-line-strong focus:bg-panel-alt"
+              />
+              <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-gold">
+                {isEdited ? "Adjusted by you" : "Eyeball estimate · tap to edit"}
               </p>
             </div>
-            <div className="grid grid-cols-4 gap-px border border-line bg-line">
-              {[
-                [`${estimate.kcal.toLocaleString()}`, "kcal"],
-                [`${estimate.protein_g}g`, "Protein"],
-                [`${estimate.carbs_g}g`, "Carbs"],
-                [`${estimate.fat_g}g`, "Fats"],
-              ].map(([v, l]) => (
-                <div key={l} className="bg-panel px-1 py-3 text-center">
-                  <div className="font-display text-[15px] font-bold">{v}</div>
-                  <div className="mt-0.5 text-[8px] uppercase tracking-[0.18em] text-gold">{l}</div>
+
+            {/* portion scaler — rescales all macros from the oracle's baseline */}
+            <div className="flex items-center justify-between gap-2 border border-line bg-panel-alt px-3 py-2">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-sec">
+                Portion
+              </span>
+              <div className="flex items-center gap-2">
+                {[0.5, 1, 1.5, 2].map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPortionTo(p)}
+                    className={cn(
+                      "rounded-[3px] border px-1.5 py-0.5 text-[10px] font-semibold",
+                      portion === p
+                        ? "border-line-strong bg-done-wash text-ink"
+                        : "border-line text-faint active:bg-pressed"
+                    )}
+                  >
+                    ×{fmtPortion(p)}
+                  </button>
+                ))}
+                <div className="flex items-center gap-1">
+                  <StepBtn onClick={() => setPortionTo(portion - 0.25)} label="Smaller portion">
+                    <Minus size={12} />
+                  </StepBtn>
+                  <span className="w-10 text-center font-mono text-[12px] text-ink">
+                    ×{fmtPortion(portion)}
+                  </span>
+                  <StepBtn onClick={() => setPortionTo(portion + 0.25)} label="Larger portion">
+                    <Plus size={12} />
+                  </StepBtn>
                 </div>
-              ))}
+              </div>
             </div>
+
+            {/* editable macros */}
+            <div className="grid grid-cols-4 gap-px border border-line bg-line">
+              <MacroInput label="kcal" value={review.kcal} onChange={(v) => patchReview({ kcal: v })} />
+              <MacroInput label="Protein" unit="g" value={review.p} onChange={(v) => patchReview({ p: v })} />
+              <MacroInput label="Carbs" unit="g" value={review.c} onChange={(v) => patchReview({ c: v })} />
+              <MacroInput label="Fats" unit="g" value={review.f} onChange={(v) => patchReview({ f: v })} />
+            </div>
+
             {estimate.note && (
               <p className="text-center text-[11px] text-sec">{estimate.note}</p>
             )}
+            <p className="text-center text-[9px] text-faint">
+              Numbers are eyeballed from your photos — nudge the portion or tap any figure to match what you actually ate.
+            </p>
+
             <div className="flex gap-2.5">
               <button
-                onClick={() => setEstimate(null)}
+                onClick={retake}
                 className="btn-ghost flex flex-1 items-center justify-center gap-1.5 py-3 text-[11px]"
               >
                 <RotateCcw size={12} /> Retake
@@ -214,6 +317,62 @@ export function LogMealDialog({ open, onClose }: { open: boolean; onClose: () =>
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+/** Small round stepper button for the portion control. */
+function StepBtn({ onClick, label, children }: {
+  onClick: () => void;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      className="flex h-6 w-6 items-center justify-center rounded-full border border-line-strong bg-panel text-gold active:translate-y-px active:bg-pressed"
+    >
+      {children}
+    </button>
+  );
+}
+
+/** One editable macro cell in the review grid. Holds a string buffer so the
+ *  field can be emptied mid-edit, and re-syncs when the value is rescaled by
+ *  the portion control (an external change the athlete didn't type). */
+function MacroInput({ label, unit, value, onChange }: {
+  label: string;
+  unit?: string;
+  value: number;
+  onChange: (n: number) => void;
+}) {
+  const [buf, setBuf] = useState(String(value));
+  const last = useRef(value);
+  useEffect(() => {
+    if (value !== last.current) {
+      last.current = value;
+      setBuf(String(value));
+    }
+  }, [value]);
+  return (
+    <div className="bg-panel px-1 py-2.5 text-center">
+      <input
+        value={buf}
+        onChange={(e) => {
+          const clean = e.target.value.replace(/[^0-9]/g, "");
+          const n = clean === "" ? 0 : Math.min(99999, parseInt(clean, 10));
+          setBuf(clean === "" ? "" : String(n)); // keep empty, else strip leading zeros
+          last.current = n; // our own change shouldn't trigger a resync
+          onChange(n);
+        }}
+        inputMode="numeric"
+        aria-label={unit ? `${label} in ${unit}` : label}
+        className="w-full bg-transparent text-center font-display text-[15px] font-bold text-ink outline-none focus:text-gold"
+      />
+      <div className="mt-0.5 text-[8px] uppercase tracking-[0.18em] text-gold">
+        {unit ? `${label} (${unit})` : label}
       </div>
     </div>
   );

@@ -6,7 +6,8 @@ import { Mic, MicOff, Send, Volume2, VolumeX } from "lucide-react";
 import { useFit, localDay, type ChatMode, type NutritionMode } from "@/lib/store";
 import { coachById } from "@/lib/coaches";
 import { pushProfile, saveMessage } from "@/lib/sync";
-import { NUTRITION_TARGETS } from "@/lib/rites";
+import { NUTRITION_TARGETS, EMPTY_RITES } from "@/lib/rites";
+import { buildCoachHistory } from "@/lib/history";
 import { cn } from "@/lib/utils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -103,6 +104,11 @@ export function CoachChat() {
       // read fresh state so the just-added message is included
       const s = useFit.getState();
       const history = m === "nutrition" ? s.nutritionMessages : s.messages;
+      const day = localDay();
+      const todayRites = s.ritesDate === day ? s.rites : EMPTY_RITES;
+      // capped past-days history so the coach can work through every
+      // submission: nutrition totals, the lift log, and rite completions
+      const coachHist = buildCoachHistory(s.meals, s.workouts, s.riteHistory, day, todayRites);
       const res = await fetch("/api/coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -116,9 +122,10 @@ export function CoachChat() {
             nutritionMode: s.nutritionMode,
             targets: NUTRITION_TARGETS,
             todayMeals: s.meals
-              .filter((x) => x.day === localDay())
+              .filter((x) => x.day === day)
               .map((x) => ({ name: x.name, kcal: x.kcal, p: x.p, c: x.c, f: x.f })),
             clientDate: localDate(),
+            ...coachHist,
           },
         }),
       });
