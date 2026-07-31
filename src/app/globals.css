@@ -261,6 +261,12 @@ body {
 }
 .animate-pulse-glow { animation: pulse-glow 2.4s ease-in-out infinite; }
 
+/* Honor OS reduced motion for every CSS animation — including the inline
+   style={{ animation }} card FX, which need !important to be overridden. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; }
+}
+
 /* thin scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }

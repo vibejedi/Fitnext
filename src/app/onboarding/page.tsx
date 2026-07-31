@@ -3,11 +3,13 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
+import dynamic from "next/dynamic";
+import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Apple, Check, ChevronDown, HeartPulse } from "lucide-react";
 import { Wordmark } from "@/components/Brand";
 import { Choice } from "@/components/Choice";
 import { COACHES, type CoachId } from "@/lib/coaches";
+import { COACH_MODELS } from "@/lib/coachModels";
 import { PERSONALITIES, type PersonalityId } from "@/lib/personalities";
 import {
   GOALS,
@@ -21,6 +23,9 @@ import {
 import { useFit } from "@/lib/store";
 import { pushProfile } from "@/lib/sync";
 import { cn } from "@/lib/utils";
+
+// three.js stage — client-only, loaded lazily so the wizard stays light
+const CoachStage = dynamic(() => import("@/components/CoachStage"), { ssr: false });
 
 function OnboardingInner() {
   const router = useRouter();
@@ -70,6 +75,7 @@ function OnboardingInner() {
   const pct = ((step + 1) / TOTAL_STEPS) * 100;
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="flex min-h-dvh flex-col">
       {/* header / progress */}
       <header className="border-b border-line">
@@ -153,6 +159,7 @@ function OnboardingInner() {
         </div>
       </footer>
     </div>
+    </MotionConfig>
   );
 }
 
@@ -174,10 +181,13 @@ function StepCoach() {
       <div className="grid grid-cols-2 items-start gap-3 sm:grid-cols-3">
         {COACHES.map((c) => {
           const isChosen = fit.coach === c.id;
+          const model3d = COACH_MODELS[c.id];
           return (
           <div key={c.id}
             className={cn(
-              "panel overflow-hidden transition-[opacity,filter,border-color] duration-300",
+              // has-[:focus-visible] — overflow-hidden clips the UA focus ring,
+              // so surface keyboard focus on the panel border instead
+              "panel overflow-hidden transition-[opacity,filter,border-color] duration-300 has-[:focus-visible]:border-gold",
               isChosen
                 ? "border-gold"
                 : fit.coach
@@ -197,6 +207,9 @@ function StepCoach() {
               <div className="relative aspect-[3/4]">
                 <Image src={c.image} alt={c.name} fill sizes="33vw"
                   className="object-cover" />
+                {model3d && (
+                  <CoachStage model={model3d} selected={isChosen} />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/10 to-transparent" />
                 {isChosen && (
                   <div
