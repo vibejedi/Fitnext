@@ -1,10 +1,12 @@
 // Rebuild public/models/*.glb from the raw exports in animations/.
 //
-// Deliberately NO meshopt/draco and NO `optimize`: their animation
-// resampling/quantization corrupts the fast limb arcs on these Mixamo clips
-// (hands melt into the torso mid-swing). Textures are ~90% of the raw size,
-// so WebP @1024 plus mesh-attribute quantization gets the win while keeping
-// animation samplers byte-identical.
+// TEXTURES ONLY — deliberately no geometry or animation processing:
+// - meshopt/`optimize` resample+quantize animation, which melted the fast
+//   arm arcs into the torso mid-swing
+// - `quantize` corrupted the skinned legs/skirt (position quantization is
+//   compensated via node transforms, which skinned vertices ignore)
+// Textures are ~90% of the raw size anyway, so WebP @1024 gets the win while
+// keeping mesh + animation byte-identical to the raw exports.
 import { execFileSync } from "node:child_process";
 import { statSync, mkdtempSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -23,11 +25,8 @@ try {
     const src = join("animations", `${name}.glb`);
     const out = join("public", "models", `${name}.glb`);
     const a = join(tmp, `${name}-a.glb`);
-    const b = join(tmp, `${name}-b.glb`);
-    run(["dedup", src, a]);
-    run(["resize", a, b, "--width", "1024", "--height", "1024"]);
-    run(["webp", b, a]);
-    run(["quantize", a, out]);
+    run(["resize", src, a, "--width", "1024", "--height", "1024"]);
+    run(["webp", a, out]);
     console.log(`${name}: ${mb(src)} -> ${mb(out)}`);
   }
 } finally {
