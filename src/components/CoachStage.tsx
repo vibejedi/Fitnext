@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 // loading poster and the fallback when WebGL is unavailable.
 
 const CHAR_HEIGHT = 1.72; // normalized god height in stage units
+const MARBLE = 0xf0eadd; // the ivory the gods are carved from
 const DOME = 0xe0d5b6; // backdrop — deeper than the card ivory so the marble separates
 const FLOOR = 0xf3ecd9; // --pressed
 const KEY_WARM = 0xfff1da;
@@ -252,17 +253,26 @@ export default function CoachStage({
       (gltf) => {
         if (disposed) return;
         const rig = gltf.scene;
-        const maxAniso = renderer.capabilities.getMaxAnisotropy();
+        // The exports' baked textures are riddled with crack veins and baked
+        // crevice shading; when hips/shoulders fold mid-clip those dark texels
+        // smear across the surface and read as the mesh tearing open. The gods
+        // wear clean ivory marble instead — the GLBs ship textureless
+        // (scripts/optimize-models.mjs) and this override is the whole look.
+        const marble = new THREE.MeshStandardMaterial({ color: MARBLE, roughness: 0.45, metalness: 0 });
         rig.traverse((o) => {
           const mesh = o as THREE.Mesh;
           if (!mesh.isMesh) return;
           mesh.castShadow = true;
           mesh.receiveShadow = true;
           mesh.frustumCulled = false; // skinned bounds lag the pose
-          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-          for (const mat of mats) {
-            const map = (mat as THREE.MeshStandardMaterial).map;
-            if (map) map.anisotropy = Math.min(8, maxAniso);
+          const prev = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          mesh.material = marble;
+          for (const mat of prev) {
+            if (!mat) continue;
+            for (const value of Object.values(mat)) {
+              if (value && (value as THREE.Texture).isTexture) (value as THREE.Texture).dispose();
+            }
+            mat.dispose();
           }
         });
 
