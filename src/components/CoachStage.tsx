@@ -106,7 +106,7 @@ export default function CoachStage({
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     const canvas = renderer.domElement;
     canvas.style.position = "absolute";
     canvas.style.inset = "0";
@@ -181,7 +181,7 @@ export default function CoachStage({
     let loopOn = false;
     let mixer: THREE.AnimationMixer | null = null;
     let freezeAt = 0;
-    const clock = new THREE.Clock();
+    const timer = new THREE.Timer();
     const rmq = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     // mixer.setTime scales its input by mixer.timeScale (and action timeScale)
@@ -199,7 +199,8 @@ export default function CoachStage({
     };
 
     const tick = () => {
-      const dt = Math.min(clock.getDelta(), 0.05);
+      timer.update();
+      const dt = Math.min(timer.getDelta(), 0.05);
       mixer?.update(dt);
       applyChosenLook(false, dt);
       renderer.render(scene, camera);
@@ -219,7 +220,7 @@ export default function CoachStage({
       if (want === loopOn) return;
       loopOn = want;
       if (want) {
-        clock.getDelta(); // drop time spent paused so the clip doesn't jump
+        timer.update(); // drop time spent paused so the clip doesn't jump
         renderer.setAnimationLoop(tick);
       } else {
         renderer.setAnimationLoop(null);

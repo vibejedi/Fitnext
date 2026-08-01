@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "models:optimize": "gltf-transform optimize animations/adonis_curl.glb public/models/adonis_curl.glb --compress meshopt --texture-compress webp --texture-size 1024 --simplify false && gltf-transform optimize animations/atalanta_pistol.glb public/models/atalanta_pistol.glb --compress meshopt --texture-compress webp --texture-size 1024 --simplify false && gltf-transform optimize animations/hermes_run.glb public/models/hermes_run.glb --compress meshopt --texture-compress webp --texture-size 1024 --simplify false"
+    "models:optimize": "node scripts/optimize-models.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.69.0",

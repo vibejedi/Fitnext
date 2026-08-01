@@ -3,13 +3,19 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import {
   motion, useScroll, useMotionValueEvent, useReducedMotion,
 } from "framer-motion";
 import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Wordmark, MeanderBand, GoldDivider } from "@/components/Brand";
+import { COACH_MODELS } from "@/lib/coachModels";
+import type { CoachId } from "@/lib/coaches";
 import { cn, toRoman } from "@/lib/utils";
+
+// three.js stage — client-only, loaded lazily so the landing stays light
+const CoachStage = dynamic(() => import("@/components/CoachStage"), { ssr: false });
 
 /* The six immortals on the dais — landing copy + "The Measure" stat bars. */
 const GODS = [
@@ -235,6 +241,7 @@ function CoachRing() {
           >
             {GODS.map((g, i) => {
               const facing = i === facingIdx;
+              const model3d = COACH_MODELS[g.id as CoachId];
               return (
                 <div
                   key={g.id}
@@ -250,7 +257,7 @@ function CoachRing() {
                 >
                   <div className="relative h-[225px] w-[160px]">
                     <div
-                      className="h-full w-full overflow-hidden border border-line-strong bg-[#0b0f0e]"
+                      className="relative h-full w-full overflow-hidden border border-line-strong bg-[#0b0f0e]"
                       style={{
                         borderRadius: "160px 160px 5px 5px",
                         boxShadow:
@@ -265,6 +272,7 @@ function CoachRing() {
                         className="object-cover"
                         style={{ borderRadius: "160px 160px 5px 5px" }}
                       />
+                      {model3d && <CoachStage model={model3d} selected={facing} />}
                     </div>
                     {facing && (
                       <div
@@ -276,9 +284,11 @@ function CoachRing() {
                         }}
                       />
                     )}
-                    <span className="absolute left-1/2 top-2 -translate-x-1/2 whitespace-nowrap rounded-[2px] border border-dashed border-line-strong bg-[rgba(247,244,236,0.85)] px-1.5 py-0.5 font-mono text-[7px] tracking-[0.2em] text-faint">
-                      3D MODEL SLOT
-                    </span>
+                    {!model3d && (
+                      <span className="absolute left-1/2 top-2 -translate-x-1/2 whitespace-nowrap rounded-[2px] border border-dashed border-line-strong bg-[rgba(247,244,236,0.85)] px-1.5 py-0.5 font-mono text-[7px] tracking-[0.2em] text-faint">
+                        3D MODEL SLOT
+                      </span>
+                    )}
                   </div>
                   {/* pedestal */}
                   <div
@@ -333,7 +343,7 @@ function CoachRing() {
         </div>
       </div>
       <p className="mt-3.5 text-center font-mono text-[9px] uppercase tracking-[0.24em] text-faint">
-        Hover or tap a god · statue placeholders until the 3D models arrive
+        Hover or tap a god · Adonis, Atalanta &amp; Hermes now move in living marble
       </p>
     </div>
   );
