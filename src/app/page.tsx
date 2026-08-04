@@ -229,6 +229,9 @@ function CoachRing() {
         />
         <div className="absolute bottom-[26px] left-1/2 h-[130px] w-[680px] max-w-[96%] -translate-x-1/2 rounded-full border border-line opacity-60" />
 
+        {/* the facing god's name, engraved across the dais front */}
+        <DaisInscription key={shown.id} name={shown.name} />
+
         {/* 3D ring */}
         <div className="relative mb-[60px] h-[330px] w-[190px]" style={{ perspective: 1300 }}>
           <div
@@ -256,30 +259,43 @@ function CoachRing() {
                   }}
                 >
                   <div className="relative h-[225px] w-[160px]">
+                    {/* gilded arch frame around the temple door */}
                     <div
-                      className="relative h-full w-full overflow-hidden border border-line-strong bg-[#0b0f0e]"
+                      className="h-full w-full p-[6px]"
                       style={{
-                        borderRadius: "160px 160px 5px 5px",
+                        borderRadius: "160px 160px 8px 8px",
+                        background:
+                          "linear-gradient(165deg, #e9d191 0%, #b08d3e 28%, #d3b25e 52%, #9a7b2d 78%, #dcc078 100%)",
                         boxShadow:
-                          "inset 0 0 0 5px #f7f4ec, inset 0 0 0 6px #cbbb92, 0 14px 30px -16px rgba(70,58,30,0.55)",
+                          "0 0 0 1px #a8863b, inset 0 1px 0 rgba(255,248,225,0.75), 0 14px 30px -16px rgba(70,58,30,0.55)",
                       }}
                     >
-                      <Image
-                        src={g.img}
-                        alt={`Coach ${g.name} — ${g.route}`}
-                        fill
-                        sizes="160px"
-                        className="object-cover"
-                        style={{ borderRadius: "160px 160px 5px 5px" }}
-                      />
-                      {model3d && <CoachStage model={model3d} selected={facing} />}
+                      <div
+                        className="relative h-full w-full overflow-hidden bg-[#0b0f0e]"
+                        style={{ borderRadius: "150px 150px 4px 4px" }}
+                      >
+                        <Image
+                          src={g.img}
+                          alt={`Coach ${g.name} — ${g.route}`}
+                          fill
+                          sizes="160px"
+                          className="object-cover"
+                          style={{ borderRadius: "150px 150px 4px 4px" }}
+                        />
+                        {model3d && <CoachStage model={model3d} selected={facing} />}
+                        {/* ivory fillet between the gold frame and the scene */}
+                        <div
+                          className="pointer-events-none absolute inset-0 border-[3px] border-[#f7f4ec]"
+                          style={{ borderRadius: "150px 150px 4px 4px" }}
+                        />
+                      </div>
                     </div>
                     {facing && (
                       <div
                         key={rot}
                         className="pointer-events-none absolute inset-0"
                         style={{
-                          borderRadius: "160px 160px 5px 5px",
+                          borderRadius: "160px 160px 8px 8px",
                           animation: "awakenGlow 1.6s ease",
                         }}
                       />
@@ -290,16 +306,6 @@ function CoachRing() {
                       </span>
                     )}
                   </div>
-                  {/* pedestal */}
-                  <div
-                    className="-mt-0.5 h-4 w-[120px] rounded-[2px] border border-line-strong"
-                    style={{ background: "linear-gradient(180deg,#fbf8f1,#e7dcc2)" }}
-                  />
-                  <div
-                    className="h-5 w-[150px] rounded-[3px] border border-line-strong"
-                    style={{ background: "linear-gradient(180deg,#f3ecd9,#ddd0b0)" }}
-                  />
-                  <p className="mt-2.5 font-display text-[15px] font-bold text-ink">{g.name}</p>
                 </div>
               );
             })}
@@ -346,6 +352,41 @@ function CoachRing() {
         Hover or tap a god · Adonis, Atalanta &amp; Hermes now move in living marble
       </p>
     </div>
+  );
+}
+
+/* The god's name at monument scale, filling the dais border. textLength trues
+   up whatever Cinzel renders so long names ("Prometheus") span the pill exactly,
+   while short ones ("Nike") take inscription-wide tracking instead of stretching
+   into comically large glyphs. aria-hidden: the card's portrait alt and the
+   stats tablet already announce the name. */
+function DaisInscription({ name }: { name: string }) {
+  const fontSize = Math.min(80, 560 / (name.length * 0.72));
+  const natural = name.length * 0.72 * fontSize;
+  const engraveLength = Math.min(560, Math.round(natural * 1.5));
+  return (
+    <svg
+      viewBox="0 0 600 96"
+      aria-hidden="true"
+      className="pointer-events-none absolute bottom-[42px] left-1/2 w-[600px] max-w-[86%] -translate-x-1/2"
+      style={{ animation: "daisEngrave 0.8s ease" }}
+    >
+      <text
+        x="300"
+        y="74"
+        textAnchor="middle"
+        textLength={engraveLength}
+        lengthAdjust="spacing"
+        className="font-display font-extrabold"
+        style={{
+          fontSize,
+          fill: "var(--ink)",
+          filter: "drop-shadow(0 1.5px 0 rgba(255,255,255,0.8))",
+        }}
+      >
+        {name}
+      </text>
+    </svg>
   );
 }
 

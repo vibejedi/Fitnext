@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 // loading poster and the fallback when WebGL is unavailable.
 
 const CHAR_HEIGHT = 1.72; // normalized god height in stage units
+const PEDESTAL_TOP = 0.34; // stepped plinth height — the god stands here, not the floor
 const MARBLE = 0xf0eadd; // the ivory the gods are carved from
 const DOME = 0xe0d5b6; // backdrop — deeper than the card ivory so the marble separates
 const FLOOR = 0xf3ecd9; // --pressed
@@ -118,8 +119,8 @@ export default function CoachStage({
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, 3 / 4, 0.1, 40);
-    camera.position.set(0, 1.0, 4.2);
-    camera.lookAt(0, 0.88, 0);
+    camera.position.set(0, 1.2, 4.7);
+    camera.lookAt(0, 1.04, 0);
 
     const pmrem = new THREE.PMREMGenerator(renderer);
     const envScene = new RoomEnvironment();
@@ -138,7 +139,7 @@ export default function CoachStage({
     key.shadow.camera.far = 12;
     key.shadow.bias = -0.00015;
     key.shadow.normalBias = 0.015;
-    key.target.position.set(0, 0.9, 0);
+    key.target.position.set(0, 1.05, 0);
     scene.add(key, key.target);
 
     const fill = new THREE.DirectionalLight(FILL_COOL, 0.42);
@@ -147,12 +148,12 @@ export default function CoachStage({
 
     const rimGold = new THREE.SpotLight(GOLD_GLEAM, RIM_BASE, 0, 0.7, 1, 2);
     rimGold.position.set(-2.6, 3.2, -2.4);
-    rimGold.target.position.set(0, 1.1, 0);
+    rimGold.target.position.set(0, 1.3, 0);
     scene.add(rimGold, rimGold.target);
 
     const rimWhite = new THREE.SpotLight(0xfff8ea, 120, 0, 0.62, 1, 2);
     rimWhite.position.set(2.8, 2.6, -2.2);
-    rimWhite.target.position.set(0, 1.2, 0);
+    rimWhite.target.position.set(0, 1.4, 0);
     scene.add(rimWhite, rimWhite.target);
 
     scene.add(new THREE.HemisphereLight(0xfff6e6, 0xb8a276, 0.28));
@@ -171,9 +172,26 @@ export default function CoachStage({
     floor.receiveShadow = true;
     scene.add(floor);
 
+    // stepped marble plinth with a gold trim band — the god's pedestal
+    const plinthMat = new THREE.MeshStandardMaterial({ color: MARBLE, roughness: 0.55, metalness: 0 });
+    const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.68, 0.16, 56), plinthMat);
+    drum.position.y = PEDESTAL_TOP - 0.08;
+    const trim = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.7, 0.7, 0.04, 56),
+      new THREE.MeshStandardMaterial({ color: GOLD_GLEAM, roughness: 0.3, metalness: 0.85 })
+    );
+    trim.position.y = 0.16;
+    const plinthBase = new THREE.Mesh(new THREE.CylinderGeometry(0.78, 0.84, 0.14, 56), plinthMat);
+    plinthBase.position.y = 0.07;
+    for (const step of [drum, trim, plinthBase]) {
+      step.castShadow = true;
+      step.receiveShadow = true;
+      scene.add(step);
+    }
+
     const ringMat = new THREE.MeshBasicMaterial({ color: GOLD_GLEAM, transparent: true, opacity: 0 });
     const ring = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.585, 64).rotateX(-Math.PI / 2), ringMat);
-    ring.position.y = 0.004;
+    ring.position.y = PEDESTAL_TOP + 0.004;
     scene.add(ring);
 
     let disposed = false;
@@ -315,7 +333,7 @@ export default function CoachStage({
         const s = CHAR_HEIGHT / height;
         rig.scale.multiplyScalar(s);
         const center = box.getCenter(new THREE.Vector3()).multiplyScalar(s);
-        rig.position.set(-center.x, -box.min.y * s + 0.005, -center.z);
+        rig.position.set(-center.x, -box.min.y * s + PEDESTAL_TOP + 0.005, -center.z);
         pivot.rotation.y = model.yaw ?? 0;
 
         loaded = true;
