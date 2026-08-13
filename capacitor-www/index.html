@@ -1,0 +1,32 @@
+<!doctype html>
+<!-- Offline fallback for the native shell — the real app loads from
+     server.url in capacitor.config.ts. Shown only if that fails. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>FitNext</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: linear-gradient(180deg, #f7f4ec, #efe9db);
+        color: #211d16;
+        font-family: system-ui, sans-serif;
+        text-align: center;
+      }
+      h1 { font-size: 22px; letter-spacing: 0.1em; margin: 0; }
+      h1 span { color: #9a7b2d; }
+      p { font-size: 13px; color: #7c7159; max-width: 260px; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <h1>FIT<span>NEXT</span></h1>
+    <p>The temple is unreachable — check your connection and reopen the app.</p>
+  </body>
+</html>
