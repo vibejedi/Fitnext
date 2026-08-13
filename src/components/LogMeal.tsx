@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Camera, X, Check, RotateCcw, Minus, Plus } from "lucide-react";
+import { Camera, X, Check, RotateCcw, Minus, Plus, ImageUp } from "lucide-react";
 import { useFit, localDay, type Meal } from "@/lib/store";
 import { pushMeal } from "@/lib/sync";
 import { cn } from "@/lib/utils";
@@ -401,30 +401,41 @@ function PhotoSlot({ label, hint, shot, onShot, onError }: {
     }
   };
   return (
-    <label
+    <div
       className={cn(
-        "relative flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 overflow-hidden rounded-[4px] border text-center active:translate-y-px",
+        "relative aspect-square overflow-hidden rounded-[4px] border text-center",
         shot ? "border-line-strong" : "border-dashed border-line-strong"
       )}
     >
-      {shot ? (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={shot.preview} alt={label} className="absolute inset-0 h-full w-full object-cover" />
-          <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 rounded-[2px] bg-[rgba(30,17,8,0.7)] px-1.5 py-px text-[8px] uppercase tracking-[0.18em] text-[#f6e7c9]">
-            {label} ✓ retake
-          </span>
-        </>
-      ) : (
-        <>
-          <Camera size={18} className="text-gold" />
-          <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gold">
-            {loading ? "Reading…" : label}
-          </span>
-          <span className="px-2 text-[9px] text-faint">{hint}</span>
-        </>
-      )}
-      <input type="file" accept="image/*" capture="environment" className="hidden" onChange={onFile} />
-    </label>
+      {/* main tap — open the camera */}
+      <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1.5 active:translate-y-px">
+        {shot ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={shot.preview} alt={label} className="absolute inset-0 h-full w-full object-cover" />
+            <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 rounded-[2px] bg-[rgba(30,17,8,0.7)] px-1.5 py-px text-[8px] uppercase tracking-[0.18em] text-[#f6e7c9]">
+              {label} ✓ retake
+            </span>
+          </>
+        ) : (
+          <>
+            <Camera size={18} className="text-gold" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gold">
+              {loading ? "Reading…" : label}
+            </span>
+            <span className="px-2 text-[9px] text-faint">{hint}</span>
+          </>
+        )}
+        <input type="file" accept="image/*" capture="environment" className="hidden" onChange={onFile} />
+      </label>
+      {/* corner chip — pick from the phone's photo library instead */}
+      <label
+        title="Upload from your photos"
+        className="absolute right-1 top-1 flex cursor-pointer items-center gap-1 rounded-[3px] border border-line-strong bg-[rgba(251,248,241,0.92)] px-1.5 py-1 text-[8px] font-semibold uppercase tracking-[0.12em] text-gold active:translate-y-px"
+      >
+        <ImageUp size={11} />
+        <input type="file" accept="image/*" className="hidden" onChange={onFile} />
+      </label>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Mic, MicOff, Send, Volume2, VolumeX } from "lucide-react";
 import { useFit, localDay, type ChatMode, type NutritionMode } from "@/lib/store";
+import { chatPresence, takePendingAsk } from "@/lib/coachBus";
 import { coachById } from "@/lib/coaches";
 import { pushProfile, saveMessage } from "@/lib/sync";
 import { NUTRITION_TARGETS, EMPTY_RITES } from "@/lib/rites";
@@ -197,7 +198,17 @@ export function CoachChat() {
       sendRef.current(prompt, m);
     };
     window.addEventListener("coach-ask", h);
-    return () => window.removeEventListener("coach-ask", h);
+    // announce presence so module screens fire prompts here instead of
+    // stashing them; then deliver any prompt stashed before we mounted
+    chatPresence.count++;
+    const pending = takePendingAsk();
+    if (pending) {
+      window.dispatchEvent(new CustomEvent("coach-ask", { detail: pending }));
+    }
+    return () => {
+      chatPresence.count--;
+      window.removeEventListener("coach-ask", h);
+    };
   }, []);
 
   // flush a queued dashboard prompt once the in-flight request settles

@@ -4,7 +4,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CoachId } from "./coaches";
 import type { PersonalityId } from "./personalities";
-import { EMPTY_RITES, SEAL_LAURELS, type RiteId } from "./rites";
+import type { LaborId } from "./labors";
+import { EMPTY_RITES, SEAL_LAURELS, type RiteId, type RiteOverrides } from "./rites";
 
 export interface Profile {
   age?: number;
@@ -63,6 +64,9 @@ export interface Workout {
   id: string;
   day: string; // YYYY-MM-DD local (session date)
   title: string;
+  /** Which of the six Labors this session belongs to (powers the per-Labor
+   *  record on the Train screen). Optional — old sessions are inferred. */
+  labor?: LaborId;
   exercises: WorkoutExercise[];
   /** How the session felt — free text the coach reads verbatim. */
   feel: string;
@@ -96,12 +100,19 @@ export interface FitState {
   /** Daily Rites — reset each local day (ritesDate tracks which day). */
   rites: Record<RiteId, boolean>;
   ritesDate: string | null;
+  /** Athlete-edited rite targets (id → target text); empty = defaults. */
+  riteOverrides: RiteOverrides;
   /** Past days' rite completions, keyed by YYYY-MM-DD (today lives in
    *  `rites`). Feeds the History view + coach context; capped in the store. */
   riteHistory: Record<string, RiteDay>;
   /** Day sealed (ISO date) — sealing awards laurels toward the Hall of Honor. */
   sealedDate: string | null;
   laurels: number;
+  /** Hall of Honor enrollment: done once the athlete has created a verified
+   *  account (username + password + email) via the Hall gate. */
+  hallJoined: boolean;
+  /** Optional Ethereum address rewards are sent to (0x…, 40 hex chars). */
+  walletAddress: string | null;
   /** Current coach video (backend-rotated weekly/bi-weekly); null → still portrait. */
   coachVideoUrl: string | null;
   /** Photo-logged meals (eyeball-estimated macros). Filtered by day in the UI. */
@@ -118,6 +129,8 @@ export interface FitState {
   /** Roll rites over to today if the local day has changed. */
   beginDay: () => void;
   toggleRite: (id: RiteId) => void;
+  /** Edit a rite's target text ("" or whitespace resets to the default). */
+  setRiteTarget: (id: RiteId, target: string) => void;
   /** Seal today: +laurels, once per day. No-op unless all rites are done. */
   sealDay: () => void;
   addMeal: (m: Meal) => void;
@@ -150,9 +163,12 @@ const initial = {
   streak: 0,
   rites: { ...EMPTY_RITES },
   ritesDate: null,
+  riteOverrides: {} as RiteOverrides,
   riteHistory: {} as Record<string, RiteDay>,
   sealedDate: null,
   laurels: 0,
+  hallJoined: false,
+  walletAddress: null,
   coachVideoUrl: null,
   meals: [],
   workouts: [],
@@ -226,6 +242,14 @@ export const useFit = create<FitState>()(
             ritesDate: today,
             riteHistory: capRiteHistory({ ...s.riteHistory, [today]: rites }),
           };
+        }),
+      setRiteTarget: (id, target) =>
+        setState((s) => {
+          const next = { ...s.riteOverrides };
+          const t = target.trim();
+          if (t) next[id] = t;
+          else delete next[id];
+          return { riteOverrides: next };
         }),
       sealDay: () => {
         const s = getState();

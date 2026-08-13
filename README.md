@@ -29,6 +29,32 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## iOS · TestFlight (Capacitor shell)
+
+The native iOS app is a Capacitor shell that loads the deployed web app
+(`server.url` in `capacitor.config.ts`, currently `https://fitnext.vercel.app`).
+
+On a Mac with Xcode + CocoaPods installed:
+
+```bash
+npm install
+npx cap add ios     # generates the ios/ Xcode project (first time only)
+npx cap open ios    # opens Xcode
+```
+
+In Xcode:
+
+1. **Signing & Capabilities** → select your Team; bundle ID is `com.vibejedi.fitnext`.
+2. Add mic access for voice chat: in `ios/App/App/Info.plist` add
+   `NSMicrophoneUsageDescription` — "FitNext uses the microphone so you can talk to your coach."
+   (Camera/photo prompts are handled by the web view automatically.)
+3. Test on a cable-connected iPhone with ▶, then **Product → Archive** →
+   **Distribute App → App Store Connect** to upload.
+4. In App Store Connect → **TestFlight**, add yourself as an Internal Tester
+   (no review wait) and install via the TestFlight app.
+
+After changing `capacitor.config.ts`, run `npx cap sync ios` before rebuilding.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.

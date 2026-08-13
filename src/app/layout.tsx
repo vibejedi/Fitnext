@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cinzel, Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +22,20 @@ export const metadata: Metadata = {
   title: "FitNext — Your AI Fitness Coach, forged by the gods",
   description:
     "A gamified AI fitness coach. Pick your god, set your goal, and train. Workouts, macros, recovery — all in one chat.",
+  // iOS home-screen install: standalone, marble status bar, proper title
+  appleWebApp: {
+    capable: true,
+    title: "FitNext",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f7f4ec",
+  width: "device-width",
+  initialScale: 1,
+  // draw under the iPhone notch/home indicator; safe-area insets handle the rest
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

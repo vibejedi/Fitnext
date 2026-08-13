@@ -33,6 +33,12 @@ alter table public.profiles add column if not exists laurels int default 0;
 alter table public.profiles add column if not exists sealed_date date;
 -- migration for the nutritionist mode choice ('full' | 'tracker')
 alter table public.profiles add column if not exists nutrition_mode text;
+-- migration for editable Daily Rites: per-rite target overrides (id → text)
+alter table public.profiles add column if not exists rites_config jsonb;
+-- migration for the Hall of Honor gate: verified enrollment + optional
+-- Ethereum reward address (rewards are sent in ETH)
+alter table public.profiles add column if not exists hall_joined boolean default false;
+alter table public.profiles add column if not exists wallet_address text;
 -- usernames are unique, case-insensitively
 create unique index if not exists profiles_username_key
   on public.profiles (lower(username));

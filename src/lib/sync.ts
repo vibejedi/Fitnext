@@ -1,6 +1,7 @@
 "use client";
 
 import { getSupabaseBrowser } from "./supabase/client";
+import { laborById } from "./labors";
 import { RITES, type RiteId } from "./rites";
 import type { ChatMode, FitState, Meal, RiteDay, Workout } from "./store";
 
@@ -27,6 +28,9 @@ function toRow(s: FitState, id: string) {
     laurels: s.laurels,
     sealed_date: s.sealedDate,
     nutrition_mode: s.nutritionMode,
+    rites_config: s.riteOverrides,
+    hall_joined: s.hallJoined,
+    wallet_address: s.walletAddress,
     updated_at: new Date().toISOString(),
   };
 }
@@ -77,6 +81,9 @@ export async function pullProfile(): Promise<Partial<FitState> | null> {
     laurels: data.laurels ?? 0,
     sealedDate: data.sealed_date ?? null,
     nutritionMode: data.nutrition_mode ?? null,
+    riteOverrides: data.rites_config ?? {},
+    hallJoined: !!data.hall_joined,
+    walletAddress: data.wallet_address ?? null,
   };
 }
 
@@ -227,6 +234,7 @@ export async function pushWorkout(w: Workout) {
       cid: w.id,
       day: w.day,
       title: w.title,
+      labor: w.labor ?? null,
       exercises: w.exercises,
       energy: w.energy ?? null,
     },
@@ -241,6 +249,7 @@ interface WorkoutRow {
     cid?: string;
     day?: string;
     title?: string;
+    labor?: string | null;
     exercises?: Workout["exercises"];
     energy?: number | null;
   } | null;
@@ -269,6 +278,7 @@ export async function pullWorkouts(limit = 60): Promise<Workout[] | null> {
         id: d.cid ?? String(r.id),
         day: d.day ?? r.logged_at.slice(0, 10),
         title: d.title ?? "Session",
+        labor: laborById(d.labor)?.id,
         exercises: Array.isArray(d.exercises) ? d.exercises : [],
         feel: r.note ?? "",
         energy: typeof d.energy === "number" ? d.energy : undefined,

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Plus, Trash2, Dumbbell, Check } from "lucide-react";
 import { useFit, localDay, type Workout, type WorkoutExercise } from "@/lib/store";
 import { pushWorkout } from "@/lib/sync";
 import { EXERCISE_CATALOG } from "@/lib/history";
+import { LABORS, inferLabor, type LaborId } from "@/lib/labors";
 import { cn } from "@/lib/utils";
 
 /**
@@ -35,21 +36,37 @@ export function LogWorkoutDialog({
   open,
   onClose,
   defaultTitle = "",
+  defaultLabor,
 }: {
   open: boolean;
   onClose: () => void;
   defaultTitle?: string;
+  /** Pre-select the session's Labor (e.g. opened from a Labor tile). */
+  defaultLabor?: LaborId;
 }) {
   const [title, setTitle] = useState(defaultTitle);
+  const [labor, setLabor] = useState<LaborId | undefined>(defaultLabor);
+  const [laborTouched, setLaborTouched] = useState(false);
   const [exercises, setExercises] = useState<DraftExercise[]>([blankExercise()]);
   const [feel, setFeel] = useState("");
   const [energy, setEnergy] = useState<number | undefined>(undefined);
   const [saving, setSaving] = useState(false);
 
+  // re-seed from the caller's defaults each time the dialog opens (the same
+  // mounted dialog serves different Labor tiles)
+  useEffect(() => {
+    if (!open) return;
+    setTitle(defaultTitle);
+    setLabor(defaultLabor ?? inferLabor(defaultTitle));
+    setLaborTouched(false);
+  }, [open, defaultTitle, defaultLabor]);
+
   if (!open) return null;
 
   const reset = () => {
     setTitle(defaultTitle);
+    setLabor(defaultLabor);
+    setLaborTouched(false);
     setExercises([blankExercise()]);
     setFeel("");
     setEnergy(undefined);
@@ -113,6 +130,7 @@ export function LogWorkoutDialog({
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       day: localDay(),
       title: title.trim() || "Training Session",
+      labor,
       exercises: cleaned,
       feel: feel.trim(),
       energy,
@@ -149,12 +167,45 @@ export function LogWorkoutDialog({
             </span>
             <input
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                // keep guessing the Labor from the title until a manual pick
+                if (!laborTouched) setLabor(inferLabor(e.target.value) ?? defaultLabor);
+              }}
               placeholder="e.g. Push Day, Lower A, Long Run"
               maxLength={60}
               className="rounded-[4px] border border-line bg-panel-alt px-3 py-2.5 text-[13px] text-ink outline-none placeholder:text-faint focus:border-line-strong"
             />
           </label>
+
+          {/* which Labor this session belongs to */}
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-sec">
+              Labor
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {LABORS.map((l) => {
+                const active = labor === l.id;
+                return (
+                  <button
+                    key={l.id}
+                    onClick={() => {
+                      setLaborTouched(true);
+                      setLabor(active ? undefined : l.id);
+                    }}
+                    className={cn(
+                      "rounded-[3px] border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors",
+                      active
+                        ? "border-line-strong bg-done-wash text-gold"
+                        : "border-line text-faint active:bg-pressed"
+                    )}
+                  >
+                    {l.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* exercises */}
           <div className="flex flex-col gap-3">

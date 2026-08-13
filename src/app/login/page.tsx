@@ -24,8 +24,11 @@ export default function LoginPage() {
   const signIn = async () => {
     const sb = getSupabaseBrowser();
     if (!sb) return;
+    const id = username.trim();
     const { error } = await sb.auth.signInWithPassword({
-      email: usernameToEmail(username),
+      // Hall of Honor accounts sign in with their real email; training-only
+      // accounts use a username mapped to its synthetic address
+      email: id.includes("@") ? id : usernameToEmail(id),
       password,
     });
     if (error) {
@@ -42,7 +45,8 @@ export default function LoginPage() {
     setErr(null);
 
     const uname = username.trim();
-    if (!USERNAME_RE.test(uname)) {
+    const emailSignIn = mode === "signin" && uname.includes("@");
+    if (!emailSignIn && !USERNAME_RE.test(uname)) {
       setErr("Username must be 3-20 characters: letters, numbers, underscores.");
       return;
     }
@@ -122,7 +126,7 @@ export default function LoginPage() {
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
+              placeholder={mode === "signin" ? "Username or email" : "Username"}
               autoComplete="username"
               autoCapitalize="none"
               spellCheck={false}
