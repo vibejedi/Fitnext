@@ -1,14 +1,18 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import { ScrollText } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { ProgressPhotos } from "@/components/ProgressPhotos";
 import { HallOfHonor } from "@/components/HallOfHonor";
+import { BodyweightPanel } from "@/components/Bodyweight";
 import { RiteDaysList } from "@/components/history/lists";
-import { SummaryStrip } from "@/components/ui";
+import { ConsistencyGrid } from "@/components/charts";
+import { Panel, SummaryStrip } from "@/components/ui";
 import { GoldDivider } from "@/components/Brand";
-import { useFit } from "@/lib/store";
+import { useFit, localDay } from "@/lib/store";
+import { RITES } from "@/lib/rites";
 import { useFitHydrated, useRequireOnboarding } from "@/lib/useHydrate";
 import { toRoman } from "@/lib/utils";
 
@@ -21,6 +25,23 @@ export default function ProgressScreen() {
   const fit = useFit();
   const mounted = useFitHydrated();
   const onboarded = useRequireOnboarding(mounted);
+
+  // rite completion fraction per day (today's live rites included) + a full
+  // mark for any day a workout was inscribed even if rites lagged
+  const consistency = useMemo(() => {
+    const today = localDay();
+    const out: Record<string, number> = {};
+    for (const [day, r] of Object.entries(fit.riteHistory)) {
+      out[day] = RITES.filter((rite) => r[rite.id]).length / RITES.length;
+    }
+    if (fit.ritesDate === today) {
+      out[today] = RITES.filter((rite) => fit.rites[rite.id]).length / RITES.length;
+    }
+    for (const w of fit.workouts) {
+      out[w.day] = Math.max(out[w.day] ?? 0, 0.5);
+    }
+    return out;
+  }, [fit.riteHistory, fit.rites, fit.ritesDate, fit.workouts]);
 
   if (!mounted || !onboarded) {
     return (
@@ -48,6 +69,18 @@ export default function ProgressScreen() {
             [toRoman(sessions), "Sessions"],
           ]}
         />
+
+        {/* the mosaic — every day laid as a tile */}
+        <Panel title="The Mosaic">
+          <div className="overflow-x-auto px-[14px] py-3.5 lg:px-[18px]">
+            <ConsistencyGrid days={consistency} weeks={16} />
+            <p className="mt-2.5 text-center text-[9px] text-faint">
+              Sixteen weeks of days — deeper gold, more rites done · training days count too
+            </p>
+          </div>
+        </Panel>
+
+        <BodyweightPanel />
 
         <ProgressPhotos />
 

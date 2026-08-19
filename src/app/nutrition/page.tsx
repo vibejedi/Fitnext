@@ -1,12 +1,17 @@
 "use client";
 
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Apple } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { NutritionPanel } from "@/components/NutritionPanel";
 import { NutritionDays } from "@/components/history/lists";
+import { TrendBars } from "@/components/charts";
+import { Panel } from "@/components/ui";
 import { GoldDivider } from "@/components/Brand";
 import { useFit } from "@/lib/store";
+import { dailyNutrition } from "@/lib/history";
+import { NUTRITION_TARGETS } from "@/lib/rites";
 import { askCoach } from "@/lib/coachBus";
 import { useFitHydrated, useRequireOnboarding } from "@/lib/useHydrate";
 
@@ -18,8 +23,28 @@ import { useFitHydrated, useRequireOnboarding } from "@/lib/useHydrate";
 export default function NutritionScreen() {
   const router = useRouter();
   const wantNutrition = useFit((s) => s.wantNutrition);
+  const meals = useFit((s) => s.meals);
   const mounted = useFitHydrated();
   const onboarded = useRequireOnboarding(mounted);
+
+  // last 14 days of calories vs target — over-target days turn clay
+  const kcalTrend = useMemo(() => {
+    const byDay = new Map(dailyNutrition(meals).map((d) => [d.day, d.kcal]));
+    const out: { label: string; value: number; tone?: "clay" }[] = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const day = d.toLocaleDateString("en-CA");
+      const kcal = byDay.get(day) ?? 0;
+      out.push({
+        label: d.toLocaleDateString(undefined, { day: "numeric" }),
+        value: kcal,
+        ...(kcal > NUTRITION_TARGETS.kcal ? { tone: "clay" as const } : {}),
+      });
+    }
+    return out;
+  }, [meals]);
+  const trendDays = kcalTrend.filter((d) => d.value > 0).length;
 
   if (!mounted || !onboarded) {
     return (
@@ -45,6 +70,22 @@ export default function NutritionScreen() {
         </div>
 
         <NutritionPanel />
+
+        {/* the fortnight — calories vs target, day by day */}
+        {trendDays >= 2 && (
+          <Panel title="The Fortnight">
+            <div className="px-[14px] py-3.5 lg:px-[18px]">
+              <TrendBars
+                data={kcalTrend}
+                target={NUTRITION_TARGETS.kcal}
+                format={(v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : `${v}`)}
+              />
+              <p className="mt-2 text-[9px] text-faint">
+                Calories per day · dashed line is your {NUTRITION_TARGETS.kcal.toLocaleString()} kcal target · clay = over
+              </p>
+            </div>
+          </Panel>
+        )}
 
         {wantNutrition && (
           <button

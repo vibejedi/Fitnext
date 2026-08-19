@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import type { User } from "@supabase/supabase-js";
 import {
-  Award, Check, Landmark, Lock, MailCheck, Pencil, Trophy, Wallet, X,
+  Award, Check, ExternalLink, Landmark, Lock, MailCheck, Pencil, Trophy, Wallet, X,
 } from "lucide-react";
 import { Panel, Sheet } from "@/components/ui";
 import { useFit } from "@/lib/store";
@@ -12,6 +12,7 @@ import { pushProfile } from "@/lib/sync";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { USERNAME_RE, PASSWORD_MIN } from "@/lib/auth";
+import { REWARDS_CHAIN, explorerAddressUrl } from "@/lib/chain";
 import { cn } from "@/lib/utils";
 
 /**
@@ -99,8 +100,8 @@ export function HallOfHonor() {
           </div>
           <WalletRow />
           <p className="border-t border-line-soft bg-panel-alt px-[14px] py-2 text-[9px] text-faint lg:px-[18px]">
-            Seasonal honors are rewarded in Ethereum (ETH), sent to your wallet address. Alpha
-            leaderboard — global ranks arrive with the public season.
+            Seasonal honors are rewarded in ETH on {REWARDS_CHAIN.name} — Ethereum L2, same 0x
+            address. Alpha leaderboard — global ranks arrive with the public season.
           </p>
         </div>
       ) : (
@@ -197,19 +198,43 @@ function WalletRow() {
     );
   }
 
+  if (wallet) {
+    return (
+      <div className="flex w-full items-center gap-2 border-t border-line-soft px-[14px] py-2.5 lg:px-[18px]">
+        <Wallet size={13} className="shrink-0 text-gold" />
+        <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-ink">{shortAddr(wallet)}</span>
+        <span className="rounded-[3px] border border-line px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.12em] text-gold">
+          {REWARDS_CHAIN.name}
+        </span>
+        <a
+          href={explorerAddressUrl(wallet)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-1 text-faint active:opacity-60"
+          aria-label="View address on the block explorer"
+        >
+          <ExternalLink size={11} />
+        </a>
+        <button
+          onClick={() => { setValue(wallet); setEditing(true); }}
+          className="p-1 text-faint active:opacity-60"
+          aria-label="Edit wallet address"
+        >
+          <Pencil size={11} />
+        </button>
+      </div>
+    );
+  }
+
   return (
     <button
-      onClick={() => { setValue(wallet ?? ""); setEditing(true); }}
+      onClick={() => { setValue(""); setEditing(true); }}
       className="flex w-full items-center gap-2 border-t border-line-soft px-[14px] py-2.5 text-left active:bg-pressed lg:px-[18px]"
     >
       <Wallet size={13} className="shrink-0 text-gold" />
-      {wallet ? (
-        <span className="flex-1 font-mono text-[11px] text-ink">{shortAddr(wallet)}</span>
-      ) : (
-        <span className="flex-1 text-[11px] text-sec">
-          Add an Ethereum address for rewards <span className="text-faint">(optional)</span>
-        </span>
-      )}
+      <span className="flex-1 text-[11px] text-sec">
+        Add an Ethereum address for rewards <span className="text-faint">(optional)</span>
+      </span>
       <Pencil size={11} className="text-faint" />
     </button>
   );
@@ -377,7 +402,7 @@ function EnrollSheet({ user, onDismiss }: { user: User | null; onDismiss: () => 
             Enter the Hall of Honor
           </h2>
           <p className="mt-0.5 font-mono text-[8px] uppercase tracking-[0.24em] text-gold">
-            Verified names only · Rewards paid in ETH
+            Verified names only · Rewards in ETH on {REWARDS_CHAIN.name}
           </p>
         </div>
         <button onClick={onDismiss} className="p-1.5 text-sec hover:text-ink" aria-label="Close">
@@ -482,7 +507,8 @@ function EnrollSheet({ user, onDismiss }: { user: User | null; onDismiss: () => 
               className={cn(field, "font-mono text-[12px] placeholder:font-sans")}
             />
             <span className="text-[9px] leading-relaxed text-faint">
-              Seasonal honors are rewarded in Ethereum (ETH), sent straight to this address.
+              Seasonal honors are rewarded in ETH on {REWARDS_CHAIN.name} — an Ethereum L2, so
+              any normal 0x address works.
             </span>
           </label>
 

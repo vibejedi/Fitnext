@@ -17,8 +17,9 @@ export function NutritionPanel() {
   const [logging, setLogging] = useState(false);
   const today = localDay();
   const meals = fit.meals.filter((m) => m.day === today);
+  const num = (v: number) => (Number.isFinite(v) ? v : 0);
   const sum = meals.reduce(
-    (a, m) => ({ kcal: a.kcal + m.kcal, p: a.p + m.p, c: a.c + m.c, f: a.f + m.f }),
+    (a, m) => ({ kcal: a.kcal + num(m.kcal), p: a.p + num(m.p), c: a.c + num(m.c), f: a.f + num(m.f) }),
     { kcal: 0, p: 0, c: 0, f: 0 }
   );
   return (
@@ -89,9 +90,11 @@ export function NutritionPanel() {
   );
 }
 
-function MacroBar({ label, cur, max, text, unit }: {
+function MacroBar({ label, cur: rawCur, max, text, unit }: {
   label: string; cur: number; max: number; text: string; unit: string;
 }) {
+  // guard against malformed synced rows (missing macros → NaN)
+  const cur = Number.isFinite(rawCur) ? rawCur : 0;
   const over = cur > max;
   const delta = Math.abs(max - cur);
   const note = label === "Calories"

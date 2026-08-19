@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { Dumbbell } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Labors } from "@/components/Labors";
 import { MovementGuides } from "@/components/MovementGuides";
 import { LogWorkoutDialog } from "@/components/LogWorkout";
+import { RecordsPanel } from "@/components/ExerciseHistory";
+import { TodayLaborPanel } from "@/components/TodayPlan";
+import { TrendBars } from "@/components/charts";
 import { TrainingSessions } from "@/components/history/lists";
-import { Panel, useGleam } from "@/components/ui";
+import { Panel } from "@/components/ui";
 import { GoldDivider } from "@/components/Brand";
 import { useFit } from "@/lib/store";
-import { askCoach } from "@/lib/coachBus";
+import { weeklyVolume } from "@/lib/records";
 import { useFitHydrated, useRequireOnboarding } from "@/lib/useHydrate";
 import { coachById } from "@/lib/coaches";
 
@@ -21,11 +23,12 @@ import { coachById } from "@/lib/coaches";
  */
 
 export default function TrainScreen() {
-  const router = useRouter();
   const fit = useFit();
   const mounted = useFitHydrated();
   const onboarded = useRequireOnboarding(mounted);
   const [logging, setLogging] = useState(false);
+  const weeks = useMemo(() => weeklyVolume(fit.workouts, 8), [fit.workouts]);
+  const anyVolume = weeks.some((w) => w.volume > 0);
 
   if (!mounted || !onboarded) {
     return (
@@ -37,12 +40,6 @@ export default function TrainScreen() {
 
   const coach = coachById(fit.coach);
 
-  const begin = () => {
-    if (!askCoach("What's my workout for today? Give me the exact sets and reps.")) {
-      router.push("/coach");
-    }
-  };
-
   return (
     <AppShell maxWidth="max-w-[900px]">
       <div className="flex flex-col gap-4 lg:gap-[18px]">
@@ -52,9 +49,8 @@ export default function TrainScreen() {
           <GoldDivider className="mt-3" />
         </div>
 
-        {/* today's labor */}
-        <Panel
-          title="Today's Labor"
+        {/* today's labor — the actual plan, written out */}
+        <TodayLaborPanel
           action={
             <button
               onClick={() => setLogging(true)}
@@ -63,17 +59,30 @@ export default function TrainScreen() {
               <Dumbbell size={11} /> LOG SESSION
             </button>
           }
-        >
-          <div className="flex items-center justify-between gap-3 px-[14px] py-[13px] lg:px-[18px] lg:py-[15px]">
-            <div>
-              <p className="text-[13px] font-semibold lg:text-sm">{coach?.route} session</p>
-              <p className="mt-0.5 text-[11px] text-sec lg:text-xs">Your coach has inscribed the plan.</p>
-            </div>
-            <BeginButton onClick={begin} />
-          </div>
-        </Panel>
+        />
 
         <Labors />
+
+        {/* weekly tonnage — the trend that keeps you honest */}
+        {anyVolume && (
+          <Panel title="Weekly Volume">
+            <div className="px-[14px] py-3.5 lg:px-[18px]">
+              <TrendBars
+                data={weeks.map((w) => ({
+                  label: w.label,
+                  value: w.volume,
+                  sub: w.sessions > 0 ? `${w.sessions}×` : "",
+                }))}
+                format={(v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}t` : `${v}`)}
+              />
+              <p className="mt-2 text-[9px] text-faint">
+                Total tonnage (reps × weight) per week · sessions marked beneath
+              </p>
+            </div>
+          </Panel>
+        )}
+
+        <RecordsPanel />
 
         <MovementGuides />
 
@@ -92,18 +101,5 @@ export default function TrainScreen() {
         defaultTitle={coach?.route ? `${coach.route} session` : ""}
       />
     </AppShell>
-  );
-}
-
-function BeginButton({ onClick }: { onClick: () => void }) {
-  const [anim, trigger] = useGleam();
-  return (
-    <button
-      onClick={() => { trigger(); onClick(); }}
-      style={anim}
-      className="btn-primary px-[18px] py-[9px] text-[11px] lg:px-6 lg:py-[11px] lg:text-xs"
-    >
-      Begin
-    </button>
   );
 }

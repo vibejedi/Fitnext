@@ -78,8 +78,28 @@ export interface Workout {
 /** Which rites were completed on a past day (id → done). */
 export type RiteDay = Partial<Record<RiteId, boolean>>;
 
+/** A body-weight entry — one per local day (re-logging replaces it). */
+export interface WeighIn {
+  day: string; // YYYY-MM-DD local
+  kg: number;
+  ts: number;
+}
+
 /** The user's local date as YYYY-MM-DD. */
 export const localDay = () => new Date().toLocaleDateString("en-CA");
+
+/** YYYY-MM-DD local, one day before the given local day string. */
+const dayBefore = (day: string) => {
+  const d = new Date(`${day}T00:00:00`);
+  d.setDate(d.getDate() - 1);
+  return d.toLocaleDateString("en-CA");
+};
+
+/** Streak shields ("Hermes' Pardon") — earned every 7 sealed days in a row,
+ *  held up to this many. One shield forgives one missed day, so a single
+ *  slip never burns the whole streak (loss-aversion without the anxiety). */
+export const MAX_SHIELDS = 2;
+export const SHIELD_EVERY = 7;
 
 export interface FitState {
   // onboarding answers
@@ -108,6 +128,10 @@ export interface FitState {
   /** Day sealed (ISO date) — sealing awards laurels toward the Hall of Honor. */
   sealedDate: string | null;
   laurels: number;
+  /** Streak shields held (0–MAX_SHIELDS); one auto-forgives a missed day. */
+  shields: number;
+  /** Body-weight log, one entry per day, oldest first. */
+  weighIns: WeighIn[];
   /** Hall of Honor enrollment: done once the athlete has created a verified
    *  account (username + password + email) via the Hall gate. */
   hallJoined: boolean;
@@ -115,6 +139,8 @@ export interface FitState {
   walletAddress: string | null;
   /** Current coach video (backend-rotated weekly/bi-weekly); null → still portrait. */
   coachVideoUrl: string | null;
+  /** Cached morning briefing — regenerated once per local day. */
+  briefing: { day: string; text: string } | null;
   /** Photo-logged meals (eyeball-estimated macros). Filtered by day in the UI. */
   meals: Meal[];
   /** Structured training sessions (lift → reps → weight), newest last. */
@@ -133,6 +159,8 @@ export interface FitState {
   setRiteTarget: (id: RiteId, target: string) => void;
   /** Seal today: +laurels, once per day. No-op unless all rites are done. */
   sealDay: () => void;
+  /** Log today's body weight (replaces today's earlier entry). */
+  addWeighIn: (kg: number) => void;
   addMeal: (m: Meal) => void;
   addWorkout: (w: Workout) => void;
   deleteWorkout: (id: string) => void;
@@ -167,9 +195,12 @@ const initial = {
   riteHistory: {} as Record<string, RiteDay>,
   sealedDate: null,
   laurels: 0,
+  shields: 0,
+  weighIns: [] as WeighIn[],
   hallJoined: false,
   walletAddress: null,
   coachVideoUrl: null,
+  briefing: null,
   meals: [],
   workouts: [],
   nutritionMode: null,
@@ -257,8 +288,42 @@ export const useFit = create<FitState>()(
         const allDone =
           s.ritesDate === today && Object.values(s.rites).every(Boolean);
         if (!allDone || s.sealedDate === today) return;
-        setState({ sealedDate: today, laurels: s.laurels + SEAL_LAURELS });
+        // Consecutive-day streak: sealed yesterday extends it; a single
+        // missed day is forgiven by a shield; anything worse restarts at 1.
+        const yesterday = dayBefore(today);
+        let streak: number;
+        let shields = s.shields;
+        if (s.sealedDate === yesterday) {
+          streak = s.streak + 1;
+        } else if (s.sealedDate === dayBefore(yesterday) && shields > 0) {
+          shields -= 1; // Hermes' Pardon — the missed day is forgiven
+          streak = s.streak + 1;
+        } else {
+          streak = Math.max(1, s.sealedDate ? 1 : s.streak);
+        }
+        // Every 7 straight sealed days mints a shield (held up to the cap).
+        if (streak > 0 && streak % SHIELD_EVERY === 0) {
+          shields = Math.min(MAX_SHIELDS, shields + 1);
+        }
+        setState({
+          sealedDate: today,
+          laurels: s.laurels + SEAL_LAURELS,
+          streak,
+          shields,
+        });
       },
+      addWeighIn: (kg) =>
+        setState((s) => {
+          const today = localDay();
+          const entry: WeighIn = { day: today, kg, ts: Date.now() };
+          const rest = s.weighIns.filter((w) => w.day !== today);
+          return {
+            weighIns: [...rest, entry]
+              .sort((a, b) => (a.day < b.day ? -1 : 1))
+              .slice(-365),
+            profile: { ...s.profile, weightKg: kg },
+          };
+        }),
       addMeal: (m) =>
         setState((s) => ({ meals: [...s.meals, m].slice(-400) })),
       addWorkout: (w) =>

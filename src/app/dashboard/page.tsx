@@ -3,14 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Apple, Award, Camera, Dumbbell, HeartPulse, Trophy } from "lucide-react";
+import { Apple, Award, Camera, Dumbbell, HeartPulse, Shield, Trophy } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { CoachChat } from "@/components/CoachChat";
 import { CoachHero } from "@/components/CoachHero";
 import { DailyRites } from "@/components/DailyRites";
 import { LogWorkoutDialog } from "@/components/LogWorkout";
-import { Panel, Stat, useGleam } from "@/components/ui";
-import { useFit, localDay, type ChatMode } from "@/lib/store";
+import { MorningBriefing } from "@/components/MorningBriefing";
+import { TodayLaborPanel } from "@/components/TodayPlan";
+import { Stat, useGleam } from "@/components/ui";
+import { Ring } from "@/components/charts";
+import { useFit, localDay, MAX_SHIELDS, SHIELD_EVERY, type ChatMode } from "@/lib/store";
 import { pushProfile } from "@/lib/sync";
 import { askCoach } from "@/lib/coachBus";
 import { useFitHydrated, useRequireOnboarding } from "@/lib/useHydrate";
@@ -74,6 +77,9 @@ export default function TodayScreen() {
         <div className="flex flex-col gap-4 lg:gap-[18px]">
           <CoachHero />
 
+          {/* the coach speaks first */}
+          <MorningBriefing />
+
           {/* stats triptych */}
           <div className="grid grid-cols-3 gap-px border border-line bg-line">
             <Stat value={toRoman(fit.streak)} label="Day streak" />
@@ -81,9 +87,8 @@ export default function TodayScreen() {
             <Stat value={`${toRoman(fit.days)} / VII`} label="Cadence" />
           </div>
 
-          {/* today's labor */}
-          <Panel
-            title="Today's Labor"
+          {/* today's labor — the actual plan, written out */}
+          <TodayLaborPanel
             action={
               <div className="flex items-center gap-1">
                 <button
@@ -101,17 +106,7 @@ export default function TodayScreen() {
                 </button>
               </div>
             }
-          >
-            <div className="flex items-center justify-between gap-3 px-[14px] py-[13px] lg:px-[18px] lg:py-[15px]">
-              <div>
-                <p className="text-[13px] font-semibold lg:text-sm">{coach?.route} session</p>
-                <p className="mt-0.5 text-[11px] text-sec lg:text-xs">Your coach has inscribed the plan.</p>
-              </div>
-              <BeginButton
-                onClick={() => goAsk("What's my workout for today? Give me the exact sets and reps.")}
-              />
-            </div>
-          </Panel>
+          />
 
           <div className="grid gap-4 lg:grid-cols-2 lg:gap-[18px]">
             <DailyRites />
@@ -134,24 +129,30 @@ export default function TodayScreen() {
               />
             </div>
 
-            {/* seal the day */}
-            <div className="panel order-2 px-[14px] py-4 text-center lg:order-3 lg:col-span-2 lg:px-[18px] lg:py-[18px]">
+            {/* seal the day — the ring the day closes */}
+            <div className="panel order-2 px-[14px] py-4 lg:order-3 lg:col-span-2 lg:px-[18px] lg:py-[18px]">
               {!sealedToday ? (
-                <div className="flex flex-col items-center justify-center gap-2 lg:flex-row lg:gap-[18px]">
-                  <SealButton allDone={allDone} onClick={seal} />
-                  <p className="text-[10px] text-sec lg:text-[11px]">
-                    {allDone
-                      ? `All rites complete — earn ${SEAL_LAURELS} laurels toward the Hall of Honor`
-                      : `${RITES.length - doneCount} rite${RITES.length - doneCount > 1 ? "s" : ""} remain to seal the day`}
-                  </p>
+                <div className="flex items-center justify-center gap-4 lg:gap-[18px]">
+                  <Ring pct={doneCount / RITES.length} size={58} stroke={5}>
+                    <span className="font-display text-[13px] font-bold text-ink">
+                      {toRoman(doneCount)}<span className="text-faint">/{toRoman(RITES.length)}</span>
+                    </span>
+                  </Ring>
+                  <div className="flex flex-col items-start gap-1.5">
+                    <SealButton allDone={allDone} onClick={seal} />
+                    <p className="text-left text-[10px] text-sec lg:text-[11px]">
+                      {allDone
+                        ? `The ring is closed — earn ${SEAL_LAURELS} laurels toward the Hall of Honor`
+                        : `${RITES.length - doneCount} rite${RITES.length - doneCount > 1 ? "s" : ""} remain to close the ring`}
+                    </p>
+                  </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center gap-1.5 lg:flex-row lg:gap-4 lg:text-left">
-                  <span
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-line-strong bg-done-wash"
-                    style={{ animation: "laurelPop 0.5s ease" }}
-                  >
-                    <Award size={18} className="text-gold" />
+                <div className="flex items-center justify-center gap-4 text-left lg:gap-[18px]">
+                  <span style={{ animation: "laurelPop 0.5s ease" }}>
+                    <Ring pct={1} size={58} stroke={5}>
+                      <Award size={20} className="text-gold" />
+                    </Ring>
                   </span>
                   <div>
                     <p className="font-display text-[15px] font-bold tracking-[0.08em]">Day Sealed</p>
@@ -161,6 +162,22 @@ export default function TodayScreen() {
                   </div>
                 </div>
               )}
+              {/* Hermes' Pardon — streak shields */}
+              <div className="mt-3 flex items-center justify-center gap-1.5 border-t border-line-soft pt-2.5">
+                {Array.from({ length: MAX_SHIELDS }, (_, i) => (
+                  <Shield
+                    key={i}
+                    size={12}
+                    className={i < fit.shields ? "text-gold" : "text-line-strong"}
+                    fill={i < fit.shields ? "currentColor" : "none"}
+                  />
+                ))}
+                <p className="text-[9px] text-faint">
+                  {fit.shields > 0
+                    ? `Hermes' Pardon held — a missed day won't break your streak (${fit.shields}/${MAX_SHIELDS})`
+                    : `Seal ${toRoman(SHIELD_EVERY)} days straight to earn Hermes' Pardon — it protects your streak`}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -190,19 +207,6 @@ export default function TodayScreen() {
 }
 
 /* ================= building blocks ================= */
-
-function BeginButton({ onClick }: { onClick: () => void }) {
-  const [anim, trigger] = useGleam();
-  return (
-    <button
-      onClick={() => { trigger(); onClick(); }}
-      style={anim}
-      className="btn-primary px-[18px] py-[9px] text-[11px] lg:px-6 lg:py-[11px] lg:text-xs"
-    >
-      Begin
-    </button>
-  );
-}
 
 function SealButton({ allDone, onClick }: { allDone: boolean; onClick: () => void }) {
   const [anim, trigger] = useGleam();
