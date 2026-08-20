@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import {
   motion, useScroll, useMotionValueEvent, useReducedMotion,
 } from "framer-motion";
-import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import { Wordmark, MeanderBand, GoldDivider } from "@/components/Brand";
 import { COACH_MODELS } from "@/lib/coachModels";
 import type { CoachId } from "@/lib/coaches";
@@ -41,6 +41,16 @@ const GODS = [
 
 const HERO_WORDS = ["Every", "legend", "begins", "with", "a", "single", "rep."];
 
+/* Act III — real screens from the app, framed like votive tablets. */
+const APP_SHOTS = [
+  { src: "/landing/altar.png", title: "The Altar",
+    sub: "Today's plan written out, the daily rites, and your coach's morning briefing." },
+  { src: "/landing/arena.png", title: "The Arena",
+    sub: "Live sessions — last time's numbers to beat, a rest timer, records the moment you break them." },
+  { src: "/landing/monument.png", title: "The Monument",
+    sub: "Your streak, the mosaic of your days, progress photos, the Hall of Honor." },
+];
+
 export default function Landing() {
   const rmPref = useReducedMotion();
   const [mounted, setMounted] = useState(false);
@@ -53,14 +63,24 @@ export default function Landing() {
 
   useMotionValueEvent(scrollY, "change", (y) => {
     const vh = window.innerHeight || 800;
-    setProgress(Math.max(0, Math.min(1, y / (vh * 1.8))));
+    setProgress(Math.max(0, Math.min(1, y / (vh * 1.3))));
   });
 
   // pick up the scroll position on mount (e.g. reload mid-page)
   useEffect(() => {
     const vh = window.innerHeight || 800;
-    setProgress(Math.max(0, Math.min(1, window.scrollY / (vh * 1.8))));
+    setProgress(Math.max(0, Math.min(1, window.scrollY / (vh * 1.3))));
   }, []);
+
+  // gold spotlight that follows the pointer across the hero marble —
+  // written straight to the node so it never re-renders the word reveal
+  const glowRef = useRef<HTMLDivElement>(null);
+  const moveGlow = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (reduceMotion || !glowRef.current) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    glowRef.current.style.background =
+      `radial-gradient(340px circle at ${e.clientX - r.left}px ${e.clientY - r.top}px, rgba(211,178,94,0.16), transparent 70%)`;
+  };
 
   const p = reduceMotion ? 1 : progress;
   const n = HERO_WORDS.length;
@@ -98,9 +118,13 @@ export default function Landing() {
         <MeanderBand />
       </div>
 
-      {/* ACT I — pinned word reveal */}
-      <div className="relative h-[280vh]">
-        <div className="sticky top-0 flex h-dvh flex-col items-center justify-center gap-9 overflow-hidden px-6">
+      {/* ACT I — pinned word reveal, then the first rep */}
+      <div className="relative h-[210vh]">
+        <div
+          onPointerMove={moveGlow}
+          className="sticky top-0 flex h-dvh flex-col items-center justify-center gap-8 overflow-hidden px-6"
+        >
+          <div ref={glowRef} className="pointer-events-none absolute inset-0" aria-hidden />
           <p
             className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold transition-opacity duration-500"
             style={{ opacity: p > 0.04 ? 1 : 0 }}
@@ -129,13 +153,15 @@ export default function Landing() {
           </h1>
           <div
             className="transition-opacity duration-500"
-            style={{ opacity: p > 0.92 ? 1 : 0 }}
+            style={{ opacity: p > 0.88 ? 1 : 0 }}
           >
             <GoldDivider lineWidth={54} />
           </div>
+          {/* the tagline made literal: the visitor's first rep */}
+          <DoARep visible={p > 0.9} />
           <div
             className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 transition-opacity duration-[400ms]"
-            style={{ opacity: p < 0.9 ? 1 : 0 }}
+            style={{ opacity: p < 0.88 ? 1 : 0 }}
           >
             <span className="text-[10px] uppercase tracking-[0.3em] text-faint">Scroll</span>
             <ChevronDown size={14} className="text-gold" />
@@ -155,7 +181,7 @@ export default function Landing() {
               Choose your coach
             </h2>
             <p className="mx-auto mt-3 max-w-[520px] text-[15px] text-sec">
-              Six immortals on the dais. Turn the wheel — hover or tap a god to read their
+              Six immortals on the dais. Drag the wheel to turn it — tap a god to read their
               focus and measure.
             </p>
           </div>
@@ -168,10 +194,39 @@ export default function Landing() {
       {/* meander divider */}
       <MeanderBand className="mx-auto my-10 max-w-[1180px]" />
 
-      {/* ACT III — entry */}
+      {/* ACT III — within the temple (the product itself, in gilded frames) */}
+      <section id="inside" className="px-5 pt-[80px] sm:px-8">
+        <div className="mx-auto max-w-[1080px]">
+          <div className="text-center">
+            <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act III</p>
+            <h2
+              className="mt-2.5 font-display font-bold"
+              style={{ fontSize: "clamp(30px, 4vw, 52px)" }}
+            >
+              Within the temple
+            </h2>
+            <p className="mx-auto mt-3 max-w-[520px] text-[15px] text-sec">
+              Not mockups — the temple as it stands. Run your cursor over the tablets.
+            </p>
+          </div>
+          <motion.div
+            {...reveal}
+            className="mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0"
+          >
+            {APP_SHOTS.map((s) => (
+              <TiltCard key={s.title} {...s} disabled={reduceMotion} />
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* meander divider */}
+      <MeanderBand className="mx-auto my-10 max-w-[1180px]" />
+
+      {/* ACT IV — entry */}
       <section id="enter" className="px-5 pb-[130px] pt-[90px] sm:px-8">
         <motion.div {...reveal} className="mx-auto max-w-[680px] text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act III</p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act IV</p>
           <h2
             className="mt-3 font-display font-extrabold leading-[1.12]"
             style={{ fontSize: "clamp(34px, 5vw, 60px)" }}
@@ -202,12 +257,46 @@ export default function Landing() {
 
 function CoachRing() {
   const N = GODS.length;
+  const STEP = 360 / N;
   const [rot, setRot] = useState(0);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const facingIdx = ((rot % N) + N) % N;
   const shown = GODS[hoverIdx ?? facingIdx];
 
+  // drag-to-spin: pointer x-drag turns the wheel live, release snaps to the
+  // nearest god. `moved` suppresses the click that follows a drag.
+  const [dragDeg, setDragDeg] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const dragState = useRef({ startX: 0, active: false, moved: false });
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragState.current = { startX: e.clientX, active: true, moved: false };
+    setDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragState.current.active) return;
+    const deg = (e.clientX - dragState.current.startX) * 0.35;
+    if (Math.abs(deg) > 2.5) dragState.current.moved = true;
+    setDragDeg(deg);
+  };
+  const endDrag = () => {
+    if (!dragState.current.active) return;
+    dragState.current.active = false;
+    setDragging(false);
+    setDragDeg((deg) => {
+      const steps = Math.round(deg / STEP);
+      if (steps !== 0) {
+        setRot((r) => r - steps);
+        setHoverIdx(null);
+      }
+      return 0;
+    });
+    // let the trailing click event see `moved` before clearing it
+    setTimeout(() => { dragState.current.moved = false; }, 60);
+  };
+
   const pick = (i: number) => {
+    if (dragState.current.moved) return; // that click was a drag
     let d = (((i - facingIdx) % N) + N) % N;
     if (d > N / 2) d -= N; // rotate the shortest way around
     setRot((r) => r + d);
@@ -232,14 +321,21 @@ function CoachRing() {
         {/* the facing god's name, engraved across the dais front */}
         <DaisInscription key={shown.id} name={shown.name} />
 
-        {/* 3D ring */}
-        <div className="relative mb-[60px] h-[330px] w-[190px]" style={{ perspective: 1300 }}>
+        {/* 3D ring — drag anywhere on it to spin */}
+        <div
+          className="relative mb-[60px] h-[330px] w-[190px]"
+          style={{ perspective: 1300, touchAction: "pan-y", cursor: dragging ? "grabbing" : "grab" }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+        >
           <div
             className="absolute inset-0"
             style={{
               transformStyle: "preserve-3d",
-              transform: `rotateY(${-rot * (360 / N)}deg)`,
-              transition: "transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)",
+              transform: `rotateY(${-rot * STEP + dragDeg}deg)`,
+              transition: dragging ? "none" : "transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
             {GODS.map((g, i) => {
@@ -300,11 +396,6 @@ function CoachRing() {
                         }}
                       />
                     )}
-                    {!model3d && (
-                      <span className="absolute left-1/2 top-2 -translate-x-1/2 whitespace-nowrap rounded-[2px] border border-dashed border-line-strong bg-[rgba(247,244,236,0.85)] px-1.5 py-0.5 font-mono text-[7px] tracking-[0.2em] text-faint">
-                        3D MODEL SLOT
-                      </span>
-                    )}
                   </div>
                 </div>
               );
@@ -349,7 +440,7 @@ function CoachRing() {
         </div>
       </div>
       <p className="mt-3.5 text-center font-mono text-[9px] uppercase tracking-[0.24em] text-faint">
-        Hover or tap a god · Adonis, Atalanta &amp; Hermes now move in living marble
+        Drag to spin · tap a god to choose · three move in living marble
       </p>
     </div>
   );
@@ -411,7 +502,171 @@ function RingButton({ side, onClick }: { side: "left" | "right"; onClick: () => 
   );
 }
 
-/* ---------------- Act III: gleaming entry ---------------- */
+/* ---------------- Act I: the visitor's first rep ---------------- */
+
+/** A barbell you actually lift: drag it up past the sticking point and the
+ *  rep counts, in Roman numerals, with a laurel pop. The tagline, made
+ *  physical — nobody else's landing page lets you train on it. */
+function DoARep({ visible }: { visible: boolean }) {
+  const [reps, setReps] = useState(0);
+  const [pop, setPop] = useState(0);
+
+  return (
+    <div
+      className={cn(
+        "flex flex-col items-center gap-2.5 transition-opacity duration-500",
+        visible ? "opacity-100" : "pointer-events-none opacity-0"
+      )}
+    >
+      <motion.div
+        drag="y"
+        dragConstraints={{ top: -60, bottom: 0 }}
+        dragElastic={0.06}
+        dragSnapToOrigin
+        whileDrag={{ scale: 1.05 }}
+        onDragEnd={(_, info) => {
+          if (info.offset.y < -42) {
+            setReps((r) => r + 1);
+            setPop((b) => b + 1);
+            if (typeof navigator !== "undefined") navigator.vibrate?.(30);
+          }
+        }}
+        className="cursor-grab touch-none active:cursor-grabbing"
+        aria-label="Lift the barbell — drag it upward to count a rep"
+        role="slider"
+        aria-valuenow={reps}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setReps((r) => r + 1);
+            setPop((b) => b + 1);
+          }
+        }}
+      >
+        <Barbell />
+      </motion.div>
+      <span
+        key={pop}
+        style={pop ? { animation: "laurelPop 0.45s ease" } : undefined}
+        className={cn(
+          "font-mono text-[10px] uppercase tracking-[0.3em]",
+          reps > 0 ? "text-gold" : "text-faint"
+        )}
+      >
+        {reps === 0 ? (
+          <span className="inline-flex items-center gap-1.5">
+            <ChevronUp size={11} className="text-gold" /> Go on — lift one
+          </span>
+        ) : (
+          `Reps · ${toRoman(reps)}`
+        )}
+      </span>
+      <span
+        className={cn(
+          "text-[11px] text-sec transition-opacity duration-500",
+          reps >= 5 ? "opacity-100" : "opacity-0"
+        )}
+      >
+        {toRoman(Math.max(reps, 5))} already. A legend stirs — the temple is below.
+      </span>
+    </div>
+  );
+}
+
+/** Chiseled-gold barbell, drawn to match the Sacred Marble frames. */
+function Barbell() {
+  return (
+    <svg width="196" height="44" viewBox="0 0 196 44" aria-hidden>
+      <defs>
+        <linearGradient id="bb-plate" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#e9d191" />
+          <stop offset="45%" stopColor="#b08d3e" />
+          <stop offset="100%" stopColor="#9a7b2d" />
+        </linearGradient>
+        <linearGradient id="bb-bar" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#cbbb92" />
+          <stop offset="50%" stopColor="#a29677" />
+          <stop offset="100%" stopColor="#7c7159" />
+        </linearGradient>
+      </defs>
+      {/* bar */}
+      <rect x="8" y="19" width="180" height="6" rx="3" fill="url(#bb-bar)" />
+      {/* inner plates */}
+      <rect x="34" y="4" width="12" height="36" rx="3" fill="url(#bb-plate)" stroke="#8a6f28" strokeWidth="1" />
+      <rect x="150" y="4" width="12" height="36" rx="3" fill="url(#bb-plate)" stroke="#8a6f28" strokeWidth="1" />
+      {/* outer plates */}
+      <rect x="20" y="9" width="10" height="26" rx="3" fill="url(#bb-plate)" stroke="#8a6f28" strokeWidth="1" />
+      <rect x="166" y="9" width="10" height="26" rx="3" fill="url(#bb-plate)" stroke="#8a6f28" strokeWidth="1" />
+      {/* collars */}
+      <rect x="50" y="15" width="7" height="14" rx="2" fill="#d3b25e" stroke="#8a6f28" strokeWidth="0.8" />
+      <rect x="139" y="15" width="7" height="14" rx="2" fill="#d3b25e" stroke="#8a6f28" strokeWidth="0.8" />
+    </svg>
+  );
+}
+
+/* ---------------- Act III: tilting votive tablets ---------------- */
+
+/** A phone screen in a gilded frame that tilts toward the cursor — transforms
+ *  are written straight to the node so tracking never re-renders. */
+function TiltCard({ src, title, sub, disabled }: {
+  src: string; title: string; sub: string; disabled: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (disabled || !el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transition = "transform 70ms linear";
+    el.style.transform =
+      `perspective(950px) rotateX(${(-py * 9).toFixed(2)}deg) rotateY(${(px * 11).toFixed(2)}deg) scale(1.02)`;
+  };
+  const onLeave = () => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.transition = "transform 0.45s ease";
+    el.style.transform = "perspective(950px) rotateX(0deg) rotateY(0deg) scale(1)";
+  };
+
+  return (
+    <figure className="w-[240px] shrink-0 snap-center sm:w-[260px] lg:w-auto">
+      <div
+        ref={ref}
+        onMouseMove={onMove}
+        onMouseLeave={onLeave}
+        className="p-[6px]"
+        style={{
+          borderRadius: 30,
+          background:
+            "linear-gradient(165deg, #e9d191 0%, #b08d3e 28%, #d3b25e 52%, #9a7b2d 78%, #dcc078 100%)",
+          boxShadow:
+            "0 0 0 1px #a8863b, inset 0 1px 0 rgba(255,248,225,0.75), 0 18px 36px -18px rgba(70,58,30,0.55)",
+        }}
+      >
+        <div
+          className="relative w-full overflow-hidden border-[3px] border-[#f7f4ec] bg-panel"
+          style={{ borderRadius: 24, aspectRatio: "390 / 800" }}
+        >
+          <Image
+            src={src}
+            alt={`${title} — FitNext app screen`}
+            fill
+            sizes="(min-width: 1024px) 330px, 260px"
+            className="object-cover object-top"
+          />
+        </div>
+      </div>
+      <figcaption className="mt-4 px-1 text-center">
+        <p className="font-display text-[15px] font-bold tracking-[0.06em]">{title}</p>
+        <p className="mx-auto mt-1 max-w-[300px] text-[11px] leading-relaxed text-sec">{sub}</p>
+      </figcaption>
+    </figure>
+  );
+}
+
+/* ---------------- Act IV: gleaming entry ---------------- */
 
 function EnterButton() {
   const router = useRouter();
