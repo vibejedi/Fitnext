@@ -63,13 +63,13 @@ export default function Landing() {
 
   useMotionValueEvent(scrollY, "change", (y) => {
     const vh = window.innerHeight || 800;
-    setProgress(Math.max(0, Math.min(1, y / (vh * 1.3))));
+    setProgress(Math.max(0, Math.min(1, y / (vh * 1.05))));
   });
 
   // pick up the scroll position on mount (e.g. reload mid-page)
   useEffect(() => {
     const vh = window.innerHeight || 800;
-    setProgress(Math.max(0, Math.min(1, window.scrollY / (vh * 1.3))));
+    setProgress(Math.max(0, Math.min(1, window.scrollY / (vh * 1.05))));
   }, []);
 
   // gold spotlight that follows the pointer across the hero marble —
@@ -118,8 +118,9 @@ export default function Landing() {
         <MeanderBand />
       </div>
 
-      {/* ACT I — pinned word reveal, then the first rep */}
-      <div className="relative h-[210vh]">
+      {/* ACT I — pinned word reveal, then the first rep. The runway past the
+          reveal (~15vh) is the dwell where the barbell invites a lift. */}
+      <div className="relative h-[220vh]">
         <div
           onPointerMove={moveGlow}
           className="sticky top-0 flex h-dvh flex-col items-center justify-center gap-8 overflow-hidden px-6"
@@ -172,7 +173,7 @@ export default function Landing() {
       {/* ACT II — the coaches */}
       <section id="coaches" className="relative px-5 pb-[60px] pt-[110px] sm:px-8">
         <div className="mx-auto max-w-[1180px]">
-          <div className="mb-[70px] text-center">
+          <div className="mb-10 text-center">
             <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act II</p>
             <h2
               className="mt-2.5 font-display font-bold"
@@ -195,7 +196,7 @@ export default function Landing() {
       <MeanderBand className="mx-auto my-10 max-w-[1180px]" />
 
       {/* ACT III — within the temple (the product itself, in gilded frames) */}
-      <section id="inside" className="px-5 pt-[80px] sm:px-8">
+      <section id="inside" className="px-5 pt-14 sm:px-8 lg:pt-[80px]">
         <div className="mx-auto max-w-[1080px]">
           <div className="text-center">
             <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act III</p>
@@ -206,17 +207,23 @@ export default function Landing() {
               Within the temple
             </h2>
             <p className="mx-auto mt-3 max-w-[520px] text-[15px] text-sec">
-              Not mockups — the temple as it stands. Run your cursor over the tablets.
+              Not mockups — the temple as it stands, three tablets from the app itself.
             </p>
           </div>
           <motion.div
             {...reveal}
-            className="mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0"
+            className="mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto px-2 pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0 lg:pb-0"
           >
             {APP_SHOTS.map((s) => (
               <TiltCard key={s.title} {...s} disabled={reduceMotion} />
             ))}
           </motion.div>
+          <p className="mt-1 text-center font-mono text-[9px] uppercase tracking-[0.24em] text-faint lg:hidden">
+            Swipe the tablets →
+          </p>
+          <p className="mt-1 hidden text-center font-mono text-[9px] uppercase tracking-[0.24em] text-faint lg:block">
+            They tilt toward your cursor
+          </p>
         </div>
       </section>
 
@@ -224,7 +231,7 @@ export default function Landing() {
       <MeanderBand className="mx-auto my-10 max-w-[1180px]" />
 
       {/* ACT IV — entry */}
-      <section id="enter" className="px-5 pb-[130px] pt-[90px] sm:px-8">
+      <section id="enter" className="px-5 pb-[110px] pt-12 sm:px-8 lg:pt-[80px]">
         <motion.div {...reveal} className="mx-auto max-w-[680px] text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act IV</p>
           <h2
@@ -305,7 +312,7 @@ function CoachRing() {
 
   return (
     <div>
-      <div className="relative flex h-[480px] items-center justify-center">
+      <div className="relative flex h-[440px] items-center justify-center">
         {/* marble dais */}
         <div
           className="absolute bottom-9 left-1/2 h-[120px] w-[620px] max-w-[90%] -translate-x-1/2 rounded-full border border-line-strong"
@@ -574,33 +581,55 @@ function DoARep({ visible }: { visible: boolean }) {
   );
 }
 
-/** Chiseled-gold barbell, drawn to match the Sacred Marble frames. */
+/** Chiseled-gold barbell with real weight to it: dimensional highlights,
+ *  a cast shadow on the marble, sized up on desktop. */
 function Barbell() {
   return (
-    <svg width="196" height="44" viewBox="0 0 196 44" aria-hidden>
+    <svg
+      width="230"
+      height="64"
+      viewBox="0 0 230 64"
+      aria-hidden
+      className="w-[200px] sm:w-[230px]"
+      style={{ filter: "drop-shadow(0 6px 10px rgba(70,58,30,0.28))" }}
+    >
       <defs>
         <linearGradient id="bb-plate" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#e9d191" />
-          <stop offset="45%" stopColor="#b08d3e" />
+          <stop offset="0%" stopColor="#f2e0ac" />
+          <stop offset="30%" stopColor="#d3b25e" />
+          <stop offset="62%" stopColor="#a8863b" />
+          <stop offset="100%" stopColor="#8a6f28" />
+        </linearGradient>
+        <linearGradient id="bb-plate-edge" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fff6dd" />
           <stop offset="100%" stopColor="#9a7b2d" />
         </linearGradient>
         <linearGradient id="bb-bar" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#cbbb92" />
-          <stop offset="50%" stopColor="#a29677" />
-          <stop offset="100%" stopColor="#7c7159" />
+          <stop offset="0%" stopColor="#e7dfcc" />
+          <stop offset="45%" stopColor="#a29677" />
+          <stop offset="100%" stopColor="#6d6350" />
         </linearGradient>
       </defs>
+      {/* cast shadow on the marble floor */}
+      <ellipse cx="115" cy="57" rx="86" ry="5" fill="rgba(70,58,30,0.16)" />
       {/* bar */}
-      <rect x="8" y="19" width="180" height="6" rx="3" fill="url(#bb-bar)" />
+      <rect x="10" y="23" width="210" height="7" rx="3.5" fill="url(#bb-bar)" />
+      <rect x="10" y="24" width="210" height="2" rx="1" fill="rgba(255,251,240,0.55)" />
+      {/* knurl marks */}
+      {[96, 102, 108, 114, 120, 126, 132].map((x) => (
+        <rect key={x} x={x} y="24" width="1.4" height="5" fill="rgba(70,58,30,0.28)" />
+      ))}
       {/* inner plates */}
-      <rect x="34" y="4" width="12" height="36" rx="3" fill="url(#bb-plate)" stroke="#8a6f28" strokeWidth="1" />
-      <rect x="150" y="4" width="12" height="36" rx="3" fill="url(#bb-plate)" stroke="#8a6f28" strokeWidth="1" />
+      <rect x="40" y="5" width="15" height="43" rx="4" fill="url(#bb-plate)" stroke="#7c6222" strokeWidth="1" />
+      <rect x="42" y="7" width="4" height="39" rx="2" fill="url(#bb-plate-edge)" opacity="0.5" />
+      <rect x="175" y="5" width="15" height="43" rx="4" fill="url(#bb-plate)" stroke="#7c6222" strokeWidth="1" />
+      <rect x="177" y="7" width="4" height="39" rx="2" fill="url(#bb-plate-edge)" opacity="0.5" />
       {/* outer plates */}
-      <rect x="20" y="9" width="10" height="26" rx="3" fill="url(#bb-plate)" stroke="#8a6f28" strokeWidth="1" />
-      <rect x="166" y="9" width="10" height="26" rx="3" fill="url(#bb-plate)" stroke="#8a6f28" strokeWidth="1" />
+      <rect x="24" y="11" width="12" height="31" rx="3.5" fill="url(#bb-plate)" stroke="#7c6222" strokeWidth="1" />
+      <rect x="194" y="11" width="12" height="31" rx="3.5" fill="url(#bb-plate)" stroke="#7c6222" strokeWidth="1" />
       {/* collars */}
-      <rect x="50" y="15" width="7" height="14" rx="2" fill="#d3b25e" stroke="#8a6f28" strokeWidth="0.8" />
-      <rect x="139" y="15" width="7" height="14" rx="2" fill="#d3b25e" stroke="#8a6f28" strokeWidth="0.8" />
+      <rect x="59" y="18" width="8" height="17" rx="2.5" fill="#d3b25e" stroke="#8a6f28" strokeWidth="0.9" />
+      <rect x="163" y="18" width="8" height="17" rx="2.5" fill="#d3b25e" stroke="#8a6f28" strokeWidth="0.9" />
     </svg>
   );
 }
