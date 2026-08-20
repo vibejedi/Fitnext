@@ -166,3 +166,23 @@ create policy "own photos read" on storage.objects
   for select using (bucket_id = 'progress' and auth.uid()::text = (storage.foldername(name))[1]);
 create policy "own photos write" on storage.objects
   for insert with check (bucket_id = 'progress' and auth.uid()::text = (storage.foldername(name))[1]);
+
+-- ============================================================
+--  Strava connections (one per athlete; webhook looks up by athlete_id)
+-- ============================================================
+create table if not exists public.strava_connections (
+  user_id      uuid primary key references auth.users(id) on delete cascade,
+  athlete_id   bigint not null,
+  access_token text not null,
+  refresh_token text not null,
+  expires_at   bigint not null,        -- unix seconds
+  scope        text,
+  connected_at timestamptz not null default now()
+);
+create index if not exists strava_connections_athlete_idx
+  on public.strava_connections (athlete_id);
+
+alter table public.strava_connections enable row level security;
+drop policy if exists "own rows" on public.strava_connections;
+create policy "own rows" on public.strava_connections
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);

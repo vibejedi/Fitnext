@@ -7,6 +7,7 @@ import { Labors } from "@/components/Labors";
 import { MovementGuides } from "@/components/MovementGuides";
 import { LogWorkoutDialog } from "@/components/LogWorkout";
 import { RecordsPanel } from "@/components/ExerciseHistory";
+import { StravaPanel } from "@/components/StravaPanel";
 import { TodayLaborPanel } from "@/components/TodayPlan";
 import { TrendBars } from "@/components/charts";
 import { TrainingSessions } from "@/components/history/lists";
@@ -86,6 +87,9 @@ export default function TrainScreen() {
         {!spartan && <RecordsPanel />}
 
         {!spartan && <MovementGuides />}
+
+        {/* one link, every watch — shown in both modes: it removes input */}
+        <StravaPanel />
 
         {/* the chronicle — every logged session */}
         <div>
