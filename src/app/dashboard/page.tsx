@@ -49,6 +49,7 @@ export default function TodayScreen() {
   }
 
   const coach = coachById(fit.coach);
+  const spartan = fit.uiMode === "spartan";
   const today = localDay();
   const rites = fit.ritesDate === today ? fit.rites : EMPTY_RITES;
   const doneCount = RITES.filter((r) => rites[r.id]).length;
@@ -80,12 +81,14 @@ export default function TodayScreen() {
           {/* the coach speaks first */}
           <MorningBriefing />
 
-          {/* stats triptych */}
-          <div className="grid grid-cols-3 gap-px border border-line bg-line">
-            <Stat value={toRoman(fit.streak)} label="Day streak" />
-            <Stat value={FOCUS[fit.goal ?? ""] ?? "—"} label="Focus" />
-            <Stat value={`${toRoman(fit.days)} / VII`} label="Cadence" />
-          </div>
+          {/* stats triptych — Olympian only (the header already carries the streak) */}
+          {!spartan && (
+            <div className="grid grid-cols-3 gap-px border border-line bg-line">
+              <Stat value={toRoman(fit.streak)} label="Day streak" />
+              <Stat value={FOCUS[fit.goal ?? ""] ?? "—"} label="Focus" />
+              <Stat value={`${toRoman(fit.days)} / VII`} label="Cadence" />
+            </div>
+          )}
 
           {/* today's labor — the actual plan, written out */}
           <TodayLaborPanel
@@ -97,13 +100,17 @@ export default function TodayScreen() {
                 >
                   <Dumbbell size={11} /> LOG SESSION
                 </button>
-                <span className="text-line-strong">·</span>
-                <button
-                  onClick={downloadICS}
-                  className="px-1.5 py-1 font-mono text-[9px] tracking-[0.1em] text-gold active:translate-y-px active:opacity-60 lg:text-[10px]"
-                >
-                  + CALENDAR
-                </button>
+                {!spartan && (
+                  <>
+                    <span className="text-line-strong">·</span>
+                    <button
+                      onClick={downloadICS}
+                      className="px-1.5 py-1 font-mono text-[9px] tracking-[0.1em] text-gold active:translate-y-px active:opacity-60 lg:text-[10px]"
+                    >
+                      + CALENDAR
+                    </button>
+                  </>
+                )}
               </div>
             }
           />
@@ -111,8 +118,11 @@ export default function TodayScreen() {
           <div className="grid gap-4 lg:grid-cols-2 lg:gap-[18px]">
             <DailyRites />
 
-            {/* quick actions — Ambrosia & Healing */}
-            <div className="order-4 grid grid-cols-2 gap-3 lg:order-2 lg:grid-cols-1 lg:grid-rows-2 lg:gap-[18px]">
+            {/* quick actions — Ambrosia & Healing (Olympian only) */}
+            <div className={cn(
+              "order-4 grid grid-cols-2 gap-3 lg:order-2 lg:grid-cols-1 lg:grid-rows-2 lg:gap-[18px]",
+              spartan && "hidden"
+            )}>
               <QuickAction
                 icon={<Apple size={18} strokeWidth={1.8} className="text-gold lg:h-5 lg:w-5" />}
                 title="Ambrosia"
@@ -182,7 +192,7 @@ export default function TodayScreen() {
           </div>
 
           {/* doorways into the deeper halls (mobile discovers via tab bar too) */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className={cn("grid grid-cols-3 gap-3", spartan && "hidden")}>
             <Doorway href="/train" icon={<Dumbbell size={16} className="text-gold" />} title="Train" sub="Labors & guides" />
             <Doorway href="/nutrition" icon={<Camera size={16} className="text-gold" />} title="Fuel" sub="Meals & macros" />
             <Doorway href="/progress" icon={<Trophy size={16} className="text-gold" />} title="Progress" sub="Photos & honor" />
@@ -216,7 +226,7 @@ function SealButton({ allDone, onClick }: { allDone: boolean; onClick: () => voi
       style={anim}
       className={cn(
         "inline-flex items-center gap-2 rounded-[3px] px-[26px] py-[13px] text-xs font-semibold uppercase tracking-[0.14em]",
-        allDone ? "btn-primary" : "cursor-default bg-[#efe9db] text-faint"
+        allDone ? "btn-primary" : "cursor-default bg-pressed text-faint"
       )}
     >
       <Award size={14} />

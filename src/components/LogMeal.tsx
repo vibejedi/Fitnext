@@ -431,7 +431,7 @@ function PhotoSlot({ label, hint, shot, onShot, onError }: {
       {/* corner chip — pick from the phone's photo library instead */}
       <label
         title="Upload from your photos"
-        className="absolute right-1 top-1 flex cursor-pointer items-center gap-1 rounded-[3px] border border-line-strong bg-[rgba(251,248,241,0.92)] px-1.5 py-1 text-[8px] font-semibold uppercase tracking-[0.12em] text-gold active:translate-y-px"
+        className="absolute right-1 top-1 flex cursor-pointer items-center gap-1 rounded-[3px] border border-line-strong bg-[color-mix(in_srgb,var(--panel)_92%,transparent)] px-1.5 py-1 text-[8px] font-semibold uppercase tracking-[0.12em] text-gold active:translate-y-px"
       >
         <ImageUp size={11} />
         <input type="file" accept="image/*" className="hidden" onChange={onFile} />

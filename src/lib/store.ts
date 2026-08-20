@@ -101,6 +101,13 @@ const dayBefore = (day: string) => {
 export const MAX_SHIELDS = 2;
 export const SHIELD_EVERY = 7;
 
+/** How much of the temple is shown: "spartan" = the essentials only
+ *  (default — noob-friendly), "olympian" = every measure and record. */
+export type UiMode = "spartan" | "olympian";
+
+/** Visual theme: "marble" = ivory daylight, "obsidian" = dark stone. */
+export type Theme = "marble" | "obsidian";
+
 export interface FitState {
   // onboarding answers
   coach: CoachId | null;
@@ -141,6 +148,10 @@ export interface FitState {
   coachVideoUrl: string | null;
   /** Cached morning briefing — regenerated once per local day. */
   briefing: { day: string; text: string } | null;
+  /** Spartan (essentials) vs Olympian (everything). Per-device preference. */
+  uiMode: UiMode;
+  /** Marble (light) vs Obsidian (dark). Per-device preference. */
+  theme: Theme;
   /** Photo-logged meals (eyeball-estimated macros). Filtered by day in the UI. */
   meals: Meal[];
   /** Structured training sessions (lift → reps → weight), newest last. */
@@ -201,6 +212,8 @@ const initial = {
   walletAddress: null,
   coachVideoUrl: null,
   briefing: null,
+  uiMode: "spartan" as UiMode,
+  theme: "marble" as Theme,
   meals: [],
   workouts: [],
   nutritionMode: null,

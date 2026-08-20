@@ -24,6 +24,7 @@ export default function NutritionScreen() {
   const router = useRouter();
   const wantNutrition = useFit((s) => s.wantNutrition);
   const meals = useFit((s) => s.meals);
+  const spartan = useFit((s) => s.uiMode) === "spartan";
   const mounted = useFitHydrated();
   const onboarded = useRequireOnboarding(mounted);
 
@@ -69,10 +70,10 @@ export default function NutritionScreen() {
           <GoldDivider className="mt-3" />
         </div>
 
-        <NutritionPanel />
+        <NutritionPanel compact={spartan} />
 
         {/* the fortnight — calories vs target, day by day */}
-        {trendDays >= 2 && (
+        {!spartan && trendDays >= 2 && (
           <Panel title="The Fortnight">
             <div className="px-[14px] py-3.5 lg:px-[18px]">
               <TrendBars

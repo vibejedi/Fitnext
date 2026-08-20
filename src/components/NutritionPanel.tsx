@@ -12,7 +12,10 @@ import { cn } from "@/lib/utils";
 
 const TARGETS = NUTRITION_TARGETS;
 
-export function NutritionPanel() {
+export function NutritionPanel({ compact = false }: {
+  /** Spartan mode: only the two numbers a beginner needs — calories & protein. */
+  compact?: boolean;
+}) {
   const fit = useFit();
   const [logging, setLogging] = useState(false);
   const today = localDay();
@@ -78,8 +81,12 @@ export function NutritionPanel() {
           <MacroBar label="Calories" cur={sum.kcal} max={TARGETS.kcal}
             text={`${sum.kcal.toLocaleString()} / ${TARGETS.kcal.toLocaleString()}`} unit="" />
           <MacroBar label="Protein" cur={sum.p} max={TARGETS.p} text={`${sum.p}g / ${TARGETS.p}g`} unit="g" />
-          <MacroBar label="Carbs" cur={sum.c} max={TARGETS.c} text={`${sum.c}g / ${TARGETS.c}g`} unit="g" />
-          <MacroBar label="Fats" cur={sum.f} max={TARGETS.f} text={`${sum.f}g / ${TARGETS.f}g`} unit="g" />
+          {!compact && (
+            <>
+              <MacroBar label="Carbs" cur={sum.c} max={TARGETS.c} text={`${sum.c}g / ${TARGETS.c}g`} unit="g" />
+              <MacroBar label="Fats" cur={sum.f} max={TARGETS.f} text={`${sum.f}g / ${TARGETS.f}g`} unit="g" />
+            </>
+          )}
           <p className="mt-0.5 text-[9px] text-faint">
             Targets set by your Nutrition Coach · macros &amp; calories are eyeball estimates from your meal photos
           </p>

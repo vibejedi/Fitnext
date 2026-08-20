@@ -52,6 +52,41 @@
   --green-glow: rgba(154, 123, 45, 0.3);
 }
 
+/* ---------- Obsidian: the temple after dark ----------
+   Same stone, no sun: near-black warm surfaces, brighter gold so the
+   accent still gleams, ivory ink. Applied via data-theme on <html> by the
+   AppShell settings — the landing/onboarding always stay Marble. */
+[data-theme="obsidian"] {
+  --page-top: #17130d;
+  --page-bottom: #100d08;
+  --panel: #1e1912;
+  --panel-alt: #251f15;
+  --pressed: #2c2518;
+  --done-wash: #272013;
+
+  --line: #3a3222;
+  --line-soft: #2b2517;
+  --line-strong: #52462b;
+  --meander: #6f5e35;
+
+  --gold: #d3b25e;
+  --gold-gleam: #eed58f;
+  --gold-badge: #c5a452;
+  --ivory: #1c160c; /* on-gold text flips dark for contrast */
+
+  --ink: #f1e9d6;
+  --sec: #b5a988;
+  --faint: #7e7256;
+
+  --clay: #e08252;
+}
+[data-theme="obsidian"] .panel {
+  box-shadow: 0 1px 0 rgba(255, 248, 225, 0.05) inset;
+}
+[data-theme="obsidian"] .glow-green {
+  box-shadow: 0 0 0 1px rgba(211, 178, 94, 0.35), 0 10px 24px -12px rgba(0, 0, 0, 0.6);
+}
+
 @theme inline {
   /* marble tokens */
   --color-panel: var(--panel);

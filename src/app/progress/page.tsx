@@ -52,6 +52,7 @@ export default function ProgressScreen() {
   }
 
   const sessions = fit.workouts.length;
+  const spartan = fit.uiMode === "spartan";
 
   return (
     <AppShell maxWidth="max-w-[900px]">
@@ -70,24 +71,26 @@ export default function ProgressScreen() {
           ]}
         />
 
-        {/* the mosaic — every day laid as a tile */}
-        <Panel title="The Mosaic">
-          <div className="overflow-x-auto px-[14px] py-3.5 lg:px-[18px]">
-            <ConsistencyGrid days={consistency} weeks={16} />
-            <p className="mt-2.5 text-center text-[9px] text-faint">
-              Sixteen weeks of days — deeper gold, more rites done · training days count too
-            </p>
-          </div>
-        </Panel>
+        {/* the mosaic — every day laid as a tile (Olympian) */}
+        {!spartan && (
+          <Panel title="The Mosaic">
+            <div className="overflow-x-auto px-[14px] py-3.5 lg:px-[18px]">
+              <ConsistencyGrid days={consistency} weeks={16} />
+              <p className="mt-2.5 text-center text-[9px] text-faint">
+                Sixteen weeks of days — deeper gold, more rites done · training days count too
+              </p>
+            </div>
+          </Panel>
+        )}
 
         <BodyweightPanel />
 
         <ProgressPhotos />
 
-        <HallOfHonor />
+        {!spartan && <HallOfHonor />}
 
         {/* rite chronicle */}
-        <div>
+        <div className={spartan ? "hidden" : undefined}>
           <div className="mb-2.5 flex items-center justify-between">
             <p className="font-mono text-[9px] uppercase tracking-[0.28em] text-gold">
               Rite chronicle

@@ -118,7 +118,7 @@ export function HallOfHonor() {
               </div>
             ))}
           </div>
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-[rgba(247,244,236,0.55)]">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-[color-mix(in_srgb,var(--page-top)_55%,transparent)]">
             <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-line-strong bg-panel lg:h-7 lg:w-7">
               <Lock size={13} className="text-gold" />
             </span>

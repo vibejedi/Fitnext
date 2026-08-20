@@ -39,6 +39,7 @@ export default function TrainScreen() {
   }
 
   const coach = coachById(fit.coach);
+  const spartan = fit.uiMode === "spartan";
 
   return (
     <AppShell maxWidth="max-w-[900px]">
@@ -61,10 +62,10 @@ export default function TrainScreen() {
           }
         />
 
-        <Labors />
+        {!spartan && <Labors />}
 
         {/* weekly tonnage — the trend that keeps you honest */}
-        {anyVolume && (
+        {!spartan && anyVolume && (
           <Panel title="Weekly Volume">
             <div className="px-[14px] py-3.5 lg:px-[18px]">
               <TrendBars
@@ -82,9 +83,9 @@ export default function TrainScreen() {
           </Panel>
         )}
 
-        <RecordsPanel />
+        {!spartan && <RecordsPanel />}
 
-        <MovementGuides />
+        {!spartan && <MovementGuides />}
 
         {/* the chronicle — every logged session */}
         <div>

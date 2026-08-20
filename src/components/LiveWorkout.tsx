@@ -252,7 +252,7 @@ function LiveWorkoutInner({ onClose, defaultTitle, defaultLabor, plan }: {
   /* ================= render ================= */
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[linear-gradient(180deg,#f7f4ec,#efe9db)]">
+    <div className="fixed inset-0 z-50 flex flex-col bg-[linear-gradient(180deg,var(--page-top),var(--page-bottom))]">
       {/* header */}
       <div className="flex items-center gap-3 border-b border-line bg-panel px-4 py-3 pt-[max(12px,env(safe-area-inset-top))]">
         <div className="min-w-0 flex-1">

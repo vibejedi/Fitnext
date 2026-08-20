@@ -11,11 +11,14 @@ import { cn } from "@/lib/utils";
  * the raw hex the tokens resolve to.
  */
 
-const GOLD = "#9a7b2d";
-const GLEAM = "#d3b25e";
-const LINE_SOFT = "#e7dfcc";
-const FAINT = "#a29677";
-const CLAY = "#b4552b";
+/* Token references so both Marble and Obsidian resolve correctly. SVG
+   presentation attributes can't read var(), so these are applied via
+   style props throughout. */
+const GOLD = "var(--gold)";
+const GLEAM = "var(--gold-gleam)";
+const LINE_SOFT = "var(--line-soft)";
+const FAINT = "var(--faint)";
+const CLAY = "var(--clay)";
 
 /* ---------------- Bars (weekly volume, calorie trend) ---------------- */
 
@@ -113,23 +116,29 @@ export function TrendLine({ points, height = 72, className }: {
     >
       <defs>
         <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={GLEAM} stopOpacity="0.35" />
-          <stop offset="100%" stopColor={GLEAM} stopOpacity="0" />
+          <stop offset="0%" style={{ stopColor: GLEAM }} stopOpacity="0.35" />
+          <stop offset="100%" style={{ stopColor: GLEAM }} stopOpacity="0" />
         </linearGradient>
       </defs>
       <path
         d={`${path} L${px(points.length - 1)},${height} L${px(0)},${height} Z`}
         fill={`url(#${gid})`}
       />
-      <path d={path} fill="none" stroke={GOLD} strokeWidth="1.6" vectorEffect="non-scaling-stroke" />
+      <path
+        d={path}
+        fill="none"
+        style={{ stroke: GOLD }}
+        strokeWidth="1.6"
+        vectorEffect="non-scaling-stroke"
+      />
       {points.map((p, i) =>
         p.pr ? (
           <g key={i}>
-            <circle cx={px(i)} cy={py(p.y)} r="4" fill={GLEAM} opacity="0.35" />
-            <circle cx={px(i)} cy={py(p.y)} r="2" fill={GOLD} />
+            <circle cx={px(i)} cy={py(p.y)} r="4" style={{ fill: GLEAM }} opacity="0.35" />
+            <circle cx={px(i)} cy={py(p.y)} r="2" style={{ fill: GOLD }} />
           </g>
         ) : (
-          <circle key={i} cx={px(i)} cy={py(p.y)} r="1.4" fill={GOLD} />
+          <circle key={i} cx={px(i)} cy={py(p.y)} r="1.4" style={{ fill: GOLD }} />
         )
       )}
     </svg>
@@ -168,9 +177,9 @@ export function ConsistencyGrid({ days, weeks = 16, className }: {
   }
   const fill = (f: number) =>
     f <= 0 ? LINE_SOFT
-    : f < 0.4 ? "#e2d3a8"
+    : f < 0.4 ? "color-mix(in oklab, var(--gold) 32%, var(--line-soft))"
     : f < 0.8 ? GLEAM
-    : f < 1 ? "#b8963f"
+    : f < 1 ? "color-mix(in oklab, var(--gold) 75%, var(--gold-gleam))"
     : GOLD;
   return (
     <div className={cn("flex justify-center gap-[3px]", className)} role="img" aria-label="Daily rite completion, last weeks">
@@ -206,18 +215,20 @@ export function Ring({ pct, size = 64, stroke = 5, children, className }: {
   return (
     <div className={cn("relative inline-flex items-center justify-center", className)} style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90" aria-hidden>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={LINE_SOFT} strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" style={{ stroke: LINE_SOFT }} strokeWidth={stroke} />
         <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
-          stroke={clamped >= 1 ? GOLD : GLEAM}
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={circ}
           strokeDashoffset={circ * (1 - clamped)}
-          style={{ transition: "stroke-dashoffset 0.6s ease, stroke 0.3s ease" }}
+          style={{
+            stroke: clamped >= 1 ? GOLD : GLEAM,
+            transition: "stroke-dashoffset 0.6s ease, stroke 0.3s ease",
+          }}
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">{children}</div>

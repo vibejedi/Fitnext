@@ -85,7 +85,7 @@ export function ProgressPhotos() {
                   {/* signed URLs are short-lived — plain img, not next/image */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.url} alt={`Progress week ${i + 1}`} className="h-full w-full object-cover" />
-                  <span className="absolute left-1.5 top-1.5 rounded-[2px] border border-line bg-[rgba(251,248,241,0.9)] px-[5px] py-px text-[7px] uppercase tracking-[0.2em] text-sec lg:text-[8px]">
+                  <span className="absolute left-1.5 top-1.5 rounded-[2px] border border-line bg-[color-mix(in_srgb,var(--panel)_90%,transparent)] px-[5px] py-px text-[7px] uppercase tracking-[0.2em] text-sec lg:text-[8px]">
                     W {toRoman(i + 1)}
                   </span>
                 </div>
@@ -141,7 +141,7 @@ function PhotoPlaceholder({ label, gold }: { label: string; gold: boolean }) {
     >
       <span
         className={cn(
-          "absolute left-1.5 top-1.5 rounded-[2px] border bg-[rgba(251,248,241,0.9)] px-[5px] py-px text-[7px] uppercase tracking-[0.2em] lg:text-[8px]",
+          "absolute left-1.5 top-1.5 rounded-[2px] border bg-[color-mix(in_srgb,var(--panel)_90%,transparent)] px-[5px] py-px text-[7px] uppercase tracking-[0.2em] lg:text-[8px]",
           gold ? "border-line-strong text-gold" : "border-line text-sec"
         )}
       >

@@ -124,7 +124,7 @@ export function CoachPortrait({ coach, videoUrl, playing, onClick, className, ra
   ring: number;
   shadow?: boolean;
 }) {
-  const inset = `inset 0 0 0 ${ring}px #f7f4ec, inset 0 0 0 ${ring + 1}px #cbbb92`;
+  const inset = `inset 0 0 0 ${ring}px var(--page-top), inset 0 0 0 ${ring + 1}px var(--line-strong)`;
   return (
     <div className={cn("relative cursor-pointer", className)} onClick={onClick} role="button" aria-label={`Play Coach ${coach.name}'s message`}>
       <div
@@ -166,7 +166,7 @@ export function CoachPortrait({ coach, videoUrl, playing, onClick, className, ra
         />
       )}
       {!playing && (
-        <span className="absolute bottom-1.5 right-1.5 flex h-[22px] w-[22px] items-center justify-center rounded-full border border-line-strong bg-[rgba(251,248,241,0.92)] shadow-[0_2px_6px_-2px_rgba(70,58,30,0.4)] lg:bottom-1 lg:right-1 lg:h-5 lg:w-5">
+        <span className="absolute bottom-1.5 right-1.5 flex h-[22px] w-[22px] items-center justify-center rounded-full border border-line-strong bg-[color-mix(in_srgb,var(--panel)_92%,transparent)] shadow-[0_2px_6px_-2px_rgba(70,58,30,0.4)] lg:bottom-1 lg:right-1 lg:h-5 lg:w-5">
           <Play size={9} className="fill-gold text-gold" />
         </span>
       )}

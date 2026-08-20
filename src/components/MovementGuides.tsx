@@ -133,7 +133,7 @@ function GuideCard({ guide }: { guide: Guide }) {
         {guide.dur}
       </span>
       {!showVideo && (
-        <span className="absolute left-1/2 top-1/2 flex h-[26px] w-[26px] -translate-x-1/2 -translate-y-[60%] items-center justify-center rounded-full border border-line-strong bg-[rgba(251,248,241,0.9)]">
+        <span className="absolute left-1/2 top-1/2 flex h-[26px] w-[26px] -translate-x-1/2 -translate-y-[60%] items-center justify-center rounded-full border border-line-strong bg-[color-mix(in_srgb,var(--panel)_90%,transparent)]">
           <Play size={9} className="fill-gold text-gold" />
         </span>
       )}
