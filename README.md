@@ -32,7 +32,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 ## iOS · TestFlight (Capacitor shell)
 
 The native iOS app is a Capacitor shell that loads the deployed web app
-(`server.url` in `capacitor.config.ts`, currently `https://fitnext.vercel.app`).
+(`server.url` in `capacitor.config.ts`, currently `https://fitnext.tech`).
 
 On a Mac with Xcode + CocoaPods installed:
 

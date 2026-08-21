@@ -4,7 +4,7 @@
  *
  * Usage:
  *   node scripts/strava-subscribe.mjs                 # create (default callback)
- *   node scripts/strava-subscribe.mjs --url https://fitnext.vercel.app/api/strava/webhook
+ *   node scripts/strava-subscribe.mjs --url https://fitnext.tech/api/strava/webhook
  *   node scripts/strava-subscribe.mjs --list
  *   node scripts/strava-subscribe.mjs --delete <id>
  *
@@ -53,7 +53,7 @@ if (delId) {
   process.exit(res.status === 204 ? 0 : 1);
 }
 
-const callback = arg("url") ?? "https://fitnext.vercel.app/api/strava/webhook";
+const callback = arg("url") ?? "https://fitnext.tech/api/strava/webhook";
 const res = await fetch(ENDPOINT, {
   method: "POST",
   headers: { "Content-Type": "application/x-www-form-urlencoded" },

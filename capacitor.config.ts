@@ -16,7 +16,7 @@ const config: CapacitorConfig = {
   appName: "FitNext",
   webDir: "capacitor-www",
   server: {
-    url: "https://fitnext.vercel.app",
+    url: "https://fitnext.tech",
     cleartext: false,
   },
   ios: {
