@@ -47,7 +47,9 @@ export function AppShell({ children, maxWidth = "max-w-[1280px]" }: {
   return (
     <div className="flex min-h-dvh flex-col">
       {/* header */}
-      <header className="sticky top-0 z-20 border-b border-line bg-[color-mix(in_srgb,var(--page-top)_92%,transparent)] backdrop-blur">
+      {/* The pad lets the marble bleed up behind the iOS status bar instead of
+          letting the clock land on top of the wordmark. Zero in a browser. */}
+      <header className="sticky top-0 z-20 border-b border-line bg-[color-mix(in_srgb,var(--page-top)_92%,transparent)] pt-[env(safe-area-inset-top)] backdrop-blur">
         <div className={cn("mx-auto flex h-[54px] w-full items-center justify-between px-[18px] lg:h-[60px] lg:px-8", maxWidth)}>
           <div className="flex items-center gap-5">
             {/* Wordmark is itself a link home — don't nest another <a> */}

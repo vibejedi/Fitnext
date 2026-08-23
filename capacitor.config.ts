@@ -8,6 +8,10 @@ import type { CapacitorConfig } from "@capacitor/cli";
  * statically. Point `server.url` at a preview deployment to beta-test a
  * branch. `webDir` only holds the offline fallback page.
  *
+ * The entry point is /login rather than the marketing landing page: everyone
+ * on the TestFlight build already has an account, so the pitch is wasted on
+ * them. /login sends an existing session straight through to the dashboard.
+ *
  * Mac workflow: npm install → npx cap add ios → npx cap open ios
  * (set the Signing Team in Xcode, then Product → Archive for TestFlight).
  */
@@ -16,7 +20,7 @@ const config: CapacitorConfig = {
   appName: "FitNext",
   webDir: "capacitor-www",
   server: {
-    url: "https://fitnext.tech",
+    url: "https://fitnext.tech/login",
     cleartext: false,
   },
   ios: {

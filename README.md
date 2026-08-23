@@ -34,23 +34,28 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The native iOS app is a Capacitor shell that loads the deployed web app
 (`server.url` in `capacitor.config.ts`, currently `https://fitnext.tech`).
 
-On a Mac with Xcode + CocoaPods installed:
+On a Mac with Xcode installed (Capacitor 8 resolves native deps with Swift
+Package Manager, so CocoaPods is not needed):
 
 ```bash
 npm install
-npx cap add ios     # generates the ios/ Xcode project (first time only)
-npx cap open ios    # opens Xcode
+npx cap add ios              # generates the ios/ Xcode project (first time only)
+./scripts/ios-permissions.sh # required — see below
+npx cap open ios             # opens Xcode
 ```
+
+`ios/` is generated and is not tracked in git, so `ios-permissions.sh` has to be
+re-run after every `cap add ios`. It writes the four privacy usage descriptions
+iOS demands before the web view may reach the hardware: camera and photo library
+for meal/progress shots, microphone *and* speech recognition for coach voice
+input. A missing key is not a silent denial — iOS kills the app on first use.
 
 In Xcode:
 
 1. **Signing & Capabilities** → select your Team; bundle ID is `com.vibejedi.fitnext`.
-2. Add mic access for voice chat: in `ios/App/App/Info.plist` add
-   `NSMicrophoneUsageDescription` — "FitNext uses the microphone so you can talk to your coach."
-   (Camera/photo prompts are handled by the web view automatically.)
-3. Test on a cable-connected iPhone with ▶, then **Product → Archive** →
+2. Test on a cable-connected iPhone with ▶, then **Product → Archive** →
    **Distribute App → App Store Connect** to upload.
-4. In App Store Connect → **TestFlight**, add yourself as an Internal Tester
+3. In App Store Connect → **TestFlight**, add yourself as an Internal Tester
    (no review wait) and install via the TestFlight app.
 
 After changing `capacitor.config.ts`, run `npx cap sync ios` before rebuilding.

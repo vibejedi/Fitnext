@@ -1,0 +1,4 @@
+# Shell scripts run on the macOS build box. CRLF endings would make the shebang
+# unparseable there ("bad interpreter: /usr/bin/env bash^M"), so keep them LF
+# no matter what core.autocrlf is set to on the machine that commits them.
+*.sh text eol=lf

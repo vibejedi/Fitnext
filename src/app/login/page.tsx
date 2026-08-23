@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
@@ -20,6 +20,22 @@ export default function LoginPage() {
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  // The iOS shell opens on this page, so it doubles as the app's entry point.
+  // An athlete who signed in on a previous launch should never see the form.
+  const [checking, setChecking] = useState(isSupabaseConfigured);
+
+  useEffect(() => {
+    const sb = getSupabaseBrowser();
+    if (!sb) return;
+    sb.auth
+      .getSession()
+      .then(({ data }) => {
+        if (data.session) router.replace("/dashboard");
+        else setChecking(false);
+      })
+      .catch(() => setChecking(false));
+  }, [router]);
 
   const signIn = async () => {
     const sb = getSupabaseBrowser();
@@ -84,10 +100,22 @@ export default function LoginPage() {
   const field =
     "panel w-full bg-stone-850 px-3 py-3 text-marble outline-none focus:border-green/60";
 
+  // Hold the wordmark rather than the form while the session resolves, so a
+  // signed-in athlete never sees a sign-in screen flash past on launch.
+  if (checking) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center">
+        <Wordmark className="text-base opacity-40" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="border-b border-line">
-        <div className="mx-auto w-full max-w-md px-6 py-4"><Wordmark className="text-base" /></div>
+        <div className="mx-auto w-full max-w-md px-6 pb-4 pt-[max(16px,env(safe-area-inset-top))]">
+          <Wordmark className="text-base" />
+        </div>
       </header>
 
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-12">
