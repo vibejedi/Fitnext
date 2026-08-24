@@ -8,7 +8,7 @@ export const GOALS = [
 ] as const;
 
 export const EXPERIENCE = [
-  { id: "newcomer", label: "Newcomer", hint: "0–1 yr training" },
+  { id: "newcomer", label: "Newcomer", hint: "Never trained? Perfect — start here" },
   { id: "intermediate", label: "Intermediate", hint: "1–3 yrs, know the basics" },
   { id: "advanced", label: "Advanced", hint: "3+ yrs, dialed in" },
 ] as const;
@@ -26,12 +26,14 @@ export const ACTIVITY = [
   { id: "high", label: "Very active", hint: "Physical job / daily training" },
 ] as const;
 
+// Home-first: most athletes start in the living room, so those doors come
+// first. Ids are stored in profiles — labels can change, ids cannot.
 export const EQUIPMENT = [
-  { id: "full-gym", label: "Full gym" },
-  { id: "home-basic", label: "Home — basics", hint: "Dumbbells, bands" },
+  { id: "home-basic", label: "Home — the essentials", hint: "Dumbbells, kettlebells, bands" },
+  { id: "bodyweight", label: "Nothing yet", hint: "Bodyweight only — plenty to start" },
   { id: "home-rack", label: "Home — rack & barbell" },
-  { id: "bodyweight", label: "Bodyweight only" },
   { id: "outdoor", label: "Outdoors / track" },
+  { id: "full-gym", label: "Full gym" },
 ] as const;
 
 export const DAYS = [1, 2, 3, 4, 5, 6, 7] as const;

@@ -25,14 +25,14 @@ const GODS = [
   { id: "kratos", name: "Kratos", route: "Powerlifting", img: "/brand/coach-kratos.png",
     line: "The bar goes up. Every excuse stays on the floor.",
     stats: [["Strength", 5], ["Power", 4], ["Endurance", 2], ["Mobility", 2]] as const },
-  { id: "prometheus", name: "Prometheus", route: "Hybrid Fitness", img: "/brand/coach-prometheus.png",
-    line: "Fire stolen from every discipline, forged into one plan.",
+  { id: "prometheus", name: "Prometheus", route: "Hybrid Athlete · Strength", img: "/brand/coach-prometheus.png",
+    line: "A pair of dumbbells and fire enough — the whole athlete, forged at home.",
     stats: [["Strength", 4], ["Power", 3], ["Endurance", 4], ["Mobility", 3]] as const },
   { id: "adonis", name: "Adonis", route: "Bodybuilding", img: "/brand/coach-adonis.png",
     line: "Sculpt the body the way the masters carved marble.",
     stats: [["Strength", 4], ["Power", 3], ["Endurance", 3], ["Mobility", 2]] as const },
-  { id: "nike", name: "Nike", route: "CrossFit", img: "/brand/coach-nike.png",
-    line: "Victory is a habit. Train it daily.",
+  { id: "nike", name: "Nike", route: "Hybrid Athlete · Engine", img: "/brand/coach-nike.png",
+    line: "Victory is a habit — bands, rope, laps. Built at home, one round at a time.",
     stats: [["Strength", 3], ["Power", 4], ["Endurance", 5], ["Mobility", 3]] as const },
   { id: "atalanta", name: "Atalanta", route: "Calisthenics", img: "/brand/coach-atalanta.png",
     line: "Your body is the only barbell you will ever need.",
@@ -216,7 +216,8 @@ export default function Landing() {
             </h2>
             <p className="mx-auto mt-3 max-w-[520px] text-[15px] text-sec">
               Six immortals on the dais. Drag the wheel to turn it — tap a god to read their
-              focus and measure.
+              focus and measure. No gym required: most of the temple trains at home, and
+              never-lifted-before is exactly where the gods like to start.
             </p>
           </div>
           <motion.div {...reveal}>
@@ -446,8 +447,9 @@ export default function Landing() {
             The temple is open.
           </h2>
           <p className="mt-4 text-[15px] leading-relaxed text-sec">
-            Daily rites, nutrition tracked to the gram, movement guides for every labor —
-            and a coach who answers when you speak. Your first trial is inscribed and waiting.
+            Start in your living room with a pair of dumbbells — or nothing at all. Daily
+            rites, nutrition tracked to the gram, movement guides for every labor, and a
+            coach who answers when you speak. Your first trial is inscribed and waiting.
           </p>
           <div className="mt-[34px] flex flex-wrap items-center justify-center gap-3.5">
             <EnterButton />
@@ -457,7 +459,7 @@ export default function Landing() {
           </div>
           <GoldDivider lineWidth={54} className="mt-11" />
           <p className="mt-[18px] font-mono text-[9px] uppercase tracking-[0.3em] text-faint">
-            Free trial · No card · Mortals welcome
+            30 days free · No gym · No card · Mortals welcome
           </p>
         </motion.div>
       </section>

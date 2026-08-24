@@ -23,11 +23,12 @@ export const COACHES: Coach[] = [
     id: "prometheus",
     name: "Prometheus",
     title: "The Pioneer",
-    route: "Hybrid Fitness",
-    tagline: "Strength, conditioning, and stamina — the complete athlete.",
-    domain: "blended strength + endurance training",
+    route: "Hybrid Athlete · Strength",
+    tagline: "Dumbbells, kettlebells, and fire enough — the complete athlete, forged at home.",
+    domain:
+      "home-first hybrid training, strength-leaning — dumbbells, kettlebells and bands as the base, endurance work (running, rowing, jump rope, swimming) mixed in; assumes no gym and welcomes absolute beginners",
     image: "/brand/coach-prometheus.png",
-    focuses: ["Strength + endurance in one plan", "Work capacity", "Conditioning"],
+    focuses: ["Home strength — dumbbells & kettlebells", "Strength + endurance in one plan", "Never lifted? Starts from zero"],
     muscles: ["Full body", "Heart", "Lungs", "Fast & slow-twitch fibers"],
   },
   {
@@ -56,11 +57,12 @@ export const COACHES: Coach[] = [
     id: "nike",
     name: "Nike",
     title: "The Victor",
-    route: "CrossFit",
-    tagline: "Functional intensity. Compete with yesterday's you.",
-    domain: "high-intensity functional conditioning",
+    route: "Hybrid Athlete · Engine",
+    tagline: "Bands, bodyweight, and heart — mixed with running, rope, rows, or laps.",
+    domain:
+      "home-first hybrid training, conditioning-leaning — resistance bands, bodyweight and light dumbbell circuits, mixed with running, swimming, jump rope and rowing; assumes no gym and welcomes absolute beginners",
     image: "/brand/coach-nike.png",
-    focuses: ["Functional conditioning", "Power endurance", "Varied high intensity"],
+    focuses: ["Home circuits — bands & bodyweight", "Mix in running, swimming, rope, or row", "Power endurance"],
     muscles: ["Full body", "Heart", "Lungs", "Core", "Fast & slow-twitch mix"],
   },
   {
