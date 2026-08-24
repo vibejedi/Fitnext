@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" width="640" height="560">
+  <rect width="640" height="560" fill="#ffffff"/>
+  <g fill="none" stroke="#0a0a0a" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+    <!-- top long stroke: droops at left tip, sweeps up-right, curls at top right -->
+    <path d="M 113 234 C 108 216, 118 205, 134 202 C 240 192, 340 181, 422 166 C 448 161, 466 150, 475 133 C 483 118, 486 103, 477 95 C 468 87, 449 91, 437 104"/>
+    <!-- left vertical stem (F stem), slight leftward bow -->
+    <path d="M 173 200 C 164 258, 152 318, 150 378 C 149 414, 150 440, 155 456"/>
+    <!-- middle crossbar with small upward flick at right end -->
+    <path d="M 160 291 C 222 283, 282 274, 326 265 C 337 263, 347 259, 353 253"/>
+    <!-- right leg dropping from crossbar end, slightly lower than left stem -->
+    <path d="M 327 268 C 333 320, 337 372, 335 416 C 334 446, 332 466, 329 479"/>
+  </g>
+</svg>
