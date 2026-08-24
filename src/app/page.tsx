@@ -530,9 +530,6 @@ function CoachRing() {
         />
         <div className="absolute bottom-[26px] left-1/2 h-[130px] w-[680px] max-w-[96%] -translate-x-1/2 rounded-full border border-line opacity-60" />
 
-        {/* the facing god's name, engraved across the dais front */}
-        <DaisInscription key={shown.id} name={shown.name} />
-
         {/* 3D ring — drag anywhere on it to spin */}
         <div
           className="relative mb-[60px] h-[330px] w-[190px]"
@@ -655,41 +652,6 @@ function CoachRing() {
         Drag to spin · tap a god to choose · three move in living marble
       </p>
     </div>
-  );
-}
-
-/* The god's name at monument scale, filling the dais border. textLength trues
-   up whatever Cinzel renders so long names ("Prometheus") span the pill exactly,
-   while short ones ("Nike") take inscription-wide tracking instead of stretching
-   into comically large glyphs. aria-hidden: the card's portrait alt and the
-   stats tablet already announce the name. */
-function DaisInscription({ name }: { name: string }) {
-  const fontSize = Math.min(80, 560 / (name.length * 0.72));
-  const natural = name.length * 0.72 * fontSize;
-  const engraveLength = Math.min(560, Math.round(natural * 1.5));
-  return (
-    <svg
-      viewBox="0 0 600 96"
-      aria-hidden="true"
-      className="pointer-events-none absolute bottom-[42px] left-1/2 w-[600px] max-w-[86%] -translate-x-1/2"
-      style={{ animation: "daisEngrave 0.8s ease" }}
-    >
-      <text
-        x="300"
-        y="74"
-        textAnchor="middle"
-        textLength={engraveLength}
-        lengthAdjust="spacing"
-        className="font-display font-extrabold"
-        style={{
-          fontSize,
-          fill: "var(--ink)",
-          filter: "drop-shadow(0 1.5px 0 rgba(255,255,255,0.8))",
-        }}
-      >
-        {name}
-      </text>
-    </svg>
   );
 }
 
