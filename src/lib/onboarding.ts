@@ -38,4 +38,4 @@ export const EQUIPMENT = [
 
 export const DAYS = [1, 2, 3, 4, 5, 6, 7] as const;
 
-export const TOTAL_STEPS = 7;
+export const TOTAL_STEPS = 8;

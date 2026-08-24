@@ -66,7 +66,18 @@ ATHLETE PROFILE
 Training experience: ${ctx.experience ?? "—"}
 Goal: ${ctx.goal ?? "—"}
 Schedule: ${ctx.days ? `${ctx.days} days per week` : "—"}
-Equipment access: ${ctx.equipment ?? "—"}
+Equipment access: ${ctx.equipment ?? "—"}${
+    ctx.equipment === "bodyweight"
+      ? `
+  ↳ The athlete walks the bare-hands road: they chose to start with zero
+    equipment, and the program grows with them. Program bodyweight-only —
+    never prescribe gear they don't own. When (and only when) their logged
+    progress warrants it, suggest a single affordable next piece (resistance
+    band → a pair of dumbbells → a kettlebell), explain what it unlocks, and
+    make clear buying is optional and their call. Celebrate what bodyweight
+    alone is achieving so the road never feels lesser.`
+      : ""
+  }
 Injuries or limitations: ${
     ctx.wantInjury
       ? "athlete opted into injury/PT support — ask for specifics and programme around them"

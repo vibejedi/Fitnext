@@ -5,7 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Apple, Check, ChevronDown, HeartPulse } from "lucide-react";
+import {
+  ArrowLeft, ArrowRight, Apple, Check, ChevronDown, Dumbbell, HeartPulse, Sparkles,
+} from "lucide-react";
 import { Wordmark } from "@/components/Brand";
 import { Choice } from "@/components/Choice";
 import { COACHES, type CoachId } from "@/lib/coaches";
@@ -27,11 +29,22 @@ import { cn } from "@/lib/utils";
 // three.js stage — client-only, loaded lazily so the wizard stays light
 const CoachStage = dynamic(() => import("@/components/CoachStage"), { ssr: false });
 
+/** The first fork: athletes with gear (or a gym) and athletes with none walk
+ *  different roads. Empty-handed is a full path, not a fallback — bodyweight
+ *  to begin, and the program tells them what's worth buying only when their
+ *  progress earns it. */
+type Path = "equipped" | "bare";
+
 function OnboardingInner() {
   const router = useRouter();
   const params = useSearchParams();
   const fit = useFit();
   const [step, setStep] = useState(0);
+  // rehydrate the fork from a previously chosen equipment (back-navigation,
+  // resumed onboarding); bodyweight ⇒ the bare-hands path
+  const [path, setPath] = useState<Path | null>(
+    fit.equipment === "bodyweight" ? "bare" : fit.equipment ? "equipped" : null
+  );
 
   // preselect coach from ?coach=
   useEffect(() => {
@@ -42,12 +55,22 @@ function OnboardingInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const pickPath = (p: Path) => {
+    setPath(p);
+    if (p === "bare") {
+      fit.set("equipment", "bodyweight");
+    } else if (fit.equipment === "bodyweight") {
+      fit.set("equipment", null); // they'll pick their gear on the access step
+    }
+  };
+
   const canAdvance = (() => {
     switch (step) {
-      case 0: return !!fit.coach;
-      case 1: return !!fit.goal;
-      case 2: return !!fit.experience;
-      case 3:
+      case 0: return !!path;
+      case 1: return !!fit.coach;
+      case 2: return !!fit.goal;
+      case 3: return !!fit.experience;
+      case 4:
         return (
           !!fit.profile.age &&
           !!fit.profile.weightKg &&
@@ -55,9 +78,9 @@ function OnboardingInner() {
           !!fit.profile.sex &&
           !!fit.profile.activity
         );
-      case 4: return !!fit.equipment && !!fit.days;
-      case 5: return true;
-      case 6: return !!fit.personality;
+      case 5: return !!fit.equipment && !!fit.days;
+      case 6: return true;
+      case 7: return !!fit.personality;
       default: return false;
     }
   })();
@@ -105,8 +128,9 @@ function OnboardingInner() {
             transition={{ duration: 0.25 }}
             className="flex-1"
           >
-            {step === 0 && <StepCoach />}
-            {step === 1 && (
+            {step === 0 && <StepPath path={path} onPick={pickPath} />}
+            {step === 1 && <StepCoach path={path} />}
+            {step === 2 && (
               <Step title="What's your primary goal?" sub="This drives everything your coach plans.">
                 <div className="grid grid-cols-2 gap-3">
                   {GOALS.map((g) => (
@@ -116,7 +140,7 @@ function OnboardingInner() {
                 </div>
               </Step>
             )}
-            {step === 2 && (
+            {step === 3 && (
               <Step title="How experienced are you?" sub="Sets your volume, complexity, and pace.">
                 <div className="grid gap-3">
                   {EXPERIENCE.map((e) => (
@@ -126,10 +150,10 @@ function OnboardingInner() {
                 </div>
               </Step>
             )}
-            {step === 3 && <StepProfile />}
-            {step === 4 && <StepAccess />}
-            {step === 5 && <StepAddons />}
-            {step === 6 && (
+            {step === 4 && <StepProfile />}
+            {step === 5 && <StepAccess path={path} />}
+            {step === 6 && <StepAddons />}
+            {step === 7 && (
               <Step title="Pick your coach's personality" sub="Same coach, different voice.">
                 <div className="grid grid-cols-2 gap-3">
                   {PERSONALITIES.map((p) => (
@@ -173,11 +197,81 @@ function Step({ title, sub, children }: { title: string; sub?: string; children:
   );
 }
 
-function StepCoach() {
+function StepPath({ path, onPick }: { path: Path | null; onPick: (p: Path) => void }) {
+  const doors: {
+    id: Path; icon: React.ReactNode; title: string; sub: string; note: string;
+  }[] = [
+    {
+      id: "bare",
+      icon: <Sparkles size={20} />,
+      title: "Empty-handed",
+      sub: "No equipment — just you. That's not a limitation, it's the classic way in.",
+      note: "Start today in your living room. When your progress earns it, your coach names the one piece of gear worth buying — nothing before that, nothing required ever.",
+    },
+    {
+      id: "equipped",
+      icon: <Dumbbell size={20} />,
+      title: "I have iron",
+      sub: "Dumbbells at home, a rack in the garage, or a gym membership.",
+      note: "Your plan is built around exactly what you have — no exercise ever calls for gear you don't own.",
+    },
+  ];
+  return (
+    <Step
+      title="How will you begin?"
+      sub="Two roads up the mountain. Both reach the top."
+    >
+      <div className="grid gap-3 sm:grid-cols-2">
+        {doors.map((d) => {
+          const selected = path === d.id;
+          return (
+            <button
+              key={d.id}
+              onClick={() => onPick(d.id)}
+              className={cn(
+                "panel panel-hover flex flex-col gap-3 px-5 py-5 text-left",
+                selected && "border-green/60"
+              )}
+              style={
+                selected
+                  ? { boxShadow: "0 0 0 1px var(--gold), 0 12px 28px -14px rgba(70,58,30,0.5)" }
+                  : undefined
+              }
+            >
+              <span className="flex items-center gap-3">
+                <span
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-lg border",
+                    selected ? "border-green/50 text-green" : "border-line text-muted"
+                  )}
+                >
+                  {d.icon}
+                </span>
+                <span className="font-display text-lg font-bold text-marble">{d.title}</span>
+                {selected && <Check size={15} className="ml-auto text-green" strokeWidth={3} />}
+              </span>
+              <span className="text-[13px] leading-relaxed text-marble-dim">{d.sub}</span>
+              <span className="text-[11px] leading-relaxed text-muted">{d.note}</span>
+            </button>
+          );
+        })}
+      </div>
+    </Step>
+  );
+}
+
+function StepCoach({ path }: { path: Path | null }) {
   const fit = useFit();
   const [open, setOpen] = useState<CoachId | null>(null);
   return (
-    <Step title="Choose your god" sub="Your coach's name, domain, and training style.">
+    <Step
+      title="Choose your god"
+      sub={
+        path === "bare"
+          ? "All six train the empty-handed. Atalanta was born for it; Nike and Prometheus build you from zero."
+          : "Your coach's name, domain, and training style."
+      }
+    >
       <div className="grid grid-cols-2 items-start gap-3 sm:grid-cols-3">
         {COACHES.map((c) => {
           const isChosen = fit.coach === c.id;
@@ -343,17 +437,50 @@ function StepProfile() {
   );
 }
 
-function StepAccess() {
+/** The road the empty-handed walk: no gear today, and a clear, unpressured
+ *  view of how the program grows if they ever want it to. */
+const BARE_ROAD = [
+  ["Just you", "Squats, push-ups, lunges, holds — a full program, nothing needed."],
+  ["A band, when reps get easy", "Your coach will say when — it costs about as much as a coffee run."],
+  ["A pair of dumbbells, when you're ready", "The plan folds each piece in the day it arrives. Buying is always your call."],
+] as const;
+
+function StepAccess({ path }: { path: Path | null }) {
   const fit = useFit();
+  const bare = path === "bare";
   return (
-    <Step title="What can you train with?" sub="Equipment and how many days a week.">
-      <p className="mb-2 text-xs uppercase tracking-wider text-muted">Equipment</p>
-      <div className="grid grid-cols-2 gap-3">
-        {EQUIPMENT.map((e) => (
-          <Choice key={e.id} label={e.label} hint={"hint" in e ? e.hint : undefined}
-            selected={fit.equipment === e.id} onClick={() => fit.set("equipment", e.id)} />
-        ))}
-      </div>
+    <Step
+      title={bare ? "How many days a week?" : "What can you train with?"}
+      sub={bare
+        ? "Your gear is already here — it's you. Pick a cadence you can keep."
+        : "Equipment and how many days a week."}
+    >
+      {bare ? (
+        <div className="panel flex flex-col gap-3 px-4 py-4">
+          <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-green">
+            The bare-hands road — it grows with you
+          </p>
+          {BARE_ROAD.map(([t, s], i) => (
+            <div key={t} className="flex gap-3">
+              <span className="font-display text-[15px] font-bold text-green">{["I", "II", "III"][i]}</span>
+              <span>
+                <span className="block text-[13px] font-medium text-marble">{t}</span>
+                <span className="block text-[11px] leading-relaxed text-muted">{s}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          <p className="mb-2 text-xs uppercase tracking-wider text-muted">Equipment</p>
+          <div className="grid grid-cols-2 gap-3">
+            {EQUIPMENT.filter((e) => e.id !== "bodyweight").map((e) => (
+              <Choice key={e.id} label={e.label} hint={"hint" in e ? e.hint : undefined}
+                selected={fit.equipment === e.id} onClick={() => fit.set("equipment", e.id)} />
+            ))}
+          </div>
+        </>
+      )}
       <p className="mb-2 mt-6 text-xs uppercase tracking-wider text-muted">Days per week</p>
       <div className="flex flex-wrap gap-2">
         {DAYS.map((d) => (
