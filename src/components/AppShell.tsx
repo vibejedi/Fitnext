@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Wordmark, MeanderBand } from "@/components/Brand";
 import { AuthButton } from "@/components/AuthButton";
+import { TrialWall } from "@/components/TrialWall";
 import { useFit, type Theme, type UiMode } from "@/lib/store";
 import { cn, toRoman } from "@/lib/utils";
 
@@ -136,6 +137,9 @@ export function AppShell({ children, maxWidth = "max-w-[1280px]" }: {
           })}
         </div>
       </nav>
+
+      {/* the thirty-day gate — seals every module screen once the trial ends */}
+      <TrialWall />
     </div>
   );
 }

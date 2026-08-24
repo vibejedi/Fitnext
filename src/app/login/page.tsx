@@ -5,9 +5,23 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Wordmark, GreekKey } from "@/components/Brand";
+import { WalletSignIn } from "@/components/WalletSignIn";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { usernameToEmail, USERNAME_RE, PASSWORD_MIN } from "@/lib/auth";
+
+/** Where to land after auth. `?next=strava` chains straight into the Strava
+ *  OAuth hand-off (the landing page's "arrive with your history" door). */
+function afterAuth(router: { push: (p: string) => void; replace: (p: string) => void }, replace = false) {
+  const next = new URLSearchParams(window.location.search).get("next");
+  if (next === "strava") {
+    // a server redirect route — leave the SPA router out of it
+    window.location.assign("/api/strava/connect");
+    return;
+  }
+  if (replace) router.replace("/dashboard");
+  else router.push("/dashboard");
+}
 
 type Mode = "signin" | "signup";
 
@@ -31,7 +45,7 @@ export default function LoginPage() {
     sb.auth
       .getSession()
       .then(({ data }) => {
-        if (data.session) router.replace("/dashboard");
+        if (data.session) afterAuth(router, true);
         else setChecking(false);
       })
       .catch(() => setChecking(false));
@@ -89,7 +103,7 @@ export default function LoginPage() {
         }
       }
       await signIn();
-      router.push("/dashboard");
+      afterAuth(router);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Something went wrong — try again.");
     } finally {
@@ -202,6 +216,8 @@ export default function LoginPage() {
             </button>
 
             {err && <p className="text-sm text-red-400">{err}</p>}
+
+            <WalletSignIn onSignedIn={() => afterAuth(router)} />
 
             <p className="pt-2 text-center text-xs text-muted">
               <Link href="/dashboard" className="hover:text-marble">

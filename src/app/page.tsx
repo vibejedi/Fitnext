@@ -8,7 +8,10 @@ import { useRouter } from "next/navigation";
 import {
   motion, useScroll, useMotionValueEvent, useReducedMotion,
 } from "framer-motion";
-import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
+import {
+  ArrowRight, ChevronDown, ChevronLeft, ChevronRight, ChevronUp,
+  Activity, Coins, Wallet, Watch,
+} from "lucide-react";
 import { Wordmark, MeanderBand, GoldDivider } from "@/components/Brand";
 import { COACH_MODELS } from "@/lib/coachModels";
 import type { CoachId } from "@/lib/coaches";
@@ -40,6 +43,23 @@ const GODS = [
 ];
 
 const HERO_WORDS = ["Every", "legend", "begins", "with", "a", "single", "rep."];
+
+/* Act V — the tribute. One free month, then the plan of your choosing. */
+const TIERS = [
+  { name: "First 30 Days", price: "Free", per: "no card · full temple", best: false },
+  { name: "Monthly", price: "$8.99", per: "per month", best: false },
+  { name: "Quarterly", price: "$22.99", per: "≈ $7.66 / month", best: false },
+  { name: "Semi-Annual", price: "$44.99", per: "≈ $7.50 / month", best: false },
+  { name: "Annual", price: "$74.99", per: "≈ $6.25 / month", best: true },
+];
+
+/* The crypto path into the temple, step by step. */
+const CRYPTO_STEPS = [
+  ["Forge a wallet", "Phantom or Solflare on your phone — two minutes, no forms."],
+  ["Enter the gate with it", "Choose “Continue with a Solana wallet” at sign-up. The wallet is your name here; no email for thirty days."],
+  ["Keep USDC for the tribute", "Plans will be payable in USDC on Solana at checkout — same prices, no card."],
+  ["The Vault opens to wallets first", "Monthly rewards tied to training performance land for wallet members first."],
+] as const;
 
 /* Act III — real screens from the app, framed like votive tablets. */
 const APP_SHOTS = [
@@ -109,6 +129,12 @@ export default function Landing() {
               className="text-[11px] uppercase tracking-[0.2em] text-sec hover:text-ink"
             >
               The Coaches
+            </a>
+            <a
+              href="#tribute"
+              className="hidden text-[11px] uppercase tracking-[0.2em] text-sec hover:text-ink sm:inline"
+            >
+              The Tribute
             </a>
             <Link href="/login" className="btn-ghost px-4 py-2 text-[11px] tracking-[0.14em]">
               Enter
@@ -230,10 +256,176 @@ export default function Landing() {
       {/* meander divider */}
       <MeanderBand className="mx-auto my-10 max-w-[1180px]" />
 
-      {/* ACT IV — entry */}
+      {/* ACT IV — the emissary (Strava) */}
+      <section id="strava" className="px-5 pt-14 sm:px-8 lg:pt-[80px]">
+        <motion.div {...reveal} className="mx-auto max-w-[760px] text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act IV</p>
+          <h2
+            className="mt-2.5 font-display font-bold"
+            style={{ fontSize: "clamp(30px, 4vw, 52px)" }}
+          >
+            Arrive with your history
+          </h2>
+          <p className="mx-auto mt-3 max-w-[560px] text-[15px] leading-relaxed text-sec">
+            Your past labors count. Link Strava and your recent training marches in with
+            you — every run, ride, and session from your watch, and every workout that
+            ends from this day on lands in the temple by itself.
+          </p>
+
+          {/* the sync road: watch → Strava → temple */}
+          <div className="mx-auto mt-8 flex max-w-[560px] flex-wrap items-center justify-center gap-2.5">
+            <span className="flex items-center gap-2 rounded-full border border-line-strong bg-panel px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-sec">
+              <Watch size={13} className="text-gold" /> Garmin · Apple · Coros · Polar
+            </span>
+            <ArrowRight size={13} className="text-faint" aria-hidden />
+            <span
+              className="flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white"
+              style={{ background: "#FC4C02" }}
+            >
+              <Activity size={13} /> Strava
+            </span>
+            <ArrowRight size={13} className="text-faint" aria-hidden />
+            <span className="flex items-center gap-2 rounded-full border border-line-strong bg-panel px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-gold">
+              The Temple
+            </span>
+          </div>
+
+          <div className="mt-8">
+            <Link
+              href="/login?next=strava"
+              className="inline-flex items-center gap-2.5 rounded-[4px] px-8 py-[15px] text-[12px] font-bold uppercase tracking-[0.16em] text-white shadow-[0_14px_28px_-14px_rgba(252,76,2,0.65)] transition-transform active:translate-y-px"
+              style={{ background: "linear-gradient(175deg, #ff6a2b 0%, #fc4c02 55%, #d94100 100%)" }}
+            >
+              <Activity size={15} /> Connect Strava &amp; enter
+            </Link>
+          </div>
+          <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.24em] text-faint">
+            New here? The gate opens your account first — then Strava hands over your history.
+          </p>
+        </motion.div>
+      </section>
+
+      {/* meander divider */}
+      <MeanderBand className="mx-auto my-10 max-w-[1180px]" />
+
+      {/* ACT V — the tribute (pricing + the crypto path) */}
+      <section id="tribute" className="px-5 pt-14 sm:px-8 lg:pt-[80px]">
+        <div className="mx-auto max-w-[1080px]">
+          <motion.div {...reveal} className="text-center">
+            <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act V</p>
+            <h2
+              className="mt-2.5 font-display font-bold"
+              style={{ fontSize: "clamp(30px, 4vw, 52px)" }}
+            >
+              The tribute
+            </h2>
+            <p className="mx-auto mt-3 max-w-[520px] text-[15px] text-sec">
+              Thirty days free for every mortal — no card at the door. Stay, and choose
+              how you pay tribute.
+            </p>
+          </motion.div>
+
+          <motion.div
+            {...reveal}
+            className="mt-11 grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-5"
+          >
+            {TIERS.map((t) => (
+              <div
+                key={t.name}
+                className={cn("relative flex flex-col items-center gap-1.5 px-4 py-6 text-center", !t.best && "panel")}
+                style={
+                  t.best
+                    ? {
+                        borderRadius: 6,
+                        background:
+                          "linear-gradient(165deg, #e9d191 0%, #d3b25e 45%, #b08d3e 100%)",
+                        boxShadow:
+                          "0 0 0 1px #a8863b, inset 0 1px 0 rgba(255,248,225,0.75), 0 18px 36px -18px rgba(70,58,30,0.55)",
+                      }
+                    : undefined
+                }
+              >
+                {t.best && (
+                  <span className="absolute -top-2.5 rounded-full border border-[#8a6f28] bg-[#fdf8ea] px-2.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#8a6f28]">
+                    Best value
+                  </span>
+                )}
+                <span
+                  className={cn(
+                    "text-[10px] font-semibold uppercase tracking-[0.18em]",
+                    t.best ? "text-[#5c4a1a]" : "text-sec"
+                  )}
+                >
+                  {t.name}
+                </span>
+                <span
+                  className={cn(
+                    "font-display text-[26px] font-extrabold leading-none",
+                    t.best ? "text-[#3c300f]" : t.price === "Free" ? "text-gold" : "text-ink"
+                  )}
+                >
+                  {t.price}
+                </span>
+                <span
+                  className={cn(
+                    "font-mono text-[9px] uppercase tracking-[0.12em]",
+                    t.best ? "text-[#6d5a22]" : "text-faint"
+                  )}
+                >
+                  {t.per}
+                </span>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* the crypto path */}
+          <motion.div {...reveal} className="panel mx-auto mt-9 max-w-[820px]">
+            <div className="flex items-center justify-between gap-3 border-b border-line-soft px-5 py-3.5">
+              <div className="flex items-center gap-2.5">
+                <Coins size={15} className="text-gold" />
+                <span className="font-display text-[13px] font-bold uppercase tracking-[0.16em]">
+                  Join with crypto
+                </span>
+              </div>
+              <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-faint">
+                Solana · USDC
+              </span>
+            </div>
+            <ol className="grid grid-cols-1 gap-x-6 gap-y-4 px-5 py-5 sm:grid-cols-2">
+              {CRYPTO_STEPS.map(([title, sub], i) => (
+                <li key={title} className="flex gap-3">
+                  <span className="mt-0.5 font-display text-[15px] font-bold text-gold">
+                    {toRoman(i + 1)}
+                  </span>
+                  <span>
+                    <span className="block text-[12px] font-semibold text-ink">{title}</span>
+                    <span className="mt-0.5 block text-[11px] leading-relaxed text-sec">{sub}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line-soft px-5 py-3.5">
+              <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-faint">
+                Card checkout works everywhere · crypto is the scenic route
+              </p>
+              <Link
+                href="/login"
+                className="btn-ghost inline-flex items-center gap-2 px-4 py-2.5 text-[10px] tracking-[0.14em]"
+              >
+                <Wallet size={12} className="text-gold" /> Enter with a wallet
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* meander divider */}
+      <MeanderBand className="mx-auto my-10 max-w-[1180px]" />
+
+      {/* ACT VI — entry */}
       <section id="enter" className="px-5 pb-[110px] pt-12 sm:px-8 lg:pt-[80px]">
         <motion.div {...reveal} className="mx-auto max-w-[680px] text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act IV</p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act VI</p>
           <h2
             className="mt-3 font-display font-extrabold leading-[1.12]"
             style={{ fontSize: "clamp(34px, 5vw, 60px)" }}
