@@ -516,22 +516,10 @@ function CoachRing() {
 
   return (
     <div>
-      <div className="relative flex h-[440px] items-center justify-center">
-        {/* marble dais */}
-        <div
-          className="absolute bottom-9 left-1/2 h-[120px] w-[620px] max-w-[90%] -translate-x-1/2 rounded-full border border-line-strong"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 42%, #fbf8f1 0%, #efe7d2 55%, #e2d7bb 100%)",
-            boxShadow:
-              "inset 0 4px 12px rgba(255,255,255,0.8), inset 0 -8px 16px rgba(70,58,30,0.14), 0 18px 34px -20px rgba(70,58,30,0.5)",
-          }}
-        />
-        <div className="absolute bottom-[26px] left-1/2 h-[130px] w-[680px] max-w-[96%] -translate-x-1/2 rounded-full border border-line opacity-60" />
-
+      <div className="relative flex h-[380px] items-center justify-center">
         {/* 3D ring — drag anywhere on it to spin */}
         <div
-          className="relative mb-[60px] h-[330px] w-[190px]"
+          className="relative h-[330px] w-[190px]"
           style={{ perspective: 1300, touchAction: "pan-y", cursor: dragging ? "grabbing" : "grab" }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
