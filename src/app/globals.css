@@ -87,6 +87,12 @@
   box-shadow: 0 0 0 1px rgba(211, 178, 94, 0.35), 0 10px 24px -12px rgba(0, 0, 0, 0.6);
 }
 
+/* Theme-matched logo mark: the stone-pillar edition on Marble, the ivory
+   edition on Obsidian. Both render; the theme picks which one shows. */
+.logo-obsidian { display: none; }
+[data-theme="obsidian"] .logo-marble { display: none; }
+[data-theme="obsidian"] .logo-obsidian { display: inline-block; }
+
 @theme inline {
   /* marble tokens */
   --color-panel: var(--panel);

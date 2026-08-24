@@ -152,6 +152,13 @@ export default function Landing() {
           className="sticky top-0 flex h-dvh flex-col items-center justify-center gap-8 overflow-hidden px-6"
         >
           <div ref={glowRef} className="pointer-events-none absolute inset-0" aria-hidden />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logo-light.png"
+            alt="FitNext — the pillar and the bolt"
+            className="-mb-2 w-[74px] transition-opacity duration-500 sm:w-[88px]"
+            style={{ opacity: p > 0.04 ? 1 : 0 }}
+          />
           <p
             className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold transition-opacity duration-500"
             style={{ opacity: p > 0.04 ? 1 : 0 }}
@@ -426,6 +433,12 @@ export default function Landing() {
       <section id="enter" className="px-5 pb-[110px] pt-12 sm:px-8 lg:pt-[80px]">
         <motion.div {...reveal} className="mx-auto max-w-[680px] text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.44em] text-gold">Act VI</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logo-light.png"
+            alt=""
+            className="mx-auto mt-5 w-[64px]"
+          />
           <h2
             className="mt-3 font-display font-extrabold leading-[1.12]"
             style={{ fontSize: "clamp(34px, 5vw, 60px)" }}

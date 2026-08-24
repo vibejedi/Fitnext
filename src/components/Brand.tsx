@@ -6,12 +6,20 @@ export function Wordmark({ className }: { className?: string }) {
     <Link
       href="/"
       className={cn(
-        "font-display text-xl font-bold tracking-[0.1em] select-none",
+        "inline-flex items-center gap-[0.5em] font-display text-xl font-bold tracking-[0.1em] select-none",
         className
       )}
     >
-      <span className="text-ink">FIT</span>
-      <span className="text-gold">NEXT</span>
+      {/* the pillar-and-bolt mark, matched to the temple's face — the swap is
+          pure CSS (see globals.css) so it never flashes on theme change */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/logo-light.png" alt="" className="logo-marble h-[1.55em] w-auto" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/logo-dark.png" alt="" className="logo-obsidian h-[1.55em] w-auto" />
+      <span>
+        <span className="text-ink">FIT</span>
+        <span className="text-gold">NEXT</span>
+      </span>
     </Link>
   );
 }

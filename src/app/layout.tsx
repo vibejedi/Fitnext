@@ -28,6 +28,13 @@ export const metadata: Metadata = {
     title: "FitNext",
     statusBarStyle: "default",
   },
+  // link previews (iMessage, X, Discord…) show the dark logo tile
+  openGraph: {
+    title: "FitNext — Your AI Fitness Coach, forged by the gods",
+    siteName: "FitNext",
+    images: ["/brand/logo-tile.png"],
+  },
+  twitter: { card: "summary", images: ["/brand/logo-tile.png"] },
 };
 
 export const viewport: Viewport = {
