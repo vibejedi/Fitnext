@@ -48,6 +48,9 @@ const arg = (name, fallback) => {
 const RATE = arg("rate", 1); // tokens per laurel
 const MIN = arg("min", 1);   // minimum laurels to be included
 
+// Rewards are paid on Solana (base58 addresses). Legacy 0x entries predate
+// the migration — counted separately so the owner can chase stragglers.
+const SOL_RE = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const ETH_RE = /^0x[a-fA-F0-9]{40}$/;
 
 const sb = createClient(url, key, { auth: { persistSession: false } });
@@ -64,8 +67,9 @@ if (error) {
 }
 
 const rows = (data ?? []).filter(
-  (r) => ETH_RE.test(r.wallet_address ?? "") && (r.laurels ?? 0) >= MIN
+  (r) => SOL_RE.test(r.wallet_address ?? "") && (r.laurels ?? 0) >= MIN
 );
+const legacyEth = (data ?? []).filter((r) => ETH_RE.test(r.wallet_address ?? "")).length;
 const skipped = (data ?? []).length - rows.length;
 
 const day = new Date().toISOString().slice(0, 10);
@@ -84,6 +88,11 @@ writeFileSync(`payouts-${day}.json`, JSON.stringify(json, null, 2) + "\n");
 const total = rows.reduce((a, r) => a + r.laurels * RATE, 0);
 console.log(
   `${rows.length} payout${rows.length === 1 ? "" : "s"} · ${total.toLocaleString()} LAUREL total` +
-  ` (rate ${RATE}/laurel, min ${MIN} laurels${skipped > 0 ? `, ${skipped} skipped — no valid wallet or below min` : ""})`
+  ` (rate ${RATE}/laurel, min ${MIN} laurels${skipped > 0 ? `, ${skipped} skipped — no valid Solana wallet or below min` : ""})`
 );
+if (legacyEth > 0) {
+  console.log(
+    `⚠ ${legacyEth} athlete${legacyEth === 1 ? " still has" : "s still have"} a legacy Ethereum address on file — they see a migrate nudge in the Hall.`
+  );
+}
 console.log(`→ payouts-${day}.csv, payouts-${day}.json`);
