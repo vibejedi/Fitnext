@@ -110,5 +110,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ email, password });
+  // solanaAddress rides along so the client can adopt it as the reward
+  // address (rewards are paid in SOL — same wallet they just signed in with)
+  return NextResponse.json({ email, password, solanaAddress });
 }

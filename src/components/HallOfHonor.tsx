@@ -12,17 +12,17 @@ import { pushProfile } from "@/lib/sync";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { USERNAME_RE, PASSWORD_MIN } from "@/lib/auth";
-import { REWARDS_CHAIN, explorerAddressUrl } from "@/lib/chain";
+import {
+  REWARDS_CHAIN, SOL_ADDRESS_RE, isLegacyEthAddress, explorerAddressUrl,
+} from "@/lib/chain";
 import { cn } from "@/lib/utils";
 
 /**
  * The Hall of Honor — the laurel leaderboard. Entry is earned, not free:
  * the athlete must hold a real account (username + password), verify their
- * email, and may optionally register an Ethereum address for rewards
- * (seasonal prizes are paid out in ETH).
+ * email, and may optionally register a Solana address for rewards
+ * (seasonal prizes are paid out in SOL).
  */
-
-const ETH_RE = /^0x[a-fA-F0-9]{40}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SYNTHETIC_DOMAIN = "@users.fitnext.app";
 
@@ -51,14 +51,16 @@ export function HallOfHonor() {
   useEffect(() => { void refreshUser(); }, [refreshUser]);
 
   // Close the loop after the email round-trip: a verified athlete who hasn't
-  // been marked enrolled yet gets their seat (and any wallet they entered
-  // during signup, carried in user metadata) written to the profile.
+  // been marked enrolled yet gets their seat (and any wallet they carry in
+  // user metadata — the Privy-linked Solana address first) written to the
+  // profile.
   useEffect(() => {
     if (!user || !isVerified(user) || fit.hallJoined) return;
     const s = useFit.getState();
     s.set("hallJoined", true);
-    const metaWallet = user.user_metadata?.wallet_address;
-    if (!s.walletAddress && typeof metaWallet === "string" && ETH_RE.test(metaWallet)) {
+    const metaWallet =
+      user.user_metadata?.solana_address ?? user.user_metadata?.wallet_address;
+    if (!s.walletAddress && typeof metaWallet === "string" && SOL_ADDRESS_RE.test(metaWallet)) {
       s.set("walletAddress", metaWallet);
     }
     void pushProfile(useFit.getState());
@@ -100,8 +102,8 @@ export function HallOfHonor() {
           </div>
           <WalletRow />
           <p className="border-t border-line-soft bg-panel-alt px-[14px] py-2 text-[9px] text-faint lg:px-[18px]">
-            Seasonal honors are rewarded in ETH on {REWARDS_CHAIN.name} — Ethereum L2, same 0x
-            address. Alpha leaderboard — global ranks arrive with the public season.
+            Seasonal honors are rewarded in SOL on {REWARDS_CHAIN.name} — the same wallet
+            you can sign in with. Alpha leaderboard — global ranks arrive with the public season.
           </p>
         </div>
       ) : (
@@ -127,7 +129,7 @@ export function HallOfHonor() {
             </p>
             <p className="max-w-xs px-4 text-center text-[10px] text-sec lg:text-[11px]">
               {isSupabaseConfigured
-                ? "Claim a verified name to compete for laurels — and ETH rewards."
+                ? "Claim a verified name to compete for laurels — and SOL rewards."
                 : "Leaderboard & rewards — coming soon"}
             </p>
             {isSupabaseConfigured && checked && (
@@ -162,8 +164,12 @@ function WalletRow() {
 
   const save = () => {
     const v = value.trim();
-    if (v && !ETH_RE.test(v)) {
-      setErr("That doesn't look like an Ethereum address (0x + 40 hex characters).");
+    if (v && !SOL_ADDRESS_RE.test(v)) {
+      setErr(
+        isLegacyEthAddress(v)
+          ? "That's an Ethereum address — rewards moved to Solana. Paste your Solana wallet address instead."
+          : "That doesn't look like a Solana address (base58, 32-44 characters)."
+      );
       return;
     }
     const s = useFit.getState();
@@ -181,7 +187,7 @@ function WalletRow() {
           <input
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder="0x… Ethereum address (leave blank to remove)"
+            placeholder="Solana address (leave blank to remove)"
             spellCheck={false}
             autoCapitalize="none"
             className="min-w-0 flex-1 rounded-[3px] border border-line bg-panel-alt px-2 py-1.5 font-mono text-[11px] text-ink outline-none placeholder:font-sans placeholder:text-faint focus:border-line-strong"
@@ -199,10 +205,18 @@ function WalletRow() {
   }
 
   if (wallet) {
+    const legacy = isLegacyEthAddress(wallet);
     return (
       <div className="flex w-full items-center gap-2 border-t border-line-soft px-[14px] py-2.5 lg:px-[18px]">
         <Wallet size={13} className="shrink-0 text-gold" />
-        <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-ink">{shortAddr(wallet)}</span>
+        <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-ink">
+          {shortAddr(wallet)}
+          {legacy && (
+            <span className="ml-2 font-sans text-[9px] text-clay">
+              Ethereum address — rewards moved to Solana, tap the pencil to update
+            </span>
+          )}
+        </span>
         <span className="rounded-[3px] border border-line px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.12em] text-gold">
           {REWARDS_CHAIN.name}
         </span>
@@ -233,7 +247,7 @@ function WalletRow() {
     >
       <Wallet size={13} className="shrink-0 text-gold" />
       <span className="flex-1 text-[11px] text-sec">
-        Add an Ethereum address for rewards <span className="text-faint">(optional)</span>
+        Add a Solana address for rewards <span className="text-faint">(optional)</span>
       </span>
       <Pencil size={11} className="text-faint" />
     </button>
@@ -265,8 +279,10 @@ function EnrollSheet({ user, onDismiss }: { user: User | null; onDismiss: () => 
 
   const validateWallet = (): string | null => {
     const w = wallet.trim();
-    if (w && !ETH_RE.test(w)) {
-      return "That doesn't look like an Ethereum address (0x + 40 hex characters). Leave it blank to skip.";
+    if (w && !SOL_ADDRESS_RE.test(w)) {
+      return isLegacyEthAddress(w)
+        ? "That's an Ethereum address — rewards moved to Solana. Paste a Solana wallet address, or leave it blank to skip."
+        : "That doesn't look like a Solana address (base58, 32-44 characters). Leave it blank to skip.";
     }
     return null;
   };
@@ -402,7 +418,7 @@ function EnrollSheet({ user, onDismiss }: { user: User | null; onDismiss: () => 
             Enter the Hall of Honor
           </h2>
           <p className="mt-0.5 font-mono text-[8px] uppercase tracking-[0.24em] text-gold">
-            Verified names only · Rewards in ETH on {REWARDS_CHAIN.name}
+            Verified names only · Rewards in SOL on {REWARDS_CHAIN.name}
           </p>
         </div>
         <button onClick={onDismiss} className="p-1.5 text-sec hover:text-ink" aria-label="Close">
@@ -501,14 +517,14 @@ function EnrollSheet({ user, onDismiss }: { user: User | null; onDismiss: () => 
             <input
               value={wallet}
               onChange={(e) => setWallet(e.target.value)}
-              placeholder="0x… Ethereum address"
+              placeholder="Solana address"
               spellCheck={false}
               autoCapitalize="none"
               className={cn(field, "font-mono text-[12px] placeholder:font-sans")}
             />
             <span className="text-[9px] leading-relaxed text-faint">
-              Seasonal honors are rewarded in ETH on {REWARDS_CHAIN.name} — an Ethereum L2, so
-              any normal 0x address works.
+              Seasonal honors are rewarded in SOL on {REWARDS_CHAIN.name}. Signed in with a
+              wallet? That address is used automatically — this is only for overriding it.
             </span>
           </label>
 

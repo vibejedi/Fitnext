@@ -5,6 +5,9 @@ import { PrivyProvider, usePrivy } from "@privy-io/react-auth";
 import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
 import { Wallet } from "lucide-react";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
+import { SOL_ADDRESS_RE } from "@/lib/chain";
+import { useFit } from "@/lib/store";
+import { pushProfile } from "@/lib/sync";
 
 /**
  * "Continue with a Solana wallet" — Privy authenticates the wallet
@@ -73,6 +76,17 @@ function WalletButton({ onSignedIn }: { onSignedIn: () => void }) {
           password: data.password,
         });
         if (error) throw new Error(error.message);
+        // the wallet that opened the door is also where SOL rewards go —
+        // adopt it as the reward address unless one is already set
+        const s = useFit.getState();
+        if (
+          !s.walletAddress &&
+          typeof data.solanaAddress === "string" &&
+          SOL_ADDRESS_RE.test(data.solanaAddress)
+        ) {
+          s.set("walletAddress", data.solanaAddress);
+          void pushProfile(useFit.getState());
+        }
         onSignedIn();
       } catch (e) {
         setErr(e instanceof Error ? e.message : "Wallet sign-in failed — try again.");

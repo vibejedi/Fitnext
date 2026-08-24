@@ -142,7 +142,7 @@ export interface FitState {
   /** Hall of Honor enrollment: done once the athlete has created a verified
    *  account (username + password + email) via the Hall gate. */
   hallJoined: boolean;
-  /** Optional Ethereum address rewards are sent to (0x…, 40 hex chars). */
+  /** Optional Solana address rewards are sent to (base58, 32-44 chars). */
   walletAddress: string | null;
   /** Current coach video (backend-rotated weekly/bi-weekly); null → still portrait. */
   coachVideoUrl: string | null;

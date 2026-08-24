@@ -8,6 +8,7 @@ import { useFit, localDay } from "@/lib/store";
 import { pushProfile } from "@/lib/sync";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { SOL_ADDRESS_RE, isLegacyEthAddress } from "@/lib/chain";
 import { cn } from "@/lib/utils";
 
 /**
@@ -21,7 +22,6 @@ import { cn } from "@/lib/utils";
 const TRIAL_DAYS = 30;
 const SYNTHETIC_DOMAIN = "@users.fitnext.app";
 const LOCAL_START_KEY = "fitnext-trial-start";
-const ETH_RE = /^0x[a-fA-F0-9]{40}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const isVerified = (u: User | null): boolean =>
@@ -133,8 +133,12 @@ function ClaimForm({ user, onRefresh }: { user: User; onRefresh: () => Promise<v
       return;
     }
     const w = wallet.trim();
-    if (w && !ETH_RE.test(w)) {
-      setErr("That doesn't look like an Ethereum address (0x + 40 hex). Leave it blank to skip.");
+    if (w && !SOL_ADDRESS_RE.test(w)) {
+      setErr(
+        isLegacyEthAddress(w)
+          ? "That's an Ethereum address — rewards are paid on Solana now. Paste a Solana wallet address, or leave it blank."
+          : "That doesn't look like a Solana address (base58, 32-44 characters). Leave it blank to skip."
+      );
       return;
     }
     const sb = getSupabaseBrowser();
@@ -220,7 +224,7 @@ function ClaimForm({ user, onRefresh }: { user: User; onRefresh: () => Promise<v
         <input
           value={wallet}
           onChange={(e) => setWallet(e.target.value)}
-          placeholder="0x… Ethereum address"
+          placeholder="Solana address"
           spellCheck={false}
           autoCapitalize="none"
           className={cn(field, "font-mono text-[12px] placeholder:font-sans")}
