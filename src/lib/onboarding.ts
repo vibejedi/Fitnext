@@ -8,7 +8,7 @@ export const GOALS = [
 ] as const;
 
 export const EXPERIENCE = [
-  { id: "newcomer", label: "Newcomer", hint: "Never trained? Perfect — start here" },
+  { id: "newcomer", label: "Newcomer", hint: "First time. Start here" },
   { id: "intermediate", label: "Intermediate", hint: "1–3 yrs, know the basics" },
   { id: "advanced", label: "Advanced", hint: "3+ yrs, dialed in" },
 ] as const;
@@ -30,7 +30,7 @@ export const ACTIVITY = [
 // first. Ids are stored in profiles — labels can change, ids cannot.
 export const EQUIPMENT = [
   { id: "home-basic", label: "Home — the essentials", hint: "Dumbbells, kettlebells, bands" },
-  { id: "bodyweight", label: "Nothing yet", hint: "Bodyweight only — plenty to start" },
+  { id: "bodyweight", label: "Nothing yet", hint: "Bodyweight. Plenty to start" },
   { id: "home-rack", label: "Home — rack & barbell" },
   { id: "outdoor", label: "Outdoors / track" },
   { id: "full-gym", label: "Full gym" },

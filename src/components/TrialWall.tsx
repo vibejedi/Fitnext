@@ -90,9 +90,8 @@ export function TrialWall() {
             Thirty days are spent
           </h2>
           <p className="max-w-sm text-[12px] leading-relaxed text-sec">
-            The free trial has run its course. Claim a verified name — a real
-            email carved beside your record — to keep training and take your
-            seat on the leaderboard.
+            Your thirty days are done. Add a real email to keep training and
+            take your seat in the Hall.
           </p>
         </div>
         {user ? (
@@ -100,8 +99,8 @@ export function TrialWall() {
         ) : (
           <div className="flex flex-col items-center gap-3 px-6 py-6">
             <p className="text-center text-[11px] text-sec">
-              This device has trained account-less. Create your account to keep
-              your momentum — your local record stays with you.
+              You&apos;ve trained without an account. Make one. Your record
+              comes with you.
             </p>
             <Link href="/login" className="btn-primary flex items-center gap-2 px-6 py-3 text-xs">
               <Lock size={13} /> Create your account
@@ -189,9 +188,9 @@ function ClaimForm({ user, onRefresh }: { user: User; onRefresh: () => Promise<v
       <div className="flex flex-col items-center gap-2.5 px-6 py-6 text-center">
         <MailCheck size={18} className="text-gold" />
         <p className="text-[12px] leading-relaxed text-sec">
-          A verification link is on its way to{" "}
-          <span className="font-semibold text-ink">{sentTo}</span>. Tap it and
-          the temple reopens — trial over, record intact.
+          A link is on its way to{" "}
+          <span className="font-semibold text-ink">{sentTo}</span>. Tap it. The
+          temple reopens.
         </p>
         {err && <p className="text-[11px] text-clay">{err}</p>}
         <div className="flex gap-2.5">
@@ -239,7 +238,7 @@ function ClaimForm({ user, onRefresh }: { user: User; onRefresh: () => Promise<v
         {busy ? "Sending…" : "Verify & reopen the temple"}
       </button>
       <p className="text-center text-[9px] leading-relaxed text-faint">
-        Your training record, streak, and laurels carry over untouched.
+        Streak, laurels, records. All carry over.
       </p>
     </div>
   );

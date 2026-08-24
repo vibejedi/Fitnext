@@ -24,11 +24,11 @@ export const COACHES: Coach[] = [
     name: "Prometheus",
     title: "The Pioneer",
     route: "Hybrid Athlete · Strength",
-    tagline: "Dumbbells, kettlebells, and fire enough — the complete athlete, forged at home.",
+    tagline: "Dumbbells, kettlebells, fire. The complete athlete, built at home.",
     domain:
       "home-first hybrid training, strength-leaning — dumbbells, kettlebells and bands as the base, endurance work (running, rowing, jump rope, swimming) mixed in; assumes no gym and welcomes absolute beginners",
     image: "/brand/coach-prometheus.png",
-    focuses: ["Home strength — dumbbells & kettlebells", "Strength + endurance in one plan", "Never lifted? Starts from zero"],
+    focuses: ["Home strength — dumbbells & kettlebells", "Strength + endurance in one plan", "Starts from zero"],
     muscles: ["Full body", "Heart", "Lungs", "Fast & slow-twitch fibers"],
   },
   {
@@ -58,7 +58,7 @@ export const COACHES: Coach[] = [
     name: "Nike",
     title: "The Victor",
     route: "Hybrid Athlete · Engine",
-    tagline: "Bands, bodyweight, and heart — mixed with running, rope, rows, or laps.",
+    tagline: "Bands, bodyweight, heart. Road, rope, water, rower.",
     domain:
       "home-first hybrid training, conditioning-leaning — resistance bands, bodyweight and light dumbbell circuits, mixed with running, swimming, jump rope and rowing; assumes no gym and welcomes absolute beginners",
     image: "/brand/coach-nike.png",

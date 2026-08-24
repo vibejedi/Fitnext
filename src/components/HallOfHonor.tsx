@@ -102,8 +102,8 @@ export function HallOfHonor() {
           </div>
           <WalletRow />
           <p className="border-t border-line-soft bg-panel-alt px-[14px] py-2 text-[9px] text-faint lg:px-[18px]">
-            Seasonal honors are rewarded in SOL on {REWARDS_CHAIN.name} — the same wallet
-            you can sign in with. Alpha leaderboard — global ranks arrive with the public season.
+            Rewards in SOL on {REWARDS_CHAIN.name} — the wallet you sign in with.
+            Global ranks arrive with the public season.
           </p>
         </div>
       ) : (
@@ -129,7 +129,7 @@ export function HallOfHonor() {
             </p>
             <p className="max-w-xs px-4 text-center text-[10px] text-sec lg:text-[11px]">
               {isSupabaseConfigured
-                ? "Claim a verified name to compete for laurels — and SOL rewards."
+                ? "A verified name competes for laurels — and SOL."
                 : "Leaderboard & rewards — coming soon"}
             </p>
             {isSupabaseConfigured && checked && (
@@ -435,9 +435,9 @@ function EnrollSheet({ user, onDismiss }: { user: User | null; onDismiss: () => 
             Check your email
           </p>
           <p className="max-w-xs text-[11px] leading-relaxed text-sec">
-            A verification link is on its way to{" "}
+            A link is on its way to{" "}
             <span className="font-semibold text-ink">{sentTo ?? user?.email}</span>.
-            Tap it, come back, and your seat in the Hall is carved.
+            Tap it. Your seat is carved.
           </p>
           {err && <p className="text-[11px] text-clay">{err}</p>}
           <div className="mt-1 flex gap-2.5">
@@ -453,11 +453,9 @@ function EnrollSheet({ user, onDismiss }: { user: User | null; onDismiss: () => 
         <div className="flex flex-col gap-3 px-4 py-4">
           <p className="text-[11px] leading-relaxed text-sec">
             {step === "signup" ? (
-              <>The Hall ranks real athletes. Create your account — username, password, and a
-              verified email — to compete for laurels.</>
+              <>The Hall ranks real athletes. Username, password, verified email.</>
             ) : (
-              <>Your training account is ready — add a verified email to claim your seat in
-              the Hall.</>
+              <>Add a verified email. Claim your seat.</>
             )}
           </p>
 
@@ -523,8 +521,8 @@ function EnrollSheet({ user, onDismiss }: { user: User | null; onDismiss: () => 
               className={cn(field, "font-mono text-[12px] placeholder:font-sans")}
             />
             <span className="text-[9px] leading-relaxed text-faint">
-              Seasonal honors are rewarded in SOL on {REWARDS_CHAIN.name}. Signed in with a
-              wallet? That address is used automatically — this is only for overriding it.
+              Rewards land in SOL. Wallet sign-ins use that address automatically —
+              this overrides it.
             </span>
           </label>
 

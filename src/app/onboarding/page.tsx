@@ -205,21 +205,21 @@ function StepPath({ path, onPick }: { path: Path | null; onPick: (p: Path) => vo
       id: "bare",
       icon: <Sparkles size={20} />,
       title: "Empty-handed",
-      sub: "No equipment — just you. That's not a limitation, it's the classic way in.",
-      note: "Start today in your living room. When your progress earns it, your coach names the one piece of gear worth buying — nothing before that, nothing required ever.",
+      sub: "No gear. Just you. It's how the old ones started.",
+      note: "Start today. When you outgrow bodyweight, your coach names the next piece worth owning. Buying is always your call.",
     },
     {
       id: "equipped",
       icon: <Dumbbell size={20} />,
       title: "I have iron",
-      sub: "Dumbbells at home, a rack in the garage, or a gym membership.",
-      note: "Your plan is built around exactly what you have — no exercise ever calls for gear you don't own.",
+      sub: "Dumbbells at home, a rack in the garage, or a gym.",
+      note: "The plan uses what you own. Nothing more.",
     },
   ];
   return (
     <Step
       title="How will you begin?"
-      sub="Two roads up the mountain. Both reach the top."
+      sub="Two roads. Same summit."
     >
       <div className="grid gap-3 sm:grid-cols-2">
         {doors.map((d) => {
@@ -268,7 +268,7 @@ function StepCoach({ path }: { path: Path | null }) {
       title="Choose your god"
       sub={
         path === "bare"
-          ? "All six train the empty-handed. Atalanta was born for it; Nike and Prometheus build you from zero."
+          ? "All six train the empty-handed. Atalanta was born for it."
           : "Your coach's name, domain, and training style."
       }
     >
@@ -440,9 +440,9 @@ function StepProfile() {
 /** The road the empty-handed walk: no gear today, and a clear, unpressured
  *  view of how the program grows if they ever want it to. */
 const BARE_ROAD = [
-  ["Just you", "Squats, push-ups, lunges, holds — a full program, nothing needed."],
-  ["A band, when reps get easy", "Your coach will say when — it costs about as much as a coffee run."],
-  ["A pair of dumbbells, when you're ready", "The plan folds each piece in the day it arrives. Buying is always your call."],
+  ["Just you", "Squats, push-ups, lunges, holds. A full program."],
+  ["A band, when reps get easy", "Your coach says when. It costs less than a gym month."],
+  ["Dumbbells, when you're ready", "The plan folds them in the day they arrive."],
 ] as const;
 
 function StepAccess({ path }: { path: Path | null }) {
@@ -452,13 +452,13 @@ function StepAccess({ path }: { path: Path | null }) {
     <Step
       title={bare ? "How many days a week?" : "What can you train with?"}
       sub={bare
-        ? "Your gear is already here — it's you. Pick a cadence you can keep."
+        ? "Pick a cadence you can keep. That's the whole secret."
         : "Equipment and how many days a week."}
     >
       {bare ? (
         <div className="panel flex flex-col gap-3 px-4 py-4">
           <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-green">
-            The bare-hands road — it grows with you
+            The bare-hands road
           </p>
           {BARE_ROAD.map(([t, s], i) => (
             <div key={t} className="flex gap-3">

@@ -26,13 +26,13 @@ const GODS = [
     line: "The bar goes up. Every excuse stays on the floor.",
     stats: [["Strength", 5], ["Power", 4], ["Endurance", 2], ["Mobility", 2]] as const },
   { id: "prometheus", name: "Prometheus", route: "Hybrid Athlete · Strength", img: "/brand/coach-prometheus.png",
-    line: "A pair of dumbbells and fire enough — the whole athlete, forged at home.",
+    line: "Dumbbells and fire. The whole athlete, built at home.",
     stats: [["Strength", 4], ["Power", 3], ["Endurance", 4], ["Mobility", 3]] as const },
   { id: "adonis", name: "Adonis", route: "Bodybuilding", img: "/brand/coach-adonis.png",
     line: "Sculpt the body the way the masters carved marble.",
     stats: [["Strength", 4], ["Power", 3], ["Endurance", 3], ["Mobility", 2]] as const },
   { id: "nike", name: "Nike", route: "Hybrid Athlete · Engine", img: "/brand/coach-nike.png",
-    line: "Victory is a habit — bands, rope, laps. Built at home, one round at a time.",
+    line: "Victory is a habit. Bands, rope, laps. Daily.",
     stats: [["Strength", 3], ["Power", 4], ["Endurance", 5], ["Mobility", 3]] as const },
   { id: "atalanta", name: "Atalanta", route: "Calisthenics", img: "/brand/coach-atalanta.png",
     line: "Your body is the only barbell you will ever need.",
@@ -55,10 +55,10 @@ const TIERS = [
 
 /* The crypto path into the temple, step by step. */
 const CRYPTO_STEPS = [
-  ["Forge a wallet", "Phantom or Solflare on your phone — two minutes, no forms."],
-  ["Enter the gate with it", "Choose “Continue with a Solana wallet” at sign-up. The wallet is your name here; no email for thirty days."],
-  ["Keep USDC for the tribute", "Plans will be payable in USDC on Solana at checkout — same prices, no card."],
-  ["The Vault opens to wallets first", "Monthly rewards tied to training performance land for wallet members first."],
+  ["Forge a wallet", "Phantom or Solflare. Two minutes."],
+  ["Enter with it", "Sign up with the wallet. It's your name here."],
+  ["Keep USDC", "Same prices, paid in USDC when checkout opens."],
+  ["The Vault favors wallets", "Monthly rewards for training performance. Wallets get them first."],
 ] as const;
 
 /* Act III — real screens from the app, framed like votive tablets. */
@@ -215,9 +215,8 @@ export default function Landing() {
               Choose your coach
             </h2>
             <p className="mx-auto mt-3 max-w-[520px] text-[15px] text-sec">
-              Six immortals on the dais. Drag the wheel to turn it — tap a god to read their
-              focus and measure. No gym required: most of the temple trains at home, and
-              never-lifted-before is exactly where the gods like to start.
+              Six immortals. Drag the wheel, tap a god. No gym required — most of the
+              temple trains at home.
             </p>
           </div>
           <motion.div {...reveal}>
@@ -241,7 +240,7 @@ export default function Landing() {
               Within the temple
             </h2>
             <p className="mx-auto mt-3 max-w-[520px] text-[15px] text-sec">
-              Not mockups — the temple as it stands, three tablets from the app itself.
+              Not mockups. Three screens from the app as it stands.
             </p>
           </div>
           <motion.div
@@ -275,9 +274,8 @@ export default function Landing() {
             Arrive with your history
           </h2>
           <p className="mx-auto mt-3 max-w-[560px] text-[15px] leading-relaxed text-sec">
-            Your past labors count. Link Strava and your recent training marches in with
-            you — every run, ride, and session from your watch, and every workout that
-            ends from this day on lands in the temple by itself.
+            Your past work counts. Link Strava and it walks in with you — every run,
+            ride, and lift from your watch, synced without being asked.
           </p>
 
           {/* the sync road: watch → Strava → temple */}
@@ -308,7 +306,7 @@ export default function Landing() {
             </Link>
           </div>
           <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.24em] text-faint">
-            New here? The gate opens your account first — then Strava hands over your history.
+            New here? Make your account at the gate. Strava follows.
           </p>
         </motion.div>
       </section>
@@ -328,8 +326,7 @@ export default function Landing() {
               The tribute
             </h2>
             <p className="mx-auto mt-3 max-w-[520px] text-[15px] text-sec">
-              Thirty days free for every mortal — no card at the door. Stay, and choose
-              how you pay tribute.
+              Thirty days free. No card at the door. If you stay, choose your tribute.
             </p>
           </motion.div>
 
@@ -447,9 +444,9 @@ export default function Landing() {
             The temple is open.
           </h2>
           <p className="mt-4 text-[15px] leading-relaxed text-sec">
-            Start in your living room with a pair of dumbbells — or nothing at all. Daily
-            rites, nutrition tracked to the gram, movement guides for every labor, and a
-            coach who answers when you speak. Your first trial is inscribed and waiting.
+            Start in your living room. Dumbbells or nothing at all. Daily rites,
+            nutrition to the gram, a guide for every labor, a coach who answers.
+            Thirty days are yours.
           </p>
           <div className="mt-[34px] flex flex-wrap items-center justify-center gap-3.5">
             <EnterButton />
@@ -744,7 +741,7 @@ function DoARep({ visible }: { visible: boolean }) {
           reps >= 5 ? "opacity-100" : "opacity-0"
         )}
       >
-        {toRoman(Math.max(reps, 5))} already. A legend stirs — the temple is below.
+        {toRoman(Math.max(reps, 5))} already. The temple is below.
       </span>
     </div>
   );

@@ -138,7 +138,7 @@ export default function LoginPage() {
           {mode === "signin" ? "Sign in to FitNext" : "Create your account"}
         </h1>
         <p className="mt-2 text-marble-dim">
-          Your coach, calibration, and progress — synced across every device.
+          Coach, calibration, progress. Synced everywhere.
         </p>
         <GreekKey className="my-6 w-40" />
 
