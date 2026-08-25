@@ -11,7 +11,7 @@ import { useFit } from "@/lib/store";
 import { pushProfile } from "@/lib/sync";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { USERNAME_RE, PASSWORD_MIN } from "@/lib/auth";
+import { USERNAME_RE, PASSWORD_MIN, emailChangeError } from "@/lib/auth";
 import {
   REWARDS_CHAIN, SOL_ADDRESS_RE, isLegacyEthAddress, explorerAddressUrl,
 } from "@/lib/chain";
@@ -374,11 +374,7 @@ function EnrollSheet({ user, onDismiss }: { user: User | null; onDismiss: () => 
         { emailRedirectTo: `${window.location.origin}/auth/callback?next=/progress` }
       );
       if (error) {
-        setErr(
-          /already/i.test(error.message)
-            ? "That email already belongs to another account."
-            : error.message
-        );
+        setErr(emailChangeError(error.message));
         return;
       }
       rememberWallet();
@@ -401,7 +397,7 @@ function EnrollSheet({ user, onDismiss }: { user: User | null; onDismiss: () => 
       const { error } = hasSyntheticAccount
         ? await sb.auth.updateUser({ email: target })
         : await sb.auth.resend({ type: "signup", email: target });
-      if (error) setErr(error.message);
+      if (error) setErr(emailChangeError(error.message));
     } finally {
       setBusy(false);
     }

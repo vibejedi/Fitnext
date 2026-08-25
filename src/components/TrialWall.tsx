@@ -9,6 +9,7 @@ import { pushProfile } from "@/lib/sync";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { SOL_ADDRESS_RE, isLegacyEthAddress } from "@/lib/chain";
+import { emailChangeError } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 /**
@@ -149,11 +150,7 @@ function ClaimForm({ user, onRefresh }: { user: User; onRefresh: () => Promise<v
         { emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard` }
       );
       if (error) {
-        setErr(
-          /already/i.test(error.message)
-            ? "That email already belongs to another account."
-            : error.message
-        );
+        setErr(emailChangeError(error.message));
         return;
       }
       if (w) {
@@ -174,7 +171,7 @@ function ClaimForm({ user, onRefresh }: { user: User; onRefresh: () => Promise<v
     setErr(null);
     try {
       const { error } = await sb.auth.updateUser({ email: sentTo });
-      if (error) setErr(error.message);
+      if (error) setErr(emailChangeError(error.message));
     } finally {
       setBusy(false);
     }
